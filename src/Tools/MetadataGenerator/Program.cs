@@ -10,7 +10,6 @@ using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
 using Roslynator.CodeGeneration.Markdown;
-using Roslynator.CodeGeneration.Xml;
 using Roslynator.Metadata;
 using Roslynator.Utilities;
 
@@ -132,14 +131,6 @@ namespace Roslynator.CodeGeneration
             WriteAllText(
                 @"CodeFixes\README.md",
                 MarkdownGenerator.CreateCodeFixesReadMe(compilerDiagnostics, comparer));
-
-            WriteAllText(
-                "DefaultConfigFile.xml",
-                XmlGenerator.CreateDefaultConfigFile(refactorings, codeFixes));
-
-            WriteAllText(
-                "default.ruleset",
-                XmlGenerator.CreateDefaultRuleSet(analyzers));
 
             // find files to delete
             foreach (string path in Directory.EnumerateFiles(GetPath(@"..\docs\refactorings")))
