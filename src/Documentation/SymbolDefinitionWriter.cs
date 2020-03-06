@@ -24,11 +24,13 @@ namespace Roslynator.Documentation
         protected SymbolDefinitionWriter(
             SymbolFilterOptions filter = null,
             DefinitionListFormat format = null,
-            SymbolDocumentationProvider documentationProvider = null)
+            SymbolDocumentationProvider documentationProvider = null,
+            INamedTypeSymbol hierarchyRoot = null)
         {
             Filter = filter ?? SymbolFilterOptions.Default;
             Format = format ?? DefinitionListFormat.Default;
             DocumentationProvider = documentationProvider;
+            HierarchyRoot = hierarchyRoot;
 
             _typeDefinitionNameFormat = new SymbolDisplayFormat(
                 typeQualificationStyle: (Layout == SymbolDefinitionListLayout.TypeHierarchy && Format.Includes(SymbolDefinitionPartFilter.ContainingNamespaceInTypeHierarchy))
@@ -47,6 +49,8 @@ namespace Roslynator.Documentation
         public DefinitionListFormat Format { get; }
 
         public SymbolDocumentationProvider DocumentationProvider { get; }
+
+        public INamedTypeSymbol HierarchyRoot { get; }
 
         public SymbolDefinitionComparer Comparer
         {
@@ -256,7 +260,9 @@ namespace Roslynator.Documentation
         public virtual void WriteDocument(IEnumerable<IAssemblySymbol> assemblies, CancellationToken cancellationToken = default)
         {
             WriteStartDocument();
-            WriteAssemblies(assemblies, cancellationToken);
+
+            if (Format.Includes(SymbolDefinitionPartFilter.Assemblies))
+                WriteAssemblies(assemblies, cancellationToken);
 
             if (!Format.GroupByAssembly)
             {
@@ -273,7 +279,7 @@ namespace Roslynator.Documentation
             WriteEndDocument();
         }
 
-        public virtual void WriteAssemblies(IEnumerable<IAssemblySymbol> assemblies, CancellationToken cancellationToken = default)
+        private void WriteAssemblies(IEnumerable<IAssemblySymbol> assemblies, CancellationToken cancellationToken = default)
         {
             WriteStartAssemblies();
 
@@ -365,7 +371,7 @@ namespace Roslynator.Documentation
                 ? SymbolDefinitionComparer.SystemFirst.TypeComparer
                 : SymbolDefinitionComparer.OmitContainingNamespace.TypeComparer;
 
-            TypeHierarchy hierarchy = TypeHierarchy.Create(types, comparer);
+            TypeHierarchy hierarchy = TypeHierarchy.Create(types, HierarchyRoot, comparer);
 
             WriteTypeHierarchy(hierarchy, cancellationToken);
         }

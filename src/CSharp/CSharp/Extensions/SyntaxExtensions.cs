@@ -371,6 +371,14 @@ namespace Roslynator.CSharp
         }
         #endregion ConversionOperatorDeclarationSyntax
 
+        #region DefaultExpressionSyntax
+        //TODO: make public
+        internal static TextSpan ParenthesesSpan(this DefaultExpressionSyntax defaultExpression)
+        {
+            return TextSpan.FromBounds(defaultExpression.OpenParenToken.SpanStart, defaultExpression.CloseParenToken.Span.End);
+        }
+        #endregion DefaultExpressionSyntax
+
         #region DelegateDeclarationSyntax
         /// <summary>
         /// Returns true the specified delegate return type is <see cref="void"/>.
@@ -657,7 +665,7 @@ namespace Roslynator.CSharp
                     return trivia;
             }
 
-            return default(SyntaxTrivia);
+            return default;
         }
 
         /// <summary>
@@ -1140,7 +1148,7 @@ namespace Roslynator.CSharp
                     return trivia;
             }
 
-            return default(SyntaxTrivia);
+            return default;
         }
 
         /// <summary>
@@ -1158,7 +1166,7 @@ namespace Roslynator.CSharp
                     return trivia;
             }
 
-            return default(SyntaxTrivia);
+            return default;
         }
 
         /// <summary>
@@ -1251,7 +1259,7 @@ namespace Roslynator.CSharp
             this TMember member,
             SemanticModel semanticModel,
             DocumentationCommentGeneratorSettings settings = null,
-            CancellationToken cancellationToken = default(CancellationToken)) where TMember : MemberDeclarationSyntax
+            CancellationToken cancellationToken = default) where TMember : MemberDeclarationSyntax
         {
             if (member == null)
                 throw new ArgumentNullException(nameof(member));
@@ -1485,7 +1493,7 @@ namespace Roslynator.CSharp
                     return trivia;
             }
 
-            return default(SyntaxTrivia);
+            return default;
         }
 
         /// <summary>
@@ -1534,14 +1542,14 @@ namespace Roslynator.CSharp
             if (index != -1)
                 return list[index];
 
-            return default(TNode);
+            return default;
         }
 
         internal static bool IsSingleLine<TNode>(
             this SeparatedSyntaxList<TNode> list,
             bool includeExteriorTrivia = true,
             bool trim = true,
-            CancellationToken cancellationToken = default(CancellationToken)) where TNode : SyntaxNode
+            CancellationToken cancellationToken = default) where TNode : SyntaxNode
         {
             int count = list.Count;
 
@@ -1569,7 +1577,7 @@ namespace Roslynator.CSharp
             this SeparatedSyntaxList<TNode> list,
             bool includeExteriorTrivia = true,
             bool trim = true,
-            CancellationToken cancellationToken = default(CancellationToken)) where TNode : SyntaxNode
+            CancellationToken cancellationToken = default) where TNode : SyntaxNode
         {
             int count = list.Count;
 
@@ -1969,14 +1977,14 @@ namespace Roslynator.CSharp
             if (index != -1)
                 return list[index];
 
-            return default(TNode);
+            return default;
         }
 
         internal static bool IsSingleLine<TNode>(
             this SyntaxList<TNode> list,
             bool includeExteriorTrivia = true,
             bool trim = true,
-            CancellationToken cancellationToken = default(CancellationToken)) where TNode : SyntaxNode
+            CancellationToken cancellationToken = default) where TNode : SyntaxNode
         {
             int count = list.Count;
 
@@ -2004,7 +2012,7 @@ namespace Roslynator.CSharp
             this SyntaxList<TNode> list,
             bool includeExteriorTrivia = true,
             bool trim = true,
-            CancellationToken cancellationToken = default(CancellationToken)) where TNode : SyntaxNode
+            CancellationToken cancellationToken = default) where TNode : SyntaxNode
         {
             int count = list.Count;
 
@@ -2422,7 +2430,7 @@ namespace Roslynator.CSharp
             this SyntaxNode node,
             bool includeExteriorTrivia = true,
             bool trim = true,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             if (node == null)
                 throw new ArgumentNullException(nameof(node));
@@ -2445,7 +2453,7 @@ namespace Roslynator.CSharp
             this SyntaxNode node,
             bool includeExteriorTrivia = true,
             bool trim = true,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             if (node == null)
                 throw new ArgumentNullException(nameof(node));
@@ -2847,7 +2855,7 @@ namespace Roslynator.CSharp
         internal static bool IsInExpressionTree(
             this SyntaxNode node,
             SemanticModel semanticModel,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             for (SyntaxNode current = node; current != null; current = current.Parent)
             {
@@ -2886,7 +2894,7 @@ namespace Roslynator.CSharp
             return false;
         }
 
-        internal static SyntaxTrivia GetIndentation(this SyntaxNode node, CancellationToken cancellationToken = default(CancellationToken))
+        internal static SyntaxTrivia GetIndentation(this SyntaxNode node, CancellationToken cancellationToken = default)
         {
             SyntaxTree tree = node.SyntaxTree;
 
@@ -2931,7 +2939,7 @@ namespace Roslynator.CSharp
             return EmptyWhitespace();
         }
 
-        internal static SyntaxTriviaList GetIncreasedIndentation(this SyntaxNode node, CancellationToken cancellationToken = default(CancellationToken))
+        internal static SyntaxTriviaList GetIncreasedIndentation(this SyntaxNode node, CancellationToken cancellationToken = default)
         {
             SyntaxTrivia trivia = GetIndentation(node, cancellationToken);
 
@@ -3406,7 +3414,7 @@ namespace Roslynator.CSharp
                     return token;
             }
 
-            return default(SyntaxToken);
+            return default;
         }
 
         internal static SyntaxTokenList Replace(this SyntaxTokenList tokens, SyntaxKind kind, SyntaxKind newKind)
@@ -3672,7 +3680,7 @@ namespace Roslynator.CSharp
                     return trivia;
             }
 
-            return default(SyntaxTrivia);
+            return default;
         }
 
         /// <summary>
@@ -3692,7 +3700,7 @@ namespace Roslynator.CSharp
 
         internal static SyntaxTriviaList EmptyIfWhitespace(this SyntaxTriviaList triviaList)
         {
-            return (triviaList.IsEmptyOrWhitespace()) ? default(SyntaxTriviaList) : triviaList;
+            return (triviaList.IsEmptyOrWhitespace()) ? default : triviaList;
         }
 
         internal static bool IsSingleElasticMarker(this SyntaxTriviaList triviaList)
