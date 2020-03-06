@@ -24,7 +24,7 @@ namespace Roslynator.CSharp
         public const string UseNameOfOperator = "RCS1015";
         public const string UseExpressionBodiedMember = "RCS1016";
         public const string AvoidMultilineExpressionBody = "RCS1017";
-        public const string AddDefaultAccessModifier = "RCS1018";
+        public const string AddAccessibilityModifiers = "RCS1018";
         public const string OrderModifiers = "RCS1019";
         public const string SimplifyNullableOfT = "RCS1020";
         public const string SimplifyLambdaExpression = "RCS1021";
@@ -76,7 +76,7 @@ namespace Roslynator.CSharp
         public const string RemoveRedundantDefaultSwitchSection = "RCS1070";
         public const string RemoveRedundantBaseConstructorCall = "RCS1071";
         public const string RemoveEmptyNamespaceDeclaration = "RCS1072";
-        public const string ReplaceIfStatementWithReturnStatement = "RCS1073";
+        public const string ConvertIfToReturnStatement = "RCS1073";
         public const string RemoveRedundantConstructor = "RCS1074";
         public const string AvoidEmptyCatchClauseThatCatchesSystemException = "RCS1075";
         public const string FormatDeclarationBraces = "RCS1076";
@@ -90,7 +90,7 @@ namespace Roslynator.CSharp
         public const string UseLinefeedAsNewLine = "RCS1086";
         public const string UseCarriageReturnAndLinefeedAsNewLine = "RCS1087";
         public const string UseSpacesInsteadOfTab = "RCS1088";
-        public const string UsePostfixUnaryOperatorInsteadOfAssignment = "RCS1089";
+        public const string UseUnaryOperatorInsteadOfAssignment = "RCS1089";
         public const string CallConfigureAwait = "RCS1090";
         public const string RemoveEmptyRegion = "RCS1091";
         public const string AddEmptyLineBeforeWhileInDoStatement = "RCS1092";
@@ -103,7 +103,7 @@ namespace Roslynator.CSharp
         public const string FormatDocumentationSummaryOnSingleLine = "RCS1100";
         public const string FormatDocumentationSummaryOnMultipleLines = "RCS1101";
         public const string MakeClassStatic = "RCS1102";
-        public const string ReplaceIfStatementWithAssignment = "RCS1103";
+        public const string ConvertIfToAssignment = "RCS1103";
         public const string SimplifyConditionalExpression = "RCS1104";
         public const string UnnecessaryInterpolation = "RCS1105";
         public const string RemoveEmptyDestructor = "RCS1106";
@@ -139,7 +139,6 @@ namespace Roslynator.CSharp
         public const string AddEmptyLineAfterClosingBrace = "RCS1153";
         public const string SortEnumMembers = "RCS1154";
         public const string UseStringComparison = "RCS1155";
-        public const string UseStringLengthInsteadOfComparisonWithEmptyString = "RCS1156";
         public const string CompositeEnumValueContainsUndefinedFlag = "RCS1157";
         public const string StaticMemberInGenericTypeShouldUseTypeParameter = "RCS1158";
         public const string UseGenericEventHandler = "RCS1159";
@@ -198,7 +197,7 @@ namespace Roslynator.CSharp
         public const string UnnecessaryInterpolatedString = "RCS1214";
         public const string ExpressionIsAlwaysEqualToTrueOrFalse = "RCS1215";
         public const string UnnecessaryUnsafeContext = "RCS1216";
-        public const string ReplaceInterpolatedStringWithConcatenation = "RCS1217";
+        public const string ConvertInterpolatedStringToConcatenation = "RCS1217";
         public const string SimplifyCodeBranching = "RCS1218";
         public const string CallSkipAndAnyInsteadOfCount = "RCS1219";
         public const string UsePatternMatchingInsteadOfIsAndCast = "RCS1220";
@@ -223,5 +222,9 @@ namespace Roslynator.CSharp
         public const string UseForStatementInsteadOfWhileStatement = "RCS1239";
         public const string UnnecessaryOperator = "RCS1240";
         public const string ImplementNonGenericCounterpart = "RCS1241";
+        public const string DoNotPassNonReadOnlyStructByReadOnlyReference = "RCS1242";
+        public const string DuplicateWordInComment = "RCS1243";
+        public const string SimplifyDefaultExpression = "RCS1244";
+        public const string SimplifyConditionalExpression2 = "RCS1245";
     }
 }
