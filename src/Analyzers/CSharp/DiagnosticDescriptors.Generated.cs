@@ -664,7 +664,7 @@ namespace Roslynator.CSharp
             messageFormat:      "Add empty line between declarations.", 
             category:           DiagnosticCategories.Formatting, 
             defaultSeverity:    DiagnosticSeverity.Info, 
-            isEnabledByDefault: true, 
+            isEnabledByDefault: false, 
             description:        null, 
             helpLinkUri:        DiagnosticIdentifiers.AddEmptyLineBetweenDeclarations, 
             customTags:         Array.Empty<string>());
@@ -1026,18 +1026,18 @@ namespace Roslynator.CSharp
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS1089</summary>
-        public static readonly DiagnosticDescriptor UsePostfixUnaryOperatorInsteadOfAssignment = Factory.Create(
-            id:                 DiagnosticIdentifiers.UsePostfixUnaryOperatorInsteadOfAssignment, 
+        public static readonly DiagnosticDescriptor UseUnaryOperatorInsteadOfAssignment = Factory.Create(
+            id:                 DiagnosticIdentifiers.UseUnaryOperatorInsteadOfAssignment, 
             title:              "Use --/++ operator instead of assignment.", 
             messageFormat:      "Use {0} operator instead of assignment.", 
             category:           DiagnosticCategories.Simplification, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: true, 
             description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.UsePostfixUnaryOperatorInsteadOfAssignment, 
+            helpLinkUri:        DiagnosticIdentifiers.UseUnaryOperatorInsteadOfAssignment, 
             customTags:         Array.Empty<string>());
 
-        public static readonly DiagnosticDescriptor UsePostfixUnaryOperatorInsteadOfAssignmentFadeOut = DiagnosticDescriptorFactory.CreateFadeOut(UsePostfixUnaryOperatorInsteadOfAssignment);
+        public static readonly DiagnosticDescriptor UseUnaryOperatorInsteadOfAssignmentFadeOut = DiagnosticDescriptorFactory.CreateFadeOut(UseUnaryOperatorInsteadOfAssignment);
 
         /// <summary>RCS1090</summary>
         public static readonly DiagnosticDescriptor CallConfigureAwait = Factory.Create(
@@ -1623,18 +1623,6 @@ namespace Roslynator.CSharp
             isEnabledByDefault: true, 
             description:        null, 
             helpLinkUri:        DiagnosticIdentifiers.UseStringComparison, 
-            customTags:         Array.Empty<string>());
-
-        /// <summary>RCS1156</summary>
-        public static readonly DiagnosticDescriptor UseStringLengthInsteadOfComparisonWithEmptyString = Factory.Create(
-            id:                 DiagnosticIdentifiers.UseStringLengthInsteadOfComparisonWithEmptyString, 
-            title:              "Use string.Length instead of comparison with empty string.", 
-            messageFormat:      "Use string.Length instead of comparison with empty string.", 
-            category:           DiagnosticCategories.Usage, 
-            defaultSeverity:    DiagnosticSeverity.Info, 
-            isEnabledByDefault: true, 
-            description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.UseStringLengthInsteadOfComparisonWithEmptyString, 
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS1157</summary>
@@ -2641,6 +2629,54 @@ namespace Roslynator.CSharp
             isEnabledByDefault: true, 
             description:        null, 
             helpLinkUri:        DiagnosticIdentifiers.ImplementNonGenericCounterpart, 
+            customTags:         Array.Empty<string>());
+
+        /// <summary>RCS1242</summary>
+        public static readonly DiagnosticDescriptor DoNotPassNonReadOnlyStructByReadOnlyReference = Factory.Create(
+            id:                 DiagnosticIdentifiers.DoNotPassNonReadOnlyStructByReadOnlyReference, 
+            title:              "Do not pass non-read-only struct by read-only reference.", 
+            messageFormat:      "Do not pass non-read-only struct by read-only reference.", 
+            category:           DiagnosticCategories.Performance, 
+            defaultSeverity:    DiagnosticSeverity.Warning, 
+            isEnabledByDefault: true, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.DoNotPassNonReadOnlyStructByReadOnlyReference, 
+            customTags:         Array.Empty<string>());
+
+        /// <summary>RCS1243</summary>
+        public static readonly DiagnosticDescriptor DuplicateWordInComment = Factory.Create(
+            id:                 DiagnosticIdentifiers.DuplicateWordInComment, 
+            title:              "Duplicate word in a comment.", 
+            messageFormat:      "Duplicate word in a comment.", 
+            category:           DiagnosticCategories.General, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: true, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.DuplicateWordInComment, 
+            customTags:         WellKnownDiagnosticTags.Unnecessary);
+
+        /// <summary>RCS1244</summary>
+        public static readonly DiagnosticDescriptor SimplifyDefaultExpression = Factory.Create(
+            id:                 DiagnosticIdentifiers.SimplifyDefaultExpression, 
+            title:              "Simplify 'default' expression.", 
+            messageFormat:      "Simplify 'default' expression.", 
+            category:           DiagnosticCategories.Simplification, 
+            defaultSeverity:    DiagnosticSeverity.Hidden, 
+            isEnabledByDefault: true, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.SimplifyDefaultExpression, 
+            customTags:         WellKnownDiagnosticTags.Unnecessary);
+
+        /// <summary>RCS1245</summary>
+        public static readonly DiagnosticDescriptor SimplifyConditionalExpression2 = Factory.Create(
+            id:                 DiagnosticIdentifiers.SimplifyConditionalExpression2, 
+            title:              "Simplify conditional expression.", 
+            messageFormat:      "Simplify conditional expression.", 
+            category:           DiagnosticCategories.Simplification, 
+            defaultSeverity:    DiagnosticSeverity.Hidden, 
+            isEnabledByDefault: true, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.SimplifyConditionalExpression2, 
             customTags:         Array.Empty<string>());
 
     }

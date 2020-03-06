@@ -29,7 +29,7 @@ namespace Roslynator.CSharp.Analysis.MarkLocalVariableAsConst
             context.RegisterSyntaxNodeAction(AnalyzeLocalDeclarationStatement, SyntaxKind.LocalDeclarationStatement);
         }
 
-        public static void AnalyzeLocalDeclarationStatement(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeLocalDeclarationStatement(SyntaxNodeAnalysisContext context)
         {
             if (context.Node.ContainsDiagnostics)
                 return;
@@ -111,7 +111,7 @@ namespace Roslynator.CSharp.Analysis.MarkLocalVariableAsConst
             ExpressionSyntax expression,
             ITypeSymbol typeSymbol,
             SemanticModel semanticModel,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             if (expression?.IsMissing != false)
                 return false;

@@ -662,8 +662,6 @@ namespace Roslynator.CSharp
         /// <param name="allowedStyles"></param>
         /// <param name="walkDownParentheses"></param>
         /// <param name="allowMissing"></param>
-        /// 
-        /// 
         public static NullCheckExpressionInfo NullCheckExpressionInfo(
             SyntaxNode node,
             NullCheckStyles allowedStyles = NullCheckStyles.ComparisonToNull | NullCheckStyles.IsPattern,
@@ -692,7 +690,7 @@ namespace Roslynator.CSharp
             NullCheckStyles allowedStyles = NullCheckStyles.All,
             bool walkDownParentheses = true,
             bool allowMissing = false,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             return Syntax.NullCheckExpressionInfo.Create(
                 node,
@@ -990,7 +988,7 @@ namespace Roslynator.CSharp
             SyntaxNode node,
             SemanticModel semanticModel,
             bool walkDownParentheses = true,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             return Syntax.StringConcatenationExpressionInfo.Create(node, semanticModel, walkDownParentheses, cancellationToken);
         }
@@ -1004,7 +1002,7 @@ namespace Roslynator.CSharp
         public static StringConcatenationExpressionInfo StringConcatenationExpressionInfo(
             BinaryExpressionSyntax binaryExpression,
             SemanticModel semanticModel,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             return Syntax.StringConcatenationExpressionInfo.Create(binaryExpression, semanticModel, cancellationToken);
         }
@@ -1018,7 +1016,7 @@ namespace Roslynator.CSharp
         public static StringConcatenationExpressionInfo StringConcatenationExpressionInfo(
             in ExpressionChain expressionChain,
             SemanticModel semanticModel,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             return Syntax.StringConcatenationExpressionInfo.Create(expressionChain, semanticModel, cancellationToken);
         }

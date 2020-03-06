@@ -97,7 +97,7 @@ namespace Roslynator
             SemanticModel semanticModel,
             int position,
             bool isCaseSensitive = true,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             if (semanticModel == null)
                 throw new ArgumentNullException(nameof(semanticModel));
@@ -114,7 +114,7 @@ namespace Roslynator
             ISymbol containingSymbol,
             SemanticModel semanticModel,
             bool isCaseSensitive = true,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             if (containingSymbol == null)
                 throw new ArgumentNullException(nameof(containingSymbol));
@@ -199,7 +199,7 @@ namespace Roslynator
             SemanticModel semanticModel,
             int position,
             bool isCaseSensitive = true,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             if (typeSymbol != null)
             {
@@ -218,7 +218,7 @@ namespace Roslynator
             SemanticModel semanticModel,
             int position,
             bool isCaseSensitive = true,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             string newName = CreateName(typeSymbol, firstCharToLower: true);
 
@@ -239,7 +239,7 @@ namespace Roslynator
             IParameterSymbol parameterSymbol,
             SemanticModel semanticModel,
             bool isCaseSensitive = true,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             string newName = CreateName(parameterSymbol.Type, firstCharToLower: true);
 
@@ -263,7 +263,7 @@ namespace Roslynator
                 && uniqueName.Length > newName.Length
                 && AreDigits(uniqueName, newName.Length, uniqueName.Length - newName.Length);
 
-            bool AreDigits(string value, int start, int count)
+            static bool AreDigits(string value, int start, int count)
             {
                 int max = start + count;
 
