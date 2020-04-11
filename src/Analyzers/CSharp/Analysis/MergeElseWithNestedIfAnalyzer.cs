@@ -10,28 +10,25 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Roslynator.CSharp.Analysis
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class MergeElseClauseWithNestedIfStatementAnalyzer : BaseDiagnosticAnalyzer
+    public class MergeElseWithNestedIfAnalyzer : BaseDiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
             get
             {
                 return ImmutableArray.Create(
-                    DiagnosticDescriptors.MergeElseClauseWithNestedIfStatement,
-                    DiagnosticDescriptors.MergeElseClauseWithNestedIfStatementFadeOut);
+                    DiagnosticDescriptors.MergeElseWithNestedIf,
+                    DiagnosticDescriptors.MergeElseWithNestedIfFadeOut);
             }
         }
 
         public override void Initialize(AnalysisContext context)
         {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
-
             base.Initialize(context);
 
             context.RegisterCompilationStartAction(startContext =>
             {
-                if (startContext.IsAnalyzerSuppressed(DiagnosticDescriptors.MergeElseClauseWithNestedIfStatement))
+                if (startContext.IsAnalyzerSuppressed(DiagnosticDescriptors.MergeElseWithNestedIf))
                     return;
 
                 startContext.RegisterSyntaxNodeAction(AnalyzeElseClause, SyntaxKind.ElseClause);
@@ -58,8 +55,8 @@ namespace Roslynator.CSharp.Analysis
                 return;
             }
 
-            DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.MergeElseClauseWithNestedIfStatement, block);
-            CSharpDiagnosticHelpers.ReportBraces(context, DiagnosticDescriptors.MergeElseClauseWithNestedIfStatementFadeOut, block);
+            DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.MergeElseWithNestedIf, block);
+            CSharpDiagnosticHelpers.ReportBraces(context, DiagnosticDescriptors.MergeElseWithNestedIfFadeOut, block);
         }
     }
 }

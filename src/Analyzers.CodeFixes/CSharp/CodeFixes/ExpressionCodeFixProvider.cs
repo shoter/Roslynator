@@ -61,7 +61,7 @@ namespace Roslynator.CSharp.CodeFixes
                                 var binaryExpression = (BinaryExpressionSyntax)expression;
 
                                 CodeAction codeAction = CodeAction.Create(
-                                    $"Call 'IsNaN'",
+                                    "Call 'IsNaN'",
                                     ct =>
                                     {
                                         ExpressionSyntax newExpression = SimpleMemberInvocationExpression(
@@ -80,6 +80,7 @@ namespace Roslynator.CSharp.CodeFixes
 
                                 context.RegisterCodeFix(codeAction, diagnostic);
                             }
+                            else
                             {
                                 CodeAction codeAction = CodeAction.Create(
                                     "Remove null check",
