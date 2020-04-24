@@ -128,6 +128,7 @@ namespace Roslynator.VisualStudio
         private void UpdateSettings()
         {
             Settings.Instance.ConfigFile = LoadConfigFileSettings();
+            Settings.Instance.ApplyTo(AnalyzerSettings.Current);
             Settings.Instance.ApplyTo(RefactoringSettings.Current);
             Settings.Instance.ApplyTo(CodeFixSettings.Current);
 

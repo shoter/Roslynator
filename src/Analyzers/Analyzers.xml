@@ -5758,6 +5758,14 @@ public class C
         <Before><![CDATA[list.ElementAt(1)]]></Before>
         <After><![CDATA[list[1]]]></After>
       </Sample>
+      <Sample RequiredOption="SupportInvocationExpression">
+        <Before><![CDATA[M().First()]]></Before>
+        <After><![CDATA[M()[0]]]></After>
+      </Sample>
+      <Sample RequiredOption="SupportElementAccessExpression">
+        <Before><![CDATA[M[index].First()]]></Before>
+        <After><![CDATA[M[index][0]]]></After>
+      </Sample>
     </Samples>
   </Analyzer>
 </Analyzers>

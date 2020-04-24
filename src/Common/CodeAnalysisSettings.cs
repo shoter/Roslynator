@@ -2,10 +2,11 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using Roslynator.Configuration;
 
 namespace Roslynator
 {
-    public abstract class CodeAnalysisSettings<T>
+    internal abstract class CodeAnalysisSettings<T>
     {
         protected CodeAnalysisSettings()
         {
@@ -14,7 +15,22 @@ namespace Roslynator
 
         public HashSet<T> Disabled { get; }
 
-        public abstract void Reset();
+        public void Reset()
+        {
+            Disabled.Clear();
+
+            SetValues(CodeAnalysisConfiguration.Default);
+        }
+
+        public void Reset(CodeAnalysisConfiguration configuration1, CodeAnalysisConfiguration configuration2)
+        {
+            Reset();
+
+            SetValues(configuration1);
+            SetValues(configuration2);
+        }
+
+        protected abstract void SetValues(CodeAnalysisConfiguration configuration);
 
         public bool IsEnabled(T item)
         {

@@ -34,12 +34,14 @@ namespace Roslynator.Configuration
 
         public CodeAnalysisConfiguration(
             IEnumerable<string> includes = null,
+            IEnumerable<KeyValuePair<string, string>> analyzers = null,
             IEnumerable<KeyValuePair<string, bool>> codeFixes = null,
             IEnumerable<KeyValuePair<string, bool>> refactorings = null,
             IEnumerable<string> ruleSets = null,
             bool prefixFieldIdentifierWithUnderscore = false)
         {
             Includes = includes?.ToImmutableArray() ?? ImmutableArray<string>.Empty;
+            Analyzers = analyzers?.ToImmutableDictionary() ?? ImmutableDictionary<string, string>.Empty;
             CodeFixes = codeFixes?.ToImmutableDictionary() ?? ImmutableDictionary<string, bool>.Empty;
             Refactorings = refactorings?.ToImmutableDictionary() ?? ImmutableDictionary<string, bool>.Empty;
             RuleSets = ruleSets?.ToImmutableArray() ?? ImmutableArray<string>.Empty;
@@ -47,6 +49,8 @@ namespace Roslynator.Configuration
         }
 
         public ImmutableArray<string> Includes { get; }
+
+        public ImmutableDictionary<string, string> Analyzers { get; }
 
         public ImmutableDictionary<string, bool> CodeFixes { get; }
 
@@ -154,6 +158,7 @@ namespace Roslynator.Configuration
 
             return new CodeAnalysisConfiguration(
                 includes: includes,
+                analyzers: builder.Analyzers?.ToImmutable() ?? ImmutableDictionary<string, string>.Empty,
                 codeFixes: builder.CodeFixes?.ToImmutable() ?? ImmutableDictionary<string, bool>.Empty,
                 refactorings: builder.Refactorings?.ToImmutable() ?? ImmutableDictionary<string, bool>.Empty,
                 ruleSets: builder.RuleSets?.ToImmutable() ?? ImmutableArray<string>.Empty,
@@ -217,6 +222,10 @@ namespace Roslynator.Configuration
                 {
                     LoadGeneral(e, builder);
                 }
+                else if (e.HasName("Analyzers"))
+                {
+                    LoadAnalyzers(e, builder);
+                }
                 else if (e.HasName("Refactorings"))
                 {
                     LoadRefactorings(e, builder);
@@ -246,6 +255,44 @@ namespace Roslynator.Configuration
 
                     if (bool.TryParse(value, out bool result))
                         builder.PrefixFieldIdentifierWithUnderscore = result;
+                }
+                else
+                {
+                    Debug.Fail(e.Name.LocalName);
+                }
+            }
+        }
+
+        private static void LoadAnalyzers(XElement element, Builder builder)
+        {
+            foreach (XElement e in element.Elements())
+            {
+                if (e.HasName("Analyzer"))
+                {
+                    string id = null;
+                    string value = null;
+
+                    foreach (XAttribute attribute in e.Attributes())
+                    {
+                        if (attribute.HasName("Id"))
+                        {
+                            id = attribute.Value;
+                        }
+                        else if (attribute.HasName("Value"))
+                        {
+                            value = attribute.Value;
+                        }
+                        else
+                        {
+                            Debug.Fail(attribute.Name.LocalName);
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(id)
+                        && !string.IsNullOrEmpty(value))
+                    {
+                        builder.Analyzers[id] = value;
+                    }
                 }
                 else
                 {
@@ -375,16 +422,29 @@ namespace Roslynator.Configuration
         {
             return new CodeAnalysisConfiguration(
                 includes: Includes,
+                analyzers: Analyzers,
                 codeFixes: CodeFixes,
                 refactorings: Refactorings,
                 ruleSets: RuleSets,
                 prefixFieldIdentifierWithUnderscore: prefixFieldIdentifierWithUnderscore);
         }
 
+        public CodeAnalysisConfiguration WithAnalyzers(IEnumerable<KeyValuePair<string, string>> analyzers)
+        {
+            return new CodeAnalysisConfiguration(
+                includes: Includes,
+                analyzers: analyzers.ToImmutableDictionary(),
+                codeFixes: CodeFixes,
+                refactorings: Refactorings,
+                ruleSets: RuleSets,
+                prefixFieldIdentifierWithUnderscore: PrefixFieldIdentifierWithUnderscore);
+        }
+
         public CodeAnalysisConfiguration WithRefactorings(IEnumerable<KeyValuePair<string, bool>> refactorings)
         {
             return new CodeAnalysisConfiguration(
                 includes: Includes,
+                analyzers: Analyzers,
                 codeFixes: CodeFixes,
                 refactorings: refactorings.ToImmutableDictionary(),
                 ruleSets: RuleSets,
@@ -395,6 +455,7 @@ namespace Roslynator.Configuration
         {
             return new CodeAnalysisConfiguration(
                 includes: Includes,
+                analyzers: Analyzers,
                 codeFixes: codeFixes.ToImmutableDictionary(),
                 refactorings: Refactorings,
                 ruleSets: RuleSets,
@@ -406,6 +467,16 @@ namespace Roslynator.Configuration
             var settings = new XElement("Settings",
                 new XElement("General",
                     new XElement("PrefixFieldIdentifierWithUnderscore", PrefixFieldIdentifierWithUnderscore)));
+
+            if (Analyzers.Count > 0)
+            {
+                settings.Add(
+                    new XElement("Analyzers",
+                        Analyzers
+                            .OrderBy(f => f.Key)
+                            .Select(f => new XElement("Analyzer", new XAttribute("Id", f.Key), new XAttribute("Value", f.Value)))
+                    ));
+            }
 
             if (Refactorings.Any(f => !f.Value))
             {
@@ -454,9 +525,15 @@ namespace Roslynator.Configuration
 
         private class Builder
         {
+            private ImmutableDictionary<string, string>.Builder _analyzers;
             private ImmutableDictionary<string, bool>.Builder _codeFixes;
             private ImmutableDictionary<string, bool>.Builder _refactorings;
             private ImmutableArray<string>.Builder _ruleSets;
+
+            public ImmutableDictionary<string, string>.Builder Analyzers
+            {
+                get { return _analyzers ?? (_analyzers = ImmutableDictionary.CreateBuilder<string, string>()); }
+            }
 
             public ImmutableDictionary<string, bool>.Builder CodeFixes
             {
