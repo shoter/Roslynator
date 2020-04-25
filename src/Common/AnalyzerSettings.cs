@@ -20,40 +20,31 @@ namespace Roslynator
             return settings;
         }
 
-        public bool RCS1246_UseElementAccess_SupportInvocationExpression { get; set; }
+        public bool UseElementAccessOnInvocation { get; set; } = true;
 
-        public bool RCS1246_UseElementAccess_SupportElementAccess { get; set; }
+        public bool UseElementAccessOnElementAccess { get; set; } = true;
 
         protected override void SetValues(CodeAnalysisConfiguration configuration)
         {
             if (configuration == null)
                 return;
 
-            RCS1246_UseElementAccess_SupportInvocationExpression = false;
-            RCS1246_UseElementAccess_SupportElementAccess = false;
+            UseElementAccessOnInvocation = true;
+            UseElementAccessOnElementAccess = true;
 
-            foreach (KeyValuePair<string, string> kvp in CodeAnalysisConfiguration.Default.Analyzers)
+            foreach (KeyValuePair<string, bool> kvp in CodeAnalysisConfiguration.Current.Analyzers)
             {
-                switch (kvp.Key)
+                if (string.Equals(kvp.Key, nameof(UseElementAccessOnInvocation), StringComparison.OrdinalIgnoreCase))
                 {
-                    case "RCS1246": // UseElementAccess
-                        {
-                            if (string.Equals(kvp.Value, "SupportInvocationExpression", StringComparison.OrdinalIgnoreCase))
-                            {
-                                RCS1246_UseElementAccess_SupportInvocationExpression = true;
-                            }
-                            else if (string.Equals(kvp.Value, "SupportElementAccessExpression", StringComparison.OrdinalIgnoreCase))
-                            {
-                                RCS1246_UseElementAccess_SupportElementAccess = true;
-                            }
-
-                            break;
-                        }
-                    default:
-                        {
-                            Debug.Fail($"Unknown analyzer id '{kvp.Key}'");
-                            break;
-                        }
+                    UseElementAccessOnInvocation = kvp.Value;
+                }
+                else if (string.Equals(kvp.Key, nameof(UseElementAccessOnElementAccess), StringComparison.OrdinalIgnoreCase))
+                {
+                    UseElementAccessOnElementAccess = kvp.Value;
+                }
+                else
+                {
+                    Debug.Fail($"Unknown key '{kvp.Key}'");
                 }
             }
         }

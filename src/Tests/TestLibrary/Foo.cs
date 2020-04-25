@@ -23,21 +23,8 @@ namespace Roslynator.Testing
 {
     class C
     {
-        List<string> M()
+        void M()
         {
-            var items = new List<string>();
-            var c = new C();
-
-            string x = items.First();
-            string y = M().First();
-            string z = c[0].First();
-
-            return default!;
-        }
-
-        public List<string> this[int index]
-        {
-            get { return null!; }
         }
     }
 }

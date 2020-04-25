@@ -73,6 +73,98 @@ class C
 ", source, expected);
         }
 
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseElementAccess)]
+        public async Task Test_UseElementAccessOnElementAccess()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+using System.Linq;
+using System.Collections.Generic;
+
+class C
+{
+    List<object> this[int index] => null;
+
+    void M()
+    {
+        C x = default;
+
+        var first = x[0].[|First()|];
+        var second = x[0].[|ElementAt(1)|];
+    }
+}
+",
+@"
+using System.Linq;
+using System.Collections.Generic;
+
+class C
+{
+    List<object> this[int index] => null;
+
+    void M()
+    {
+        C x = default;
+
+        var first = x[0][0];
+        var second = x[0][1];
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseElementAccess)]
+        public async Task Test_UseElementAccessOnInvocationExpression()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+
+class C
+{
+    void M()
+    {
+        object x = null;
+
+        x = ((List<object>)x).ToList().[|First()|];
+        x = ((object[])x).ToArray().[|First()|];
+        x = ((ImmutableArray<object>)x).ToImmutableArray().[|First()|];
+        x = ((string)x).ToString().[|First()|];
+
+        x = ((List<object>)x).ToList().[|ElementAt(1)|];
+        x = ((object[])x).ToArray().[|ElementAt(1)|];
+        x = ((ImmutableArray<object>)x).ToImmutableArray().[|ElementAt(1)|];
+        x = ((string)x).ToString().[|ElementAt(1)|];
+    }
+}
+",
+@"
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+
+class C
+{
+    void M()
+    {
+        object x = null;
+
+        x = ((List<object>)x).ToList()[0];
+        x = ((object[])x).ToArray()[0];
+        x = ((ImmutableArray<object>)x).ToImmutableArray()[0];
+        x = ((string)x).ToString()[0];
+
+        x = ((List<object>)x).ToList()[1];
+        x = ((object[])x).ToArray()[1];
+        x = ((ImmutableArray<object>)x).ToImmutableArray()[1];
+        x = ((string)x).ToString()[1];
+    }
+}
+");
+        }
+
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.OptimizeLinqMethodCall)]
         public async Task TestNoDiagnostic_UseElementAccessInsteadOfElementAt()
         {
@@ -94,11 +186,6 @@ class C
         x = ((IEnumerable<object>)x).ElementAt(1);
 
         x = ((Dictionary<object, object>)x).ElementAt(1);
-
-        x = ((List<object>)x).ToList().ElementAt(1);
-        x = ((object[])x).ToArray().ElementAt(1);
-        x = ((ImmutableArray<object>)x).ToImmutableArray().ElementAt(1);
-        x = ((string)x).ToString().ElementAt(1);
     }
 }
 ");
@@ -125,13 +212,15 @@ class C
         x = ((IEnumerable<object>)x).First();
 
         x = ((Dictionary<object, object>)x).First();
-
-        x = ((List<object>)x).ToList().First();
-        x = ((object[])x).ToArray().First();
-        x = ((ImmutableArray<object>)x).ToImmutableArray().First();
-        x = ((string)x).ToString().First();
     }
 }
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.OptimizeLinqMethodCall)]
+        public async Task TestNoDiagnostic_UseElementAccessOnElementAccess()
+        {
+            await VerifyNoDiagnosticAsync(@"
 ");
         }
 

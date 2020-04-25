@@ -6,7 +6,7 @@ using Roslynator.Configuration;
 
 namespace Roslynator
 {
-    internal abstract class CodeAnalysisSettings<T>
+    public abstract class CodeAnalysisSettings<T>
     {
         protected CodeAnalysisSettings()
         {
@@ -19,7 +19,7 @@ namespace Roslynator
         {
             Disabled.Clear();
 
-            SetValues(CodeAnalysisConfiguration.Default);
+            SetValues(CodeAnalysisConfiguration.Current);
         }
 
         public void Reset(CodeAnalysisConfiguration configuration1, CodeAnalysisConfiguration configuration2)

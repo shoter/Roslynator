@@ -13,44 +13,46 @@ using System.Xml.Linq;
 
 namespace Roslynator.Configuration
 {
-    internal class CodeAnalysisConfiguration
+    public class CodeAnalysisConfiguration
     {
         public const string ConfigFileName = "roslynator.config";
 
-        private static CodeAnalysisConfiguration _default;
+        private static readonly IEqualityComparer<string> _keyComparer = StringComparer.OrdinalIgnoreCase;
+
+        private static CodeAnalysisConfiguration _current;
 
         public static CodeAnalysisConfiguration Empty { get; } = new CodeAnalysisConfiguration();
 
-        public static CodeAnalysisConfiguration Default
+        public static CodeAnalysisConfiguration Current
         {
             get
             {
-                if (_default == null)
-                    Interlocked.CompareExchange(ref _default, LoadDefaultConfiguration() ?? Empty, null);
+                if (_current == null)
+                    Interlocked.CompareExchange(ref _current, LoadConfiguration() ?? Empty, null);
 
-                return _default;
+                return _current;
             }
         }
 
         public CodeAnalysisConfiguration(
             IEnumerable<string> includes = null,
-            IEnumerable<KeyValuePair<string, string>> analyzers = null,
+            IEnumerable<KeyValuePair<string, bool>> analyzers = null,
             IEnumerable<KeyValuePair<string, bool>> codeFixes = null,
             IEnumerable<KeyValuePair<string, bool>> refactorings = null,
             IEnumerable<string> ruleSets = null,
             bool prefixFieldIdentifierWithUnderscore = false)
         {
             Includes = includes?.ToImmutableArray() ?? ImmutableArray<string>.Empty;
-            Analyzers = analyzers?.ToImmutableDictionary() ?? ImmutableDictionary<string, string>.Empty;
-            CodeFixes = codeFixes?.ToImmutableDictionary() ?? ImmutableDictionary<string, bool>.Empty;
-            Refactorings = refactorings?.ToImmutableDictionary() ?? ImmutableDictionary<string, bool>.Empty;
+            Analyzers = analyzers?.ToImmutableDictionary(_keyComparer) ?? ImmutableDictionary<string, bool>.Empty;
+            CodeFixes = codeFixes?.ToImmutableDictionary(_keyComparer) ?? ImmutableDictionary<string, bool>.Empty;
+            Refactorings = refactorings?.ToImmutableDictionary(_keyComparer) ?? ImmutableDictionary<string, bool>.Empty;
             RuleSets = ruleSets?.ToImmutableArray() ?? ImmutableArray<string>.Empty;
             PrefixFieldIdentifierWithUnderscore = prefixFieldIdentifierWithUnderscore;
         }
 
         public ImmutableArray<string> Includes { get; }
 
-        public ImmutableDictionary<string, string> Analyzers { get; }
+        public ImmutableDictionary<string, bool> Analyzers { get; }
 
         public ImmutableDictionary<string, bool> CodeFixes { get; }
 
@@ -78,7 +80,7 @@ namespace Roslynator.Configuration
             }
         }
 
-        private static CodeAnalysisConfiguration LoadDefaultConfiguration()
+        private static CodeAnalysisConfiguration LoadConfiguration()
         {
             string path = typeof(CodeAnalysisConfiguration).Assembly.Location;
 
@@ -158,7 +160,7 @@ namespace Roslynator.Configuration
 
             return new CodeAnalysisConfiguration(
                 includes: includes,
-                analyzers: builder.Analyzers?.ToImmutable() ?? ImmutableDictionary<string, string>.Empty,
+                analyzers: builder.Analyzers?.ToImmutable() ?? ImmutableDictionary<string, bool>.Empty,
                 codeFixes: builder.CodeFixes?.ToImmutable() ?? ImmutableDictionary<string, bool>.Empty,
                 refactorings: builder.Refactorings?.ToImmutable() ?? ImmutableDictionary<string, bool>.Empty,
                 ruleSets: builder.RuleSets?.ToImmutable() ?? ImmutableArray<string>.Empty,
@@ -251,10 +253,14 @@ namespace Roslynator.Configuration
             {
                 if (e.HasName("PrefixFieldIdentifierWithUnderscore"))
                 {
-                    string value = e.Value;
-
-                    if (bool.TryParse(value, out bool result))
+                    if (bool.TryParse(e.Value, out bool result))
+                    {
                         builder.PrefixFieldIdentifierWithUnderscore = result;
+                    }
+                    else
+                    {
+                        Debug.Fail(e.Value);
+                    }
                 }
                 else
                 {
@@ -267,36 +273,15 @@ namespace Roslynator.Configuration
         {
             foreach (XElement e in element.Elements())
             {
-                if (e.HasName("Analyzer"))
+                string key = e.Name.LocalName;
+
+                if (bool.TryParse(e.Value, out bool value))
                 {
-                    string id = null;
-                    string value = null;
-
-                    foreach (XAttribute attribute in e.Attributes())
-                    {
-                        if (attribute.HasName("Id"))
-                        {
-                            id = attribute.Value;
-                        }
-                        else if (attribute.HasName("Value"))
-                        {
-                            value = attribute.Value;
-                        }
-                        else
-                        {
-                            Debug.Fail(attribute.Name.LocalName);
-                        }
-                    }
-
-                    if (!string.IsNullOrEmpty(id)
-                        && !string.IsNullOrEmpty(value))
-                    {
-                        builder.Analyzers[id] = value;
-                    }
+                    builder.Analyzers[key] = value;
                 }
                 else
                 {
-                    Debug.Fail(e.Name.LocalName);
+                    Debug.Fail(e.Value);
                 }
             }
         }
@@ -429,11 +414,11 @@ namespace Roslynator.Configuration
                 prefixFieldIdentifierWithUnderscore: prefixFieldIdentifierWithUnderscore);
         }
 
-        public CodeAnalysisConfiguration WithAnalyzers(IEnumerable<KeyValuePair<string, string>> analyzers)
+        public CodeAnalysisConfiguration WithAnalyzers(IEnumerable<KeyValuePair<string, bool>> analyzers)
         {
             return new CodeAnalysisConfiguration(
                 includes: Includes,
-                analyzers: analyzers.ToImmutableDictionary(),
+                analyzers: analyzers,
                 codeFixes: CodeFixes,
                 refactorings: Refactorings,
                 ruleSets: RuleSets,
@@ -446,7 +431,7 @@ namespace Roslynator.Configuration
                 includes: Includes,
                 analyzers: Analyzers,
                 codeFixes: CodeFixes,
-                refactorings: refactorings.ToImmutableDictionary(),
+                refactorings: refactorings,
                 ruleSets: RuleSets,
                 prefixFieldIdentifierWithUnderscore: PrefixFieldIdentifierWithUnderscore);
         }
@@ -456,7 +441,7 @@ namespace Roslynator.Configuration
             return new CodeAnalysisConfiguration(
                 includes: Includes,
                 analyzers: Analyzers,
-                codeFixes: codeFixes.ToImmutableDictionary(),
+                codeFixes: codeFixes,
                 refactorings: Refactorings,
                 ruleSets: RuleSets,
                 prefixFieldIdentifierWithUnderscore: PrefixFieldIdentifierWithUnderscore);
@@ -525,14 +510,14 @@ namespace Roslynator.Configuration
 
         private class Builder
         {
-            private ImmutableDictionary<string, string>.Builder _analyzers;
+            private ImmutableDictionary<string, bool>.Builder _analyzers;
             private ImmutableDictionary<string, bool>.Builder _codeFixes;
             private ImmutableDictionary<string, bool>.Builder _refactorings;
             private ImmutableArray<string>.Builder _ruleSets;
 
-            public ImmutableDictionary<string, string>.Builder Analyzers
+            public ImmutableDictionary<string, bool>.Builder Analyzers
             {
-                get { return _analyzers ?? (_analyzers = ImmutableDictionary.CreateBuilder<string, string>()); }
+                get { return _analyzers ?? (_analyzers = ImmutableDictionary.CreateBuilder<string, bool>()); }
             }
 
             public ImmutableDictionary<string, bool>.Builder CodeFixes

@@ -13,9 +13,9 @@ namespace Roslynator.CSharp.Analysis
     {
         public static bool ShouldAnalyze(in SimpleMemberInvocationExpressionInfo invocationInfo)
         {
-            return (AnalyzerSettings.Current.RCS1246_UseElementAccess_SupportInvocationExpression
+            return (AnalyzerSettings.Current.UseElementAccessOnInvocation
                     || !invocationInfo.Expression.IsKind(SyntaxKind.InvocationExpression))
-                && (AnalyzerSettings.Current.RCS1246_UseElementAccess_SupportElementAccess
+                && (AnalyzerSettings.Current.UseElementAccessOnElementAccess
                     || !invocationInfo.Expression.IsKind(SyntaxKind.ElementAccessExpression));
         }
 
