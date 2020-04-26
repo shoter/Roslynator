@@ -44,8 +44,6 @@ namespace Roslynator
 
         public static bool TryGetNormalizedFullPath(string path, string basePath, out string result)
         {
-            Debug.WriteLine(path);
-
             try
             {
                 if (basePath != null
@@ -55,9 +53,6 @@ namespace Roslynator
                 }
 
                 path = Path.GetFullPath(path);
-
-                Debug.WriteLine(path);
-                Debug.WriteLine("");
 
                 result = path;
                 return true;

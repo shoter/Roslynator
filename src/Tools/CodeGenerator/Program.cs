@@ -36,6 +36,19 @@ namespace Roslynator.CodeGeneration
             ImmutableArray<RefactoringMetadata> refactorings = metadata.Refactorings;
             ImmutableArray<CodeFixMetadata> codeFixes = metadata.CodeFixes;
             ImmutableArray<CompilerDiagnosticMetadata> compilerDiagnostics = metadata.CompilerDiagnostics;
+            ImmutableArray<CodeStyle.CodeStyleDescriptor> codeStyles = metadata.CodeStyles;
+
+            WriteCompilationUnit(
+                @"Common\CodeStyle\CodeStyleDescriptors.Generated.cs",
+                CodeStyleDescriptorsGenerator.Generate(codeStyles, comparer),
+                normalizeWhitespace: false);
+
+            WriteCompilationUnit(
+                @"Common\CodeStyle\CodeStyleIdentifiers.Generated.cs",
+                CodeStyleIdentifiersGenerator.Generate(codeStyles, comparer));
+
+            Console.WriteLine("xxx");
+            return;
 
             WriteCompilationUnit(
                 @"Refactorings\CSharp\RefactoringIdentifiers.Generated.cs",

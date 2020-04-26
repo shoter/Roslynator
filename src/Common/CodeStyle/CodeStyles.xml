@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeStyles>
+  <CodeStyle Identifier="ParenthesizeSimpleConditionOfConditionalExpression">
+    <IsEnabledByDefault>true</IsEnabledByDefault>
+    <Summary></Summary>
+  </CodeStyle>
+  <CodeStyle Identifier="UseElementAccessOnElementAccess">
+    <IsEnabledByDefault>true</IsEnabledByDefault>
+    <Summary></Summary>
+  </CodeStyle>
+  <CodeStyle Identifier="UseElementAccessOnInvocation">
+    <IsEnabledByDefault>true</IsEnabledByDefault>
+    <Summary></Summary>
+  </CodeStyle>
+</CodeStyles>

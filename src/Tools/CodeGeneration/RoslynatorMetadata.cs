@@ -5,6 +5,8 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
+using Roslynator.CodeStyle;
 using Roslynator.Metadata;
 
 namespace Roslynator.CodeGeneration
@@ -24,6 +26,7 @@ namespace Roslynator.CodeGeneration
         private ImmutableArray<RefactoringMetadata> _refactorings;
         private ImmutableArray<CodeFixMetadata> _codeFixes;
         private ImmutableArray<CompilerDiagnosticMetadata> _compilerDiagnostics;
+        private ImmutableArray<CodeStyleDescriptor> _codeStyles;
 
         private static readonly Regex _analyzersFileNameRegex = new Regex(@"\A(\w+\.)?Analyzers(?!\.Template)(\.\w+)?\z");
 
@@ -90,6 +93,30 @@ namespace Roslynator.CodeGeneration
                     _compilerDiagnostics = MetadataFile.ReadAllCompilerDiagnostics(GetPath(@"CodeFixes\Diagnostics.xml"));
 
                 return _compilerDiagnostics;
+            }
+        }
+
+        public ImmutableArray<CodeStyleDescriptor> CodeStyles
+        {
+            get
+            {
+                if (_codeStyles.IsDefault)
+                    _codeStyles = LoadCodeStyles(GetPath(@"Common\CodeStyle\CodeStyles.xml")).ToImmutableArray();
+
+                return _codeStyles;
+            }
+        }
+
+        public static IEnumerable<CodeStyleDescriptor> LoadCodeStyles(string filePath)
+        {
+            XDocument doc = XDocument.Load(filePath);
+
+            foreach (XElement element in doc.Root.Elements("CodeStyle"))
+            {
+                yield return new CodeStyleDescriptor(
+                    element.Attribute("Id").Value,
+                    bool.Parse(element.Element("IsEnabledByDefault").Value),
+                    element.Element("Summary")?.Value);
             }
         }
 

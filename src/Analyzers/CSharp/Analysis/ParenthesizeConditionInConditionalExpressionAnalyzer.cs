@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Roslynator.CSharp.Syntax;
+using Roslynator.CodeStyle;
 
 namespace Roslynator.CSharp.Analysis
 {
@@ -32,15 +31,23 @@ namespace Roslynator.CSharp.Analysis
             if (conditionalExpression.ContainsDiagnostics)
                 return;
 
-            ConditionalExpressionInfo info = SyntaxInfo.ConditionalExpressionInfo(conditionalExpression, walkDownParentheses: false);
+            ExpressionSyntax condition = conditionalExpression.Condition;
 
-            if (!info.Success)
+            if (condition == null)
                 return;
 
-            if (info.Condition.Kind() == SyntaxKind.ParenthesizedExpression)
+            SyntaxKind kind = condition.Kind();
+
+            if (kind == SyntaxKind.ParenthesizedExpression)
                 return;
 
-            DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ParenthesizeConditionInConditionalExpression, info.Condition);
+            if (CSharpFacts.IsSingleTokenExpression(kind)
+                && !context.IsCodeStyleEnabled(CodeStyleIdentifiers.ParenthesizeSimpleConditionOfConditionalExpression))
+            {
+                return;
+            }
+
+            DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ParenthesizeConditionInConditionalExpression, condition);
         }
     }
 }

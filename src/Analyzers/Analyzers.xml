@@ -1084,7 +1084,7 @@ if (!f)
     <SupportsFadeOutAnalyzer>false</SupportsFadeOutAnalyzer>
     <Samples>
       <Sample>
-        <Before><![CDATA[object x = condition ? WhenTrue() : WhenFalse(); // [|Id|]]]></Before>
+        <Before Disable="ParenthesizeSimpleConditionOfConditionalExpression"><![CDATA[object x = condition ? WhenTrue() : WhenFalse(); // [|Id|]]]></Before>
         <After><![CDATA[object x = (condition) ? WhenTrue() : WhenFalse();]]></After>
       </Sample>
     </Samples>
@@ -5758,12 +5758,12 @@ public class C
         <Before><![CDATA[list.ElementAt(1)]]></Before>
         <After><![CDATA[list[1]]]></After>
       </Sample>
-      <Sample Disable="UseElementAccessOnInvocation">
-        <Before><![CDATA[M().First()]]></Before>
+      <Sample>
+        <Before Disable="UseElementAccessOnInvocation"><![CDATA[M().First()]]></Before>
         <After><![CDATA[M()[0]]]></After>
       </Sample>
-      <Sample Disable="UseElementAccessOnElementAccess">
-        <Before><![CDATA[M[index].First()]]></Before>
+      <Sample>
+        <Before Disable="UseElementAccessOnElementAccess"><![CDATA[M[index].First()]]></Before>
         <After><![CDATA[M[index][0]]]></After>
       </Sample>
     </Samples>

@@ -4,14 +4,17 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using Microsoft.CodeAnalysis;
+using Roslynator.CodeStyle;
 using Roslynator.Configuration;
 
 namespace Roslynator
 {
     internal class AnalyzerRules
     {
-        public static AnalyzerRules Current { get; } = Create();
+        public static AnalyzerRules Default { get; } = Create();
 
         public ReportDiagnostic GeneralDiagnosticOption { get; }
 
@@ -39,7 +42,7 @@ namespace Roslynator
             {
                 string key = kvp.Key;
 
-                if (key.StartsWith(AnalyzerRuleIdentifiers.Prefix))
+                if (key.StartsWith(CodeStyleIdentifiers.Prefix))
                 {
                     ReportDiagnostic value = kvp.Value;
 
@@ -61,16 +64,16 @@ namespace Roslynator
             CodeStyleRules = codeStyleRules.ToImmutable();
         }
 
-        public bool IsRuleEnabled(SemanticModel semanticModel, string ruleId)
+        public bool IsCodeStyleEnabled(SemanticModel semanticModel, string id)
         {
-            return IsRuleEnabled(semanticModel.Compilation, ruleId);
+            return IsCodeStyleEnabled(semanticModel.Compilation, id);
         }
 
-        public bool IsRuleEnabled(Compilation compilation, string ruleId)
+        public bool IsCodeStyleEnabled(Compilation compilation, string id)
         {
             if (compilation
                 .Options
-                .SpecificDiagnosticOptions.TryGetValue(ruleId, out ReportDiagnostic reportDiagnostic))
+                .SpecificDiagnosticOptions.TryGetValue(id, out ReportDiagnostic reportDiagnostic))
             {
                 switch (reportDiagnostic)
                 {
@@ -84,7 +87,7 @@ namespace Roslynator
                 return false;
             }
 
-            return CodeStyleRules.GetValueOrDefault(ruleId);
+            return CodeStyleRules.GetValueOrDefault(id);
         }
 
         public DiagnosticSeverity GetDiagnosticSeverityOrDefault(string id, DiagnosticSeverity defaultValue)
@@ -118,11 +121,6 @@ namespace Roslynator
 
         private static AnalyzerRules Create()
         {
-            ImmutableDictionary<string, bool>.Builder defaultRules = ImmutableDictionary.CreateBuilder<string, bool>();
-
-            defaultRules.Add(AnalyzerRuleIdentifiers.UseElementAccessOnElementAccess, true);
-            defaultRules.Add(AnalyzerRuleIdentifiers.UseElementAccessOnInvocation, true);
-
             string path = typeof(AnalyzerRules).Assembly.Location;
 
             if (!string.IsNullOrEmpty(path))
@@ -130,7 +128,13 @@ namespace Roslynator
 
             RuleSet ruleSet = RuleSetUtility.Load(path, CodeAnalysisConfiguration.Current.RuleSets) ?? RuleSetUtility.EmptyRuleSet;
 
-            return new AnalyzerRules(ruleSet.GeneralDiagnosticOption, ruleSet.SpecificDiagnosticOptions, defaultRules);
+            ImmutableDictionary<string, bool> defaultCodeStyleRules = typeof(CodeStyleDescriptors)
+                        .GetRuntimeFields()
+                        .Where(f => f.IsPublic)
+                        .Select(f => (CodeStyleDescriptor)f.GetValue(null))
+                        .ToImmutableDictionary(f => f.Id, f => f.IsEnabledByDefault);
+
+            return new AnalyzerRules(ruleSet.GeneralDiagnosticOption, ruleSet.SpecificDiagnosticOptions, defaultCodeStyleRules);
         }
     }
 }
