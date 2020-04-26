@@ -11,12 +11,12 @@ namespace Roslynator.CSharp.Analysis
 {
     internal static class UseElementAccessAnalysis
     {
-        public static bool ShouldAnalyze(in SimpleMemberInvocationExpressionInfo invocationInfo)
+        public static bool ShouldAnalyze(SemanticModel semanticModel, in SimpleMemberInvocationExpressionInfo invocationInfo)
         {
-            return (AnalyzerSettings.Current.UseElementAccessOnInvocation
-                    || !invocationInfo.Expression.IsKind(SyntaxKind.InvocationExpression))
-                && (AnalyzerSettings.Current.UseElementAccessOnElementAccess
-                    || !invocationInfo.Expression.IsKind(SyntaxKind.ElementAccessExpression));
+            return (!invocationInfo.Expression.IsKind(SyntaxKind.InvocationExpression)
+                    || AnalyzerRules.Current.IsRuleEnabled(semanticModel, AnalyzerRuleIdentifiers.UseElementAccessOnInvocation, AnalyzerRules.UseElementAccessOnInvocation))
+                && (!invocationInfo.Expression.IsKind(SyntaxKind.ElementAccessExpression)
+                    || AnalyzerRules.Current.IsRuleEnabled(semanticModel, AnalyzerRuleIdentifiers.UseElementAccessOnElementAccess, AnalyzerRules.UseElementAccessOnElementAccess));
         }
 
         public static bool IsFixableElementAt(

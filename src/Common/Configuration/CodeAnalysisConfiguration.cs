@@ -119,6 +119,9 @@ namespace Roslynator.Configuration
 
         public static CodeAnalysisConfiguration Load(string uri)
         {
+            if (!TryGetNormalizedFullPath(uri, out uri))
+                return null;
+
             Builder builder = null;
 
             Queue<string> queue = null;
@@ -129,7 +132,7 @@ namespace Roslynator.Configuration
 
             if (queue != null)
             {
-                var loadedIncludes = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { uri };
+                var loadedIncludes = new HashSet<string>(FileSystemHelpers.Comparer) { uri };
 
                 do
                 {
@@ -174,6 +177,8 @@ namespace Roslynator.Configuration
         {
             XDocument doc = XDocument.Load(uri);
 
+            string directoryPath = null;
+
             XElement root = doc.Root;
 
             Debug.Assert(root?.HasName("Roslynator") == true, root?.Name.LocalName);
@@ -187,7 +192,7 @@ namespace Roslynator.Configuration
                         if (builder == null)
                             builder = new Builder();
 
-                        LoadSettings(element, builder);
+                        LoadSettings(element, builder, uri);
                     }
                     else if (element.HasName("Include"))
                     {
@@ -195,12 +200,12 @@ namespace Roslynator.Configuration
                         {
                             if (attribute.HasName("Path"))
                             {
-                                string path = LoadPath(attribute);
+                                directoryPath ??= Path.GetDirectoryName(uri);
+
+                                string path = LoadPath(attribute, directoryPath);
 
                                 if (path != null)
-                                {
                                     (includes ?? (includes = new Queue<string>())).Enqueue(path);
-                                }
                             }
                             else
                             {
@@ -216,7 +221,7 @@ namespace Roslynator.Configuration
             }
         }
 
-        private static void LoadSettings(XElement element, Builder builder)
+        private static void LoadSettings(XElement element, Builder builder, string filePath)
         {
             foreach (XElement e in element.Elements())
             {
@@ -238,7 +243,7 @@ namespace Roslynator.Configuration
                 }
                 else if (e.HasName("RuleSets"))
                 {
-                    LoadRuleSets(e, builder);
+                    LoadRuleSets(e, builder, filePath);
                 }
                 else
                 {
@@ -362,8 +367,10 @@ namespace Roslynator.Configuration
             }
         }
 
-        private static void LoadRuleSets(XElement element, Builder builder)
+        private static void LoadRuleSets(XElement element, Builder builder, string filePath)
         {
+            string directoryPath = null;
+
             foreach (XElement e in element.Elements())
             {
                 if (e.HasName("RuleSet"))
@@ -374,7 +381,9 @@ namespace Roslynator.Configuration
                     {
                         if (attribute.HasName("Path"))
                         {
-                            path = LoadPath(attribute);
+                            directoryPath ??= Path.GetDirectoryName(filePath);
+
+                            path = LoadPath(attribute, directoryPath);
                         }
                         else
                         {
@@ -394,13 +403,20 @@ namespace Roslynator.Configuration
             }
         }
 
-        private static string LoadPath(XAttribute attribute)
+        private static string LoadPath(XAttribute attribute, string basePath)
         {
             string path = attribute.Value.Trim();
 
-            string localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            if (path.Contains("%LOCALAPPDATA%"))
+            {
+                string localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-            return path.Replace("%LOCALAPPDATA%", localAppDataPath);
+                path = path.Replace("%LOCALAPPDATA%", localAppDataPath);
+            }
+
+            return (TryGetNormalizedFullPath(path, basePath, out path))
+                ? path
+                : null;
         }
 
         public CodeAnalysisConfiguration WithPrefixFieldIdentifierWithUnderscore(bool prefixFieldIdentifierWithUnderscore)
@@ -536,6 +552,22 @@ namespace Roslynator.Configuration
             }
 
             public bool PrefixFieldIdentifierWithUnderscore { get; set; } = Empty.PrefixFieldIdentifierWithUnderscore;
+        }
+
+        private static bool TryGetNormalizedFullPath(string path, out string result)
+        {
+            return TryGetNormalizedFullPath(path, null, out result);
+        }
+
+        private static bool TryGetNormalizedFullPath(string path, string basePath, out string result)
+        {
+            if (!FileSystemHelpers.TryGetNormalizedFullPath(path, basePath, out result))
+            {
+                Debug.WriteLine($"Path is invalid: {path}");
+                return false;
+            }
+
+            return true;
         }
     }
 }
