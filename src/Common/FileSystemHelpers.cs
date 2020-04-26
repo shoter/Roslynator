@@ -9,8 +9,6 @@ namespace Roslynator
 {
     internal static class FileSystemHelpers
     {
-        private static readonly char[] _directorySeparators = new char[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar };
-
         public static bool IsCaseSensitive { get; } = GetIsCaseSensitive();
 
         public static StringComparer Comparer { get; } = (IsCaseSensitive) ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase;
@@ -53,9 +51,6 @@ namespace Roslynator
                 if (basePath != null
                     && !Path.IsPathRooted(path))
                 {
-                    path = path.TrimStart(_directorySeparators);
-                    basePath = basePath.TrimEnd(_directorySeparators);
-
                     path = Path.Combine(basePath, path);
                 }
 

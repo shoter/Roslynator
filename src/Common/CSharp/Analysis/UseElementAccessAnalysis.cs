@@ -14,9 +14,9 @@ namespace Roslynator.CSharp.Analysis
         public static bool ShouldAnalyze(SemanticModel semanticModel, in SimpleMemberInvocationExpressionInfo invocationInfo)
         {
             return (!invocationInfo.Expression.IsKind(SyntaxKind.InvocationExpression)
-                    || AnalyzerRules.Current.IsRuleEnabled(semanticModel, AnalyzerRuleIdentifiers.UseElementAccessOnInvocation, AnalyzerRules.UseElementAccessOnInvocation))
+                    || AnalyzerRules.Current.IsRuleEnabled(semanticModel, AnalyzerRuleIdentifiers.UseElementAccessOnInvocation))
                 && (!invocationInfo.Expression.IsKind(SyntaxKind.ElementAccessExpression)
-                    || AnalyzerRules.Current.IsRuleEnabled(semanticModel, AnalyzerRuleIdentifiers.UseElementAccessOnElementAccess, AnalyzerRules.UseElementAccessOnElementAccess));
+                    || AnalyzerRules.Current.IsRuleEnabled(semanticModel, AnalyzerRuleIdentifiers.UseElementAccessOnElementAccess));
         }
 
         public static bool IsFixableElementAt(

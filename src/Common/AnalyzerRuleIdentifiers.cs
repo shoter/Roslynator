@@ -4,7 +4,7 @@ namespace Roslynator
 {
     internal static class AnalyzerRuleIdentifiers
     {
-        private const string Prefix = "Roslynator.";
+        public const string Prefix = "Roslynator.";
 
         public const string UseElementAccessOnInvocation = Prefix + nameof(UseElementAccessOnInvocation);
 

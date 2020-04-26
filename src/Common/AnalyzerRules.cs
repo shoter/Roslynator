@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
@@ -12,68 +13,124 @@ namespace Roslynator
     {
         public static AnalyzerRules Current { get; } = Create();
 
-        public static bool UseElementAccessOnInvocation { get; } = true;
+        public ReportDiagnostic GeneralDiagnosticOption { get; }
 
-        public static bool UseElementAccessOnElementAccess { get; } = true;
+        public ImmutableDictionary<string, ReportDiagnostic> SpecificDiagnosticOptions { get; }
 
-        public RuleSet RuleSet { get; }
+        public ImmutableDictionary<string, bool> CodeStyleRules { get; }
 
-        public ImmutableDictionary<string, bool> DefaultRules { get; }
-
-        public AnalyzerRules(RuleSet ruleSet, ImmutableDictionary<string, bool> defaultRules = null)
+        public AnalyzerRules(
+            ReportDiagnostic generalDiagnosticOption,
+            ImmutableDictionary<string, ReportDiagnostic> specificDiagnosticOptions,
+            IEnumerable<KeyValuePair<string, bool>> defaultCodeStyleRules = null)
         {
-            RuleSet = ruleSet;
-            DefaultRules = defaultRules ?? ImmutableDictionary<string, bool>.Empty;
+            GeneralDiagnosticOption = generalDiagnosticOption;
+            SpecificDiagnosticOptions = specificDiagnosticOptions;
+
+            ImmutableDictionary<string, bool>.Builder codeStyleRules = ImmutableDictionary.CreateBuilder<string, bool>();
+
+            if (defaultCodeStyleRules != null)
+            {
+                foreach (KeyValuePair<string, bool> rule in defaultCodeStyleRules)
+                    codeStyleRules.Add(rule);
+            }
+
+            foreach (KeyValuePair<string, ReportDiagnostic> kvp in specificDiagnosticOptions)
+            {
+                string key = kvp.Key;
+
+                if (key.StartsWith(AnalyzerRuleIdentifiers.Prefix))
+                {
+                    ReportDiagnostic value = kvp.Value;
+
+                    if (value == ReportDiagnostic.Info)
+                    {
+                        codeStyleRules[key] = true;
+                    }
+                    else if (value == ReportDiagnostic.Suppress)
+                    {
+                        codeStyleRules[key] = false;
+                    }
+                    else
+                    {
+                        Debug.Fail($"Invalid code style value '{value}'.");
+                    }
+                }
+            }
+
+            CodeStyleRules = codeStyleRules.ToImmutable();
         }
 
-        public bool IsRuleEnabled(SemanticModel semanticModel, string ruleId, bool defaultValue)
+        public bool IsRuleEnabled(SemanticModel semanticModel, string ruleId)
         {
-            return IsRuleEnabled(semanticModel.Compilation, ruleId, defaultValue);
+            return IsRuleEnabled(semanticModel.Compilation, ruleId);
         }
 
-        public bool IsRuleEnabled(Compilation compilation, string ruleId, bool defaultValue)
+        public bool IsRuleEnabled(Compilation compilation, string ruleId)
         {
-            if (!compilation
+            if (compilation
                 .Options
                 .SpecificDiagnosticOptions.TryGetValue(ruleId, out ReportDiagnostic reportDiagnostic))
             {
-                reportDiagnostic = RuleSet.SpecificDiagnosticOptions.GetValueOrDefault(ruleId);
+                switch (reportDiagnostic)
+                {
+                    case ReportDiagnostic.Info:
+                        return true;
+                    case ReportDiagnostic.Suppress:
+                        return false;
+                }
+
+                Debug.Fail($"Invalid code style value '{reportDiagnostic}'.");
+                return false;
             }
 
-            switch (reportDiagnostic)
+            return CodeStyleRules.GetValueOrDefault(ruleId);
+        }
+
+        public DiagnosticSeverity GetDiagnosticSeverityOrDefault(string id, DiagnosticSeverity defaultValue)
+        {
+            if (!SpecificDiagnosticOptions.TryGetValue(id, out ReportDiagnostic reportDiagnostic))
+                reportDiagnostic = GeneralDiagnosticOption;
+
+            if (reportDiagnostic != ReportDiagnostic.Default
+                && reportDiagnostic != ReportDiagnostic.Suppress)
             {
-                case ReportDiagnostic.Default:
-                    return DefaultRules.GetValueOrDefault(ruleId);
-                case ReportDiagnostic.Suppress:
-                    return false;
-                case ReportDiagnostic.Info:
-                    return true;
+                return reportDiagnostic.ToDiagnosticSeverity();
             }
 
-            Debug.Fail($"Invalid value '{reportDiagnostic}'.");
-            return false;
+            return defaultValue;
+        }
+
+        public bool IsDiagnosticEnabledOrDefault(string id, bool defaultValue)
+        {
+            if (SpecificDiagnosticOptions.TryGetValue(id, out ReportDiagnostic reportDiagnostic))
+            {
+                if (reportDiagnostic != ReportDiagnostic.Default)
+                    return reportDiagnostic != ReportDiagnostic.Suppress;
+            }
+            else if (GeneralDiagnosticOption == ReportDiagnostic.Suppress)
+            {
+                return false;
+            }
+
+            return defaultValue;
         }
 
         private static AnalyzerRules Create()
         {
-            var defaultRules = ImmutableDictionary.CreateBuilder<string, bool>();
+            ImmutableDictionary<string, bool>.Builder defaultRules = ImmutableDictionary.CreateBuilder<string, bool>();
 
             defaultRules.Add(AnalyzerRuleIdentifiers.UseElementAccessOnElementAccess, true);
             defaultRules.Add(AnalyzerRuleIdentifiers.UseElementAccessOnInvocation, true);
 
-            return CreateFromAssemblyLocation(typeof(AnalyzerRules).Assembly.Location, defaultRules.ToImmutableDictionary());
-        }
+            string path = typeof(AnalyzerRules).Assembly.Location;
 
-        internal static AnalyzerRules CreateFromAssemblyLocation(string assemblyLocation, ImmutableDictionary<string, bool> defaultValues = null)
-        {
-            string path = null;
-
-            if (!string.IsNullOrEmpty(assemblyLocation))
-                path = Path.Combine(Path.GetDirectoryName(assemblyLocation), RuleSetUtility.DefaultRuleSetName);
+            if (!string.IsNullOrEmpty(path))
+                path = Path.Combine(Path.GetDirectoryName(path), RuleSetUtility.DefaultRuleSetName);
 
             RuleSet ruleSet = RuleSetUtility.Load(path, CodeAnalysisConfiguration.Current.RuleSets) ?? RuleSetUtility.EmptyRuleSet;
 
-            return new AnalyzerRules(ruleSet);
+            return new AnalyzerRules(ruleSet.GeneralDiagnosticOption, ruleSet.SpecificDiagnosticOptions, defaultRules);
         }
     }
 }
