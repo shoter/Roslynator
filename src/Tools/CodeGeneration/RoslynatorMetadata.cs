@@ -5,8 +5,6 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
-using Roslynator.Options;
 using Roslynator.Metadata;
 
 namespace Roslynator.CodeGeneration
@@ -26,7 +24,7 @@ namespace Roslynator.CodeGeneration
         private ImmutableArray<RefactoringMetadata> _refactorings;
         private ImmutableArray<CodeFixMetadata> _codeFixes;
         private ImmutableArray<CompilerDiagnosticMetadata> _compilerDiagnostics;
-        private ImmutableArray<AnalyzerOptionDescriptor> _analyzerOptions;
+        private ImmutableArray<AnalyzerMetadata> _analyzerOptions;
 
         private static readonly Regex _analyzersFileNameRegex = new Regex(@"\A(\w+\.)?Analyzers(?!\.Template)(\.\w+)?\z");
 
@@ -96,28 +94,14 @@ namespace Roslynator.CodeGeneration
             }
         }
 
-        public ImmutableArray<AnalyzerOptionDescriptor> AnalyzerOptions
+        public ImmutableArray<AnalyzerMetadata> AnalyzerOptions
         {
             get
             {
                 if (_analyzerOptions.IsDefault)
-                    _analyzerOptions = LoadAnalyzerOptions(GetPath(@"Common\Options\AnalyzerOptions.xml")).ToImmutableArray();
+                    _analyzerOptions = LoadAnalyzers(GetPath(@"Common\Options"));
 
                 return _analyzerOptions;
-            }
-        }
-
-        public static IEnumerable<AnalyzerOptionDescriptor> LoadAnalyzerOptions(string filePath)
-        {
-            XDocument doc = XDocument.Load(filePath);
-
-            foreach (XElement element in doc.Root.Elements("AnalyzerOption"))
-            {
-                yield return new AnalyzerOptionDescriptor(
-                    element.Attribute("Id").Value,
-                    element.Element("Title").Value,
-                    bool.Parse(element.Element("IsEnabledByDefault").Value),
-                    element.Element("Summary")?.Value);
             }
         }
 

@@ -16,9 +16,9 @@ namespace Roslynator.CSharp.Analysis
         public static bool ShouldAnalyze(SyntaxNodeAnalysisContext context, in SimpleMemberInvocationExpressionInfo invocationInfo)
         {
             return (!invocationInfo.Expression.IsKind(SyntaxKind.InvocationExpression)
-                    || context.IsOptionEnabled(AnalyzerOptionIdentifiers.UseElementAccessOnInvocation))
+                    || !context.IsAnalyzerSuppressed(AnalyzerOptionDescriptors.UseElementAccessOnInvocation))
                 && (!invocationInfo.Expression.IsKind(SyntaxKind.ElementAccessExpression)
-                    || context.IsOptionEnabled(AnalyzerOptionIdentifiers.UseElementAccessOnElementAccess));
+                    || !context.IsAnalyzerSuppressed(AnalyzerOptionDescriptors.UseElementAccessOnElementAccess));
         }
 
         public static bool IsFixableElementAt(

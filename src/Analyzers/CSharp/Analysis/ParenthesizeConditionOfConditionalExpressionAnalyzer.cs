@@ -42,7 +42,7 @@ namespace Roslynator.CSharp.Analysis
                 return;
 
             if (CSharpFacts.IsSingleTokenExpression(kind)
-                && !context.IsOptionEnabled(AnalyzerOptionIdentifiers.ParenthesizeSimpleConditionOfConditionalExpression))
+                && context.IsAnalyzerSuppressed(AnalyzerOptionDescriptors.ParenthesizeSimpleConditionOfConditionalExpression))
             {
                 return;
             }

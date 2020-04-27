@@ -19,19 +19,22 @@ namespace Roslynator.CodeGeneration.CSharp
             IEnumerable<AnalyzerMetadata> analyzers,
             bool obsolete,
             IComparer<string> comparer,
-            string @namespace)
+            string @namespace,
+            string className,
+            string identifiersClassName)
         {
             CompilationUnitSyntax compilationUnit = CompilationUnit(
                 UsingDirectives("System", "Microsoft.CodeAnalysis"),
                 NamespaceDeclaration(@namespace,
                     ClassDeclaration(
                         Modifiers.Public_Static_Partial(),
-                        "DiagnosticDescriptors",
+                        className,
                         List(
                             CreateMembers(
                                 analyzers
                                     .Where(f => f.IsObsolete == obsolete)
                                     .OrderBy(f => f.Id, comparer),
+                                identifiersClassName,
                                 obsolete: obsolete)))));
 
             compilationUnit = compilationUnit.NormalizeWhitespace();
@@ -39,7 +42,7 @@ namespace Roslynator.CodeGeneration.CSharp
             return (CompilationUnitSyntax)Rewriter.Instance.Visit(compilationUnit);
         }
 
-        private static IEnumerable<MemberDeclarationSyntax> CreateMembers(IEnumerable<AnalyzerMetadata> analyzers, bool obsolete)
+        private static IEnumerable<MemberDeclarationSyntax> CreateMembers(IEnumerable<AnalyzerMetadata> analyzers, string identifiersClassName, bool obsolete)
         {
             foreach (AnalyzerMetadata analyzer in analyzers)
             {
@@ -53,7 +56,7 @@ namespace Roslynator.CodeGeneration.CSharp
                         ArgumentList(
                             Argument(
                                 NameColon("id"),
-                                SimpleMemberAccessExpression(IdentifierName("DiagnosticIdentifiers"), IdentifierName(analyzer.Identifier))),
+                                SimpleMemberAccessExpression(IdentifierName(identifiersClassName), IdentifierName(analyzer.Identifier))),
                             Argument(
                                 NameColon("title"),
                                 StringLiteralExpression(analyzer.Title)),
@@ -74,7 +77,7 @@ namespace Roslynator.CodeGeneration.CSharp
                                 NullLiteralExpression()),
                             Argument(
                                 NameColon("helpLinkUri"),
-                                SimpleMemberAccessExpression(IdentifierName("DiagnosticIdentifiers"), IdentifierName(analyzer.Identifier))),
+                                SimpleMemberAccessExpression(IdentifierName(identifiersClassName), IdentifierName(analyzer.Identifier))),
                             Argument(
                                 NameColon("customTags"),
                                 (analyzer.SupportsFadeOut)

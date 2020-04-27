@@ -16,14 +16,15 @@ namespace Roslynator.CodeGeneration.CSharp
             IEnumerable<AnalyzerMetadata> analyzers,
             bool obsolete,
             IComparer<string> comparer,
-            string @namespace)
+            string @namespace,
+            string className)
         {
             return CompilationUnit(
                 UsingDirectives("System"),
                 NamespaceDeclaration(@namespace,
                     ClassDeclaration(
                         Modifiers.Public_Static_Partial(),
-                        "DiagnosticIdentifiers",
+                        className,
                         analyzers
                             .Where(f => f.IsObsolete == obsolete)
                             .OrderBy(f => f.Id, comparer)

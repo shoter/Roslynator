@@ -32,17 +32,19 @@ namespace Roslynator.Metadata
             {
                 string id = element.Element("Id").Value;
 
+                string title = element.Element("Title").Value;
+
                 yield return new AnalyzerMetadata(
                     id,
                     element.Attribute("Identifier").Value,
-                    element.Element("Title").Value,
-                    element.Element("MessageFormat").Value,
+                    title,
+                    element.Element("MessageFormat")?.Value ?? title,
                     element.Element("Category").Value,
                     element.Element("DefaultSeverity").Value,
                     bool.Parse(element.Element("IsEnabledByDefault").Value),
                     element.AttributeValueAsBooleanOrDefault("IsObsolete"),
-                    bool.Parse(element.Element("SupportsFadeOut").Value),
-                    bool.Parse(element.Element("SupportsFadeOutAnalyzer").Value),
+                    element.ElementValueAsBooleanOrDefault("SupportsFadeOut"),
+                    element.ElementValueAsBooleanOrDefault("SupportsFadeOutAnalyzer"),
                     element.Element("MinLanguageVersion")?.Value,
                     element.Element("Summary")?.Value.NormalizeNewLine(),
                     element.Element("Remarks")?.Value.NormalizeNewLine(),

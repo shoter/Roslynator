@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Analyzers>
+  <Analyzer Identifier="ParenthesizeSimpleConditionOfConditionalExpression">
+    <Id>Roslynator.ParenthesizeSimpleConditionOfConditionalExpression</Id>
+    <Title>Parenthesize simple condition of conditional expression</Title>
+    <Category>AnalyzerOption</Category>
+    <DefaultSeverity>Info</DefaultSeverity>
+    <IsEnabledByDefault>true</IsEnabledByDefault>
+    <Summary></Summary>
+  </Analyzer>
+  <Analyzer Identifier="UseElementAccessOnElementAccess">
+    <Id>Roslynator.UseElementAccessOnElementAccess</Id>
+    <Title>Use element access on element access</Title>
+    <Category>AnalyzerOption</Category>
+    <DefaultSeverity>Info</DefaultSeverity>
+    <IsEnabledByDefault>true</IsEnabledByDefault>
+    <Summary></Summary>
+  </Analyzer>
+  <Analyzer Identifier="UseElementAccessOnInvocation">
+    <Id>Roslynator.UseElementAccessOnInvocation</Id>
+    <Title>Use element access on invocation</Title>
+    <Category>AnalyzerOption</Category>
+    <DefaultSeverity>Info</DefaultSeverity>
+    <IsEnabledByDefault>true</IsEnabledByDefault>
+    <Summary></Summary>
+  </Analyzer>
+</Analyzers>

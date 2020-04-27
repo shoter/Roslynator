@@ -2,7 +2,7 @@
 
 namespace Roslynator.Options
 {
-    internal static partial class AnalyzerOptionIdentifiers
+    public static partial class AnalyzerOptionIdentifiers
     {
         public const string Prefix = "Roslynator.";
     }
