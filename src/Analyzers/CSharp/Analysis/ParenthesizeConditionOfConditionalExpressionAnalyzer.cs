@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Roslynator.CodeStyle;
+using Roslynator.Options;
 
 namespace Roslynator.CSharp.Analysis
 {
@@ -42,7 +42,7 @@ namespace Roslynator.CSharp.Analysis
                 return;
 
             if (CSharpFacts.IsSingleTokenExpression(kind)
-                && !context.IsCodeStyleEnabled(CodeStyleIdentifiers.ParenthesizeSimpleConditionOfConditionalExpression))
+                && !context.IsOptionEnabled(AnalyzerOptionIdentifiers.ParenthesizeSimpleConditionOfConditionalExpression))
             {
                 return;
             }

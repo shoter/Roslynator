@@ -36,7 +36,7 @@ namespace Roslynator.CodeGeneration
             ImmutableArray<RefactoringMetadata> refactorings = metadata.Refactorings;
             ImmutableArray<CodeFixMetadata> codeFixes = metadata.CodeFixes;
             ImmutableArray<CompilerDiagnosticMetadata> compilerDiagnostics = metadata.CompilerDiagnostics;
-            ImmutableArray<CodeStyle.CodeStyleDescriptor> codeStyles = metadata.CodeStyles;
+            ImmutableArray<Options.AnalyzerOptionDescriptor> analyzerOptions = metadata.AnalyzerOptions;
 
             WriteCompilationUnit(
                 @"Refactorings\CSharp\RefactoringIdentifiers.Generated.cs",
@@ -75,13 +75,13 @@ namespace Roslynator.CodeGeneration
                 CodeFixesOptionsPageGenerator.Generate(codeFixes, comparer));
 
             WriteCompilationUnit(
-                @"Common\CodeStyle\CodeStyleDescriptors.Generated.cs",
-                CodeStyleDescriptorsGenerator.Generate(codeStyles, comparer),
+                @"Common\Options\AnalyzerOptionDescriptors.Generated.cs",
+                AnalyzerOptionDescriptorsGenerator.Generate(analyzerOptions, comparer),
                 normalizeWhitespace: false);
 
             WriteCompilationUnit(
-                @"Common\CodeStyle\CodeStyleIdentifiers.Generated.cs",
-                CodeStyleIdentifiersGenerator.Generate(codeStyles, comparer));
+                @"Common\Options\AnalyzerOptionIdentifiers.Generated.cs",
+                AnalyzerOptionIdentifiersGenerator.Generate(analyzerOptions, comparer));
 
             WriteCompilationUnit(
                 @"CSharp\CSharp\CompilerDiagnosticIdentifiers.Generated.cs",

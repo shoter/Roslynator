@@ -5,28 +5,28 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Roslynator.CodeStyle;
+using Roslynator.Options;
 using Roslynator.CSharp;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static Roslynator.CSharp.CSharpFactory;
 
 namespace Roslynator.CodeGeneration.CSharp
 {
-    public static class CodeStyleDescriptorsGenerator
+    public static class AnalyzerOptionDescriptorsGenerator
     {
         public static CompilationUnitSyntax Generate(
-            IEnumerable<CodeStyleDescriptor> codeStyles,
+            IEnumerable<AnalyzerOptionDescriptor> analyzerOptions,
             IComparer<string> comparer)
         {
             CompilationUnitSyntax compilationUnit = CompilationUnit(
                 UsingDirectives(),
-                NamespaceDeclaration("Roslynator.CodeStyle",
+                NamespaceDeclaration("Roslynator.Options",
                     ClassDeclaration(
                         Modifiers.Internal_Static_Partial(),
-                        "CodeStyleDescriptors",
+                        "AnalyzerOptionDescriptors",
                         List(
                             CreateMembers(
-                                codeStyles
+                                analyzerOptions
                                     .OrderBy(f => f.Id, comparer))))));
 
             compilationUnit = compilationUnit.NormalizeWhitespace();
@@ -34,19 +34,19 @@ namespace Roslynator.CodeGeneration.CSharp
             return (CompilationUnitSyntax)Rewriter.Instance.Visit(compilationUnit);
         }
 
-        private static IEnumerable<MemberDeclarationSyntax> CreateMembers(IEnumerable<CodeStyleDescriptor> codeStyles)
+        private static IEnumerable<MemberDeclarationSyntax> CreateMembers(IEnumerable<AnalyzerOptionDescriptor> analyzerOptions)
         {
-            foreach (CodeStyleDescriptor codeStyle in codeStyles)
+            foreach (AnalyzerOptionDescriptor analyzerOption in analyzerOptions)
             {
                 var arguments = new List<ArgumentSyntax>()
                 {
                     Argument(
                         NameColon("id"),
-                        SimpleMemberAccessExpression(IdentifierName("CodeStyleIdentifiers"), IdentifierName(codeStyle.Id))),
+                        SimpleMemberAccessExpression(IdentifierName("AnalyzerOptionIdentifiers"), IdentifierName(analyzerOption.Id))),
 
                     Argument(
                         NameColon("title"),
-                        StringLiteralExpression(codeStyle.Title ?? "")),
+                        StringLiteralExpression(analyzerOption.Title ?? "")),
 
                     Argument(
                         NameColon("isEnabledByDefault"),
@@ -54,15 +54,15 @@ namespace Roslynator.CodeGeneration.CSharp
 
                     Argument(
                         NameColon("summary"),
-                        StringLiteralExpression(codeStyle.Summary ?? ""))
+                        StringLiteralExpression(analyzerOption.Summary ?? ""))
                 };
 
                 yield return FieldDeclaration(
                     Modifiers.Public_Static_ReadOnly(),
-                    IdentifierName("CodeStyleDescriptor"),
-                    codeStyle.Id,
+                    IdentifierName("AnalyzerOptionDescriptor"),
+                    analyzerOption.Id,
                     ObjectCreationExpression(
-                        IdentifierName("CodeStyleDescriptor"),
+                        IdentifierName("AnalyzerOptionDescriptor"),
                         ArgumentList(arguments.ToSeparatedSyntaxList())));
             }
         }

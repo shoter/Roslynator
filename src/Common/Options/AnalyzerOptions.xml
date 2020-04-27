@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<CodeStyles>
-  <CodeStyle Id="ParenthesizeSimpleConditionOfConditionalExpression">
+<AnalyzerOptions>
+  <AnalyzerOption Id="ParenthesizeSimpleConditionOfConditionalExpression">
     <Title>Parenthesize simple condition of conditional expression</Title>
     <IsEnabledByDefault>true</IsEnabledByDefault>
     <Summary></Summary>
-  </CodeStyle>
-  <CodeStyle Id="UseElementAccessOnElementAccess">
+  </AnalyzerOption>
+  <AnalyzerOption Id="UseElementAccessOnElementAccess">
     <Title>Use element access on element access</Title>
     <IsEnabledByDefault>true</IsEnabledByDefault>
     <Summary></Summary>
-  </CodeStyle>
-  <CodeStyle Id="UseElementAccessOnInvocation">
+  </AnalyzerOption>
+  <AnalyzerOption Id="UseElementAccessOnInvocation">
     <Title>Use element access on invocation</Title>
     <IsEnabledByDefault>true</IsEnabledByDefault>
     <Summary></Summary>
-  </CodeStyle>
-</CodeStyles>
+  </AnalyzerOption>
+</AnalyzerOptions>

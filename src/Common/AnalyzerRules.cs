@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
-using Roslynator.CodeStyle;
+using Roslynator.Options;
 using Roslynator.Configuration;
 
 namespace Roslynator
@@ -20,39 +20,39 @@ namespace Roslynator
 
         public ImmutableDictionary<string, ReportDiagnostic> SpecificDiagnosticOptions { get; }
 
-        public ImmutableDictionary<string, bool> CodeStyleRules { get; }
+        public ImmutableDictionary<string, bool> AnalyzerOptions { get; }
 
         public AnalyzerRules(
             ReportDiagnostic generalDiagnosticOption,
             ImmutableDictionary<string, ReportDiagnostic> specificDiagnosticOptions,
-            IEnumerable<KeyValuePair<string, bool>> defaultCodeStyleRules = null)
+            IEnumerable<KeyValuePair<string, bool>> defaultAnalyzerOptions = null)
         {
             GeneralDiagnosticOption = generalDiagnosticOption;
             SpecificDiagnosticOptions = specificDiagnosticOptions;
 
-            ImmutableDictionary<string, bool>.Builder codeStyleRules = ImmutableDictionary.CreateBuilder<string, bool>();
+            ImmutableDictionary<string, bool>.Builder analyzerOptions = ImmutableDictionary.CreateBuilder<string, bool>();
 
-            if (defaultCodeStyleRules != null)
+            if (defaultAnalyzerOptions != null)
             {
-                foreach (KeyValuePair<string, bool> rule in defaultCodeStyleRules)
-                    codeStyleRules.Add(rule);
+                foreach (KeyValuePair<string, bool> rule in defaultAnalyzerOptions)
+                    analyzerOptions.Add(rule);
             }
 
             foreach (KeyValuePair<string, ReportDiagnostic> kvp in specificDiagnosticOptions)
             {
                 string key = kvp.Key;
 
-                if (key.StartsWith(CodeStyleIdentifiers.Prefix))
+                if (key.StartsWith(AnalyzerOptionIdentifiers.Prefix))
                 {
                     ReportDiagnostic value = kvp.Value;
 
                     if (value == ReportDiagnostic.Info)
                     {
-                        codeStyleRules[key] = true;
+                        analyzerOptions[key] = true;
                     }
                     else if (value == ReportDiagnostic.Suppress)
                     {
-                        codeStyleRules[key] = false;
+                        analyzerOptions[key] = false;
                     }
                     else
                     {
@@ -61,15 +61,10 @@ namespace Roslynator
                 }
             }
 
-            CodeStyleRules = codeStyleRules.ToImmutable();
+            AnalyzerOptions = analyzerOptions.ToImmutable();
         }
 
-        public bool IsCodeStyleEnabled(SemanticModel semanticModel, string id)
-        {
-            return IsCodeStyleEnabled(semanticModel.Compilation, id);
-        }
-
-        public bool IsCodeStyleEnabled(Compilation compilation, string id)
+        public bool IsOptionEnabled(Compilation compilation, string id)
         {
             if (compilation
                 .Options
@@ -87,7 +82,7 @@ namespace Roslynator
                 return false;
             }
 
-            return CodeStyleRules.GetValueOrDefault(id);
+            return AnalyzerOptions.GetValueOrDefault(id);
         }
 
         public DiagnosticSeverity GetDiagnosticSeverityOrDefault(string id, DiagnosticSeverity defaultValue)
@@ -128,13 +123,16 @@ namespace Roslynator
 
             RuleSet ruleSet = RuleSetUtility.Load(path, CodeAnalysisConfiguration.Current.RuleSets) ?? RuleSetUtility.EmptyRuleSet;
 
-            ImmutableDictionary<string, bool> defaultCodeStyleRules = typeof(CodeStyleDescriptors)
-                        .GetRuntimeFields()
-                        .Where(f => f.IsPublic)
-                        .Select(f => (CodeStyleDescriptor)f.GetValue(null))
-                        .ToImmutableDictionary(f => f.Id, f => f.IsEnabledByDefault);
+            ImmutableDictionary<string, bool> defaultAnalyzerOptions = typeof(AnalyzerOptionDescriptors)
+                .GetRuntimeFields()
+                .Where(f => f.IsPublic)
+                .Select(f => (AnalyzerOptionDescriptor)f.GetValue(null))
+                .ToImmutableDictionary(f => f.Id, f => f.IsEnabledByDefault);
 
-            return new AnalyzerRules(ruleSet.GeneralDiagnosticOption, ruleSet.SpecificDiagnosticOptions, defaultCodeStyleRules);
+            return new AnalyzerRules(
+                ruleSet.GeneralDiagnosticOption,
+                ruleSet.SpecificDiagnosticOptions,
+                defaultAnalyzerOptions);
         }
     }
 }

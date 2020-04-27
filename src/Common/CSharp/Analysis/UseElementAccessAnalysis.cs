@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Roslynator.CodeStyle;
+using Roslynator.Options;
 using Roslynator.CSharp.Syntax;
 using static Roslynator.SymbolUtility;
 
@@ -16,9 +16,9 @@ namespace Roslynator.CSharp.Analysis
         public static bool ShouldAnalyze(SyntaxNodeAnalysisContext context, in SimpleMemberInvocationExpressionInfo invocationInfo)
         {
             return (!invocationInfo.Expression.IsKind(SyntaxKind.InvocationExpression)
-                    || context.IsCodeStyleEnabled(CodeStyleIdentifiers.UseElementAccessOnInvocation))
+                    || context.IsOptionEnabled(AnalyzerOptionIdentifiers.UseElementAccessOnInvocation))
                 && (!invocationInfo.Expression.IsKind(SyntaxKind.ElementAccessExpression)
-                    || context.IsCodeStyleEnabled(CodeStyleIdentifiers.UseElementAccessOnElementAccess));
+                    || context.IsOptionEnabled(AnalyzerOptionIdentifiers.UseElementAccessOnElementAccess));
         }
 
         public static bool IsFixableElementAt(

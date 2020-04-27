@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using Roslynator.CodeStyle;
+using Roslynator.Options;
 using Roslynator.Metadata;
 
 namespace Roslynator.CodeGeneration
@@ -26,7 +26,7 @@ namespace Roslynator.CodeGeneration
         private ImmutableArray<RefactoringMetadata> _refactorings;
         private ImmutableArray<CodeFixMetadata> _codeFixes;
         private ImmutableArray<CompilerDiagnosticMetadata> _compilerDiagnostics;
-        private ImmutableArray<CodeStyleDescriptor> _codeStyles;
+        private ImmutableArray<AnalyzerOptionDescriptor> _analyzerOptions;
 
         private static readonly Regex _analyzersFileNameRegex = new Regex(@"\A(\w+\.)?Analyzers(?!\.Template)(\.\w+)?\z");
 
@@ -96,24 +96,24 @@ namespace Roslynator.CodeGeneration
             }
         }
 
-        public ImmutableArray<CodeStyleDescriptor> CodeStyles
+        public ImmutableArray<AnalyzerOptionDescriptor> AnalyzerOptions
         {
             get
             {
-                if (_codeStyles.IsDefault)
-                    _codeStyles = LoadCodeStyles(GetPath(@"Common\CodeStyle\CodeStyles.xml")).ToImmutableArray();
+                if (_analyzerOptions.IsDefault)
+                    _analyzerOptions = LoadAnalyzerOptions(GetPath(@"Common\Options\AnalyzerOptions.xml")).ToImmutableArray();
 
-                return _codeStyles;
+                return _analyzerOptions;
             }
         }
 
-        public static IEnumerable<CodeStyleDescriptor> LoadCodeStyles(string filePath)
+        public static IEnumerable<AnalyzerOptionDescriptor> LoadAnalyzerOptions(string filePath)
         {
             XDocument doc = XDocument.Load(filePath);
 
-            foreach (XElement element in doc.Root.Elements("CodeStyle"))
+            foreach (XElement element in doc.Root.Elements("AnalyzerOption"))
             {
-                yield return new CodeStyleDescriptor(
+                yield return new AnalyzerOptionDescriptor(
                     element.Attribute("Id").Value,
                     element.Element("Title").Value,
                     bool.Parse(element.Element("IsEnabledByDefault").Value),
