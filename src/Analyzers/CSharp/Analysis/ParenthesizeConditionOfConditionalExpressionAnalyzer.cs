@@ -10,11 +10,11 @@ using Roslynator.CodeStyle;
 namespace Roslynator.CSharp.Analysis
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class ParenthesizeConditionInConditionalExpressionAnalyzer : BaseDiagnosticAnalyzer
+    public class ParenthesizeConditionOfConditionalExpressionAnalyzer : BaseDiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
-            get { return ImmutableArray.Create(DiagnosticDescriptors.ParenthesizeConditionInConditionalExpression); }
+            get { return ImmutableArray.Create(DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression); }
         }
 
         public override void Initialize(AnalysisContext context)
@@ -47,7 +47,7 @@ namespace Roslynator.CSharp.Analysis
                 return;
             }
 
-            DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ParenthesizeConditionInConditionalExpression, condition);
+            DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression, condition);
         }
     }
 }
