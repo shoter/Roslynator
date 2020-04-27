@@ -1084,7 +1084,7 @@ if (!f)
     <SupportsFadeOutAnalyzer>false</SupportsFadeOutAnalyzer>
     <Samples>
       <Sample>
-        <Before Disable="ParenthesizeSimpleConditionOfConditionalExpression"><![CDATA[object x = condition ? WhenTrue() : WhenFalse(); // [|Id|]]]></Before>
+        <Before Option="Roslynator.ParenthesizeSimpleConditionOfConditionalExpression"><![CDATA[object x = condition ? WhenTrue() : WhenFalse(); // [|Id|]]]></Before>
         <After><![CDATA[object x = (condition) ? WhenTrue() : WhenFalse();]]></After>
       </Sample>
     </Samples>
@@ -5759,11 +5759,11 @@ public class C
         <After><![CDATA[list[1]]]></After>
       </Sample>
       <Sample>
-        <Before Disable="UseElementAccessOnInvocation"><![CDATA[M().First()]]></Before>
+        <Before Option="Roslynator.UseElementAccessOnInvocation"><![CDATA[M().First()]]></Before>
         <After><![CDATA[M()[0]]]></After>
       </Sample>
       <Sample>
-        <Before Disable="UseElementAccessOnElementAccess"><![CDATA[M[index].First()]]></Before>
+        <Before Option="Roslynator.UseElementAccessOnElementAccess"><![CDATA[M[index].First()]]></Before>
         <After><![CDATA[M[index][0]]]></After>
       </Sample>
     </Samples>

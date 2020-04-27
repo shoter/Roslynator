@@ -46,7 +46,7 @@ namespace Roslynator.Metadata
                     element.Element("MinLanguageVersion")?.Value,
                     element.Element("Summary")?.Value.NormalizeNewLine(),
                     element.Element("Remarks")?.Value.NormalizeNewLine(),
-                    LoadSamples(element)?.Select(f => new SampleMetadata(f.Before.Replace("[|Id|]", id), f.After)),
+                    LoadSamples(element)?.Select(f => f.WithBefore(f.Before.Replace("[|Id|]", id))),
                     LoadLinks(element));
             }
         }
@@ -93,7 +93,17 @@ namespace Roslynator.Metadata
             return element
                 .Element("Samples")?
                 .Elements("Sample")
-                .Select(f => new SampleMetadata(f.Element("Before").Value.NormalizeNewLine(), f.Element("After")?.Value.NormalizeNewLine()));
+                .Select(f =>
+                {
+                    XElement before = f.Element("Before");
+                    XElement after = f.Element("After");
+
+                    return new SampleMetadata(
+                        before.Value.NormalizeNewLine(),
+                        after?.Value.NormalizeNewLine(),
+                        beforeOption: before.Attribute("Option")?.Value,
+                        afterOption: after?.Attribute("Option")?.Value);
+                });
         }
 
         private static IEnumerable<LinkMetadata> LoadLinks(XElement element)

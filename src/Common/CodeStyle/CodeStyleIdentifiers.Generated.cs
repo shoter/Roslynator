@@ -6,8 +6,8 @@ namespace Roslynator.CodeStyle
 {
     internal static partial class CodeStyleIdentifiers
     {
-        public const string ParenthesizeSimpleConditionOfConditionalExpression = Prefix + nameof(ParenthesizeSimpleConditionOfConditionalExpression);
-        public const string UseElementAccessOnElementAccess = Prefix + nameof(UseElementAccessOnElementAccess);
-        public const string UseElementAccessOnInvocation = Prefix + nameof(UseElementAccessOnInvocation);
+        public const string ParenthesizeSimpleConditionOfConditionalExpression = "Roslynator.ParenthesizeSimpleConditionOfConditionalExpression";
+        public const string UseElementAccessOnElementAccess = "Roslynator.UseElementAccessOnElementAccess";
+        public const string UseElementAccessOnInvocation = "Roslynator.UseElementAccessOnInvocation";
     }
 }

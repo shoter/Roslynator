@@ -4,14 +4,17 @@ namespace Roslynator.CodeStyle
 {
     public class CodeStyleDescriptor
     {
-        public CodeStyleDescriptor(string id, bool isEnabledByDefault, string summary)
+        public CodeStyleDescriptor(string id, string title, bool isEnabledByDefault, string summary)
         {
             Id = id;
+            Title = title;
             IsEnabledByDefault = isEnabledByDefault;
             Summary = summary;
         }
 
         public string Id { get; }
+
+        public string Title { get; }
 
         public bool IsEnabledByDefault { get; }
 

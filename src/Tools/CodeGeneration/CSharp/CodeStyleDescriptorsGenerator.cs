@@ -47,6 +47,10 @@ namespace Roslynator.CodeGeneration.CSharp
                         SimpleMemberAccessExpression(IdentifierName("CodeStyleIdentifiers"), IdentifierName(codeStyle.Id))),
 
                     Argument(
+                        NameColon("title"),
+                        StringLiteralExpression(codeStyle.Title ?? "")),
+
+                    Argument(
                         NameColon("isEnabledByDefault"),
                         BooleanLiteralExpression(true)),
 

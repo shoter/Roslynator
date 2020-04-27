@@ -115,6 +115,7 @@ namespace Roslynator.CodeGeneration
             {
                 yield return new CodeStyleDescriptor(
                     element.Attribute("Id").Value,
+                    element.Element("Title").Value,
                     bool.Parse(element.Element("IsEnabledByDefault").Value),
                     element.Element("Summary")?.Value);
             }

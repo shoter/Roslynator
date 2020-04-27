@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -96,29 +97,58 @@ namespace Roslynator.CodeGeneration.Markdown
             }
         }
 
-        private static IEnumerable<MElement> GetSamples(IEnumerable<SampleMetadata> samples, MHeading beforeHeader, MHeading afterHeader)
+        private static IEnumerable<MElement> GetSamples(
+            IEnumerable<SampleMetadata> samples,
+            MHeading beforeHeader,
+            MHeading afterHeader)
         {
-            bool isFirst = true;
-
-            foreach (SampleMetadata sample in samples)
+            using (IEnumerator<SampleMetadata> en = samples.GetEnumerator())
             {
-                if (!isFirst)
+                if (en.MoveNext())
                 {
-                    yield return HorizontalRule();
+                    while (true)
+                    {
+                        yield return beforeHeader;
+                        yield return FencedCodeBlock(en.Current.Before, LanguageIdentifiers.CSharp);
+
+                        string beforeOptions = GetOptions(en.Current.BeforeOption);
+
+                        if (beforeOptions != null)
+                            yield return new MText("Options: " + beforeOptions);
+
+                        if (!string.IsNullOrEmpty(en.Current.After))
+                        {
+                            yield return afterHeader;
+                            yield return FencedCodeBlock(en.Current.After, LanguageIdentifiers.CSharp);
+
+                            string afterOptions = GetOptions(en.Current.AfterOption);
+
+                            if (afterOptions != null)
+                                yield return new MText("Options: " + afterOptions);
+                        }
+
+                        if (en.MoveNext())
+                        {
+                            yield return HorizontalRule();
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
                 }
-                else
+            }
+
+            static string GetOptions(string options)
+            {
+                if (options != null)
                 {
-                    isFirst = false;
+                    string[] splits = options.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    return string.Join(", ", splits);
                 }
 
-                yield return beforeHeader;
-                yield return FencedCodeBlock(sample.Before, LanguageIdentifiers.CSharp);
-
-                if (!string.IsNullOrEmpty(sample.After))
-                {
-                    yield return afterHeader;
-                    yield return FencedCodeBlock(sample.After, LanguageIdentifiers.CSharp);
-                }
+                return null;
             }
         }
 
@@ -171,6 +201,7 @@ namespace Roslynator.CodeGeneration.Markdown
                     (!string.IsNullOrEmpty(analyzer.MinLanguageVersion)) ? TableRow("Minimal Language Version", analyzer.MinLanguageVersion) : null),
                 CreateSummary(analyzer.Summary),
                 Samples(),
+                CreateOptions(analyzer),
                 CreateRemarks(analyzer.Remarks),
                 CreateAppliesTo(appliesTo),
                 CreateSeeAlso(
@@ -332,6 +363,22 @@ namespace Roslynator.CodeGeneration.Markdown
             {
                 yield return Heading2("Summary");
                 yield return Raw(summary);
+            }
+        }
+
+        private static IEnumerable<MElement> CreateOptions(AnalyzerMetadata analyzer)
+        {
+            IEnumerable<string> ids1 = analyzer.Samples.SelectMany(f => (f.BeforeOption ?? "").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+            IEnumerable<string> ids2 = analyzer.Samples.SelectMany(f => (f.AfterOption ?? "").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+
+            IEnumerable<string> ids = ids1.Concat(ids2).Distinct().OrderBy(f => f);
+
+            if (ids.Any())
+            {
+                yield return Heading2("Options");
+
+                foreach (string id in ids)
+                    yield return BulletItem(id);
             }
         }
 

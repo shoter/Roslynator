@@ -6,9 +6,23 @@ namespace Roslynator.CodeStyle
 {
     internal static partial class CodeStyleDescriptors
     {
+        public static readonly CodeStyleDescriptor ParenthesizeSimpleConditionOfConditionalExpression = new CodeStyleDescriptor(
+            id:                 CodeStyleIdentifiers.ParenthesizeSimpleConditionOfConditionalExpression, 
+            title:              "Parenthesize simple condition of conditional expression", 
+            isEnabledByDefault: true, 
+            summary:            "");
+
+        public static readonly CodeStyleDescriptor UseElementAccessOnElementAccess = new CodeStyleDescriptor(
+            id:                 CodeStyleIdentifiers.UseElementAccessOnElementAccess, 
+            title:              "Use element access on element access", 
+            isEnabledByDefault: true, 
+            summary:            "");
+
         public static readonly CodeStyleDescriptor UseElementAccessOnInvocation = new CodeStyleDescriptor(
-            id: CodeStyleIdentifiers.UseElementAccessOnInvocation,
-            isEnabledByDefault: true,
-            summary: null);
+            id:                 CodeStyleIdentifiers.UseElementAccessOnInvocation, 
+            title:              "Use element access on invocation", 
+            isEnabledByDefault: true, 
+            summary:            "");
+
     }
 }

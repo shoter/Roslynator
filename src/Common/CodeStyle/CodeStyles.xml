@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CodeStyles>
-  <CodeStyle Identifier="ParenthesizeSimpleConditionOfConditionalExpression">
+  <CodeStyle Id="ParenthesizeSimpleConditionOfConditionalExpression">
+    <Title>Parenthesize simple condition of conditional expression</Title>
     <IsEnabledByDefault>true</IsEnabledByDefault>
     <Summary></Summary>
   </CodeStyle>
-  <CodeStyle Identifier="UseElementAccessOnElementAccess">
+  <CodeStyle Id="UseElementAccessOnElementAccess">
+    <Title>Use element access on element access</Title>
     <IsEnabledByDefault>true</IsEnabledByDefault>
     <Summary></Summary>
   </CodeStyle>
-  <CodeStyle Identifier="UseElementAccessOnInvocation">
+  <CodeStyle Id="UseElementAccessOnInvocation">
+    <Title>Use element access on invocation</Title>
     <IsEnabledByDefault>true</IsEnabledByDefault>
     <Summary></Summary>
   </CodeStyle>
