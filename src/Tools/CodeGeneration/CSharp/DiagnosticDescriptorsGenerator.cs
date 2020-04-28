@@ -127,8 +127,8 @@ namespace Roslynator.CodeGeneration.CSharp
                 foreach (AnalyzerOptionMetadata option in analyzer.Options)
                 {
                     yield return CreateMember(
-                        analyzer.Id + "." + option.Identifier,
-                        analyzer.Identifier + "." + option.Identifier,
+                        analyzer.Id + "_" + option.Identifier,
+                        analyzer.Identifier + "_" + option.Identifier,
                         option.Title,
                         option.MessageFormat,
                         false,

@@ -4,8 +4,6 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Roslynator.Options;
 using Roslynator.CSharp.Syntax;
 using static Roslynator.SymbolUtility;
 
@@ -13,14 +11,6 @@ namespace Roslynator.CSharp.Analysis
 {
     internal static class UseElementAccessAnalysis
     {
-        public static bool ShouldAnalyze(SyntaxNodeAnalysisContext context, in SimpleMemberInvocationExpressionInfo invocationInfo)
-        {
-            return (!invocationInfo.Expression.IsKind(SyntaxKind.InvocationExpression)
-                    || !context.IsAnalyzerSuppressed(AnalyzerOptionDescriptors.UseElementAccessOnInvocation))
-                && (!invocationInfo.Expression.IsKind(SyntaxKind.ElementAccessExpression)
-                    || !context.IsAnalyzerSuppressed(AnalyzerOptionDescriptors.UseElementAccessOnElementAccess));
-        }
-
         public static bool IsFixableElementAt(
             in SimpleMemberInvocationExpressionInfo invocationInfo,
             SemanticModel semanticModel,

@@ -621,6 +621,18 @@ namespace Roslynator.CSharp
             helpLinkUri:        DiagnosticIdentifiers.ParenthesizeConditionOfConditionalExpression, 
             customTags:         Array.Empty<string>());
 
+        /// <summary>RCS1051_NoParenthesesForSingleTokenExpression</summary>
+        public static readonly DiagnosticDescriptor ParenthesizeConditionOfConditionalExpression_NoParenthesesForSingleTokenExpression = Factory.Create(
+            id:                 DiagnosticIdentifiers.ParenthesizeConditionOfConditionalExpression_NoParenthesesForSingleTokenExpression, 
+            title:              "Remove parentheses from condition of conditional expression.", 
+            messageFormat:      "Remove parentheses from condition of conditional expression.", 
+            category:           DiagnosticCategories.AnalyzerOption, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: false, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.ParenthesizeConditionOfConditionalExpression_NoParenthesesForSingleTokenExpression, 
+            customTags:         Array.Empty<string>());
+
         /// <summary>RCS1052</summary>
         public static readonly DiagnosticDescriptor DeclareEachAttributeSeparately = Factory.Create(
             id:                 DiagnosticIdentifiers.DeclareEachAttributeSeparately, 
@@ -2701,6 +2713,30 @@ namespace Roslynator.CSharp
             isEnabledByDefault: true, 
             description:        null, 
             helpLinkUri:        DiagnosticIdentifiers.UseElementAccess, 
+            customTags:         Array.Empty<string>());
+
+        /// <summary>RCS1246_NoUseElementAccessOnInvocation</summary>
+        public static readonly DiagnosticDescriptor UseElementAccess_NoUseElementAccessOnInvocation = Factory.Create(
+            id:                 DiagnosticIdentifiers.UseElementAccess_NoUseElementAccessOnInvocation, 
+            title:              "Do not use element access on invocation.", 
+            messageFormat:      "Do not use element access on invocation.", 
+            category:           DiagnosticCategories.AnalyzerOption, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: false, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.UseElementAccess_NoUseElementAccessOnInvocation, 
+            customTags:         Array.Empty<string>());
+
+        /// <summary>RCS1246_NoUseElementAccessOnElementAccess</summary>
+        public static readonly DiagnosticDescriptor UseElementAccess_NoUseElementAccessOnElementAccess = Factory.Create(
+            id:                 DiagnosticIdentifiers.UseElementAccess_NoUseElementAccessOnElementAccess, 
+            title:              "Do not use element access on element access.", 
+            messageFormat:      "Do not use element access on element access.", 
+            category:           DiagnosticCategories.AnalyzerOption, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: false, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.UseElementAccess_NoUseElementAccessOnElementAccess, 
             customTags:         Array.Empty<string>());
 
     }

@@ -21,7 +21,6 @@
   </Dependencies>
   <Assets>
     <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="Refactorings" Path="|Refactorings|" />
-    <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="Common" Path="|Common|" />
     <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="Analyzers" Path="|Analyzers|" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="Analyzers.CodeFixes" Path="|Analyzers.CodeFixes|" />
     <Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="Formatting.Analyzers" Path="|Formatting.Analyzers|" />

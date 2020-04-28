@@ -5,7 +5,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Roslynator.Options;
 
 namespace Roslynator.CSharp.Analysis
 {
@@ -14,7 +13,12 @@ namespace Roslynator.CSharp.Analysis
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
-            get { return ImmutableArray.Create(DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression); }
+            get
+            {
+                return ImmutableArray.Create(
+                    DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression,
+                    DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression_NoParenthesesForSingleTokenExpression);
+            }
         }
 
         public override void Initialize(AnalysisContext context)
@@ -39,15 +43,25 @@ namespace Roslynator.CSharp.Analysis
             SyntaxKind kind = condition.Kind();
 
             if (kind == SyntaxKind.ParenthesizedExpression)
-                return;
-
-            if (CSharpFacts.IsSingleTokenExpression(kind)
-                && context.IsAnalyzerSuppressed(AnalyzerOptionDescriptors.ParenthesizeSimpleConditionOfConditionalExpression))
             {
-                return;
-            }
+                if (!context.IsAnalyzerSuppressed(DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression_NoParenthesesForSingleTokenExpression))
+                {
+                    var parenthesizedExpression = (ParenthesizedExpressionSyntax)condition;
 
-            DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression, condition);
+                    ExpressionSyntax expression = parenthesizedExpression.Expression;
+
+                    if (!expression.IsMissing
+                        && CSharpFacts.IsSingleTokenExpression(expression.Kind()))
+                    {
+                        DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression_NoParenthesesForSingleTokenExpression, condition);
+                    }
+                }
+            }
+            else if (!CSharpFacts.IsSingleTokenExpression(kind)
+                || context.IsAnalyzerSuppressed(DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression_NoParenthesesForSingleTokenExpression))
+            {
+                DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression, condition);
+            }
         }
     }
 }

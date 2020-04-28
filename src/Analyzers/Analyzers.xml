@@ -1090,8 +1090,8 @@ if (!f)
     </Samples>
     <Options>
       <Option Identifier="NoParenthesesForSingleTokenExpression">
-        <Kind>Change</Kind>
         <Title>Remove parentheses from condition of conditional expression.</Title>
+        <Kind>Change</Kind>
         <Samples>
           <Sample>
             <Before><![CDATA[x = (condition) ? "true" : "false"; // [|Id|]]]></Before>
@@ -5773,6 +5773,7 @@ public class C
     </Samples>
     <Options>
       <Option Identifier="NoUseElementAccessOnInvocation">
+        <Title>Do not use element access on invocation.</Title>
         <Kind>Disable</Kind>
         <Samples>
           <Sample>
@@ -5781,6 +5782,7 @@ public class C
         </Samples>
       </Option>
       <Option Identifier="NoUseElementAccessOnElementAccess">
+        <Title>Do not use element access on element access.</Title>
         <Kind>Disable</Kind>
         <Samples>
           <Sample>

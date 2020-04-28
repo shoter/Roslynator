@@ -152,6 +152,13 @@ namespace Roslynator.CSharp.Testing
                 allowedCompilerDiagnosticIds: allowedCompilerDiagnosticIds);
         }
 
+        public CSharpCodeVerificationOptions WithEnabled(DiagnosticDescriptor descriptor)
+        {
+            var compilationOptions = (CSharpCompilationOptions)CompilationOptions.EnsureEnabled(descriptor);
+
+            return WithCompilationOptions(compilationOptions);
+        }
+
         public CSharpCodeVerificationOptions WithParseOptions(CSharpParseOptions parseOptions)
         {
             return new CSharpCodeVerificationOptions(

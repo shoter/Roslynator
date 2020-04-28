@@ -110,7 +110,7 @@ namespace Roslynator.CSharp.Analysis
                                 {
                                     if (!context.IsAnalyzerSuppressed(DiagnosticDescriptors.OptimizeLinqMethodCall))
                                     {
-                                        if (UseElementAccessAnalysis.ShouldAnalyze(context, invocationInfo)
+                                        if (CanUseElementAccess(context, invocationInfo)
                                             && UseElementAccessAnalysis.IsFixableFirst(invocationInfo, context.SemanticModel, context.CancellationToken))
                                         {
                                             DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.UseElementAccess, Location.Create(invocation.SyntaxTree, TextSpan.FromBounds(invocationInfo.Name.SpanStart, invocationInfo.ArgumentList.Span.End)));
@@ -230,7 +230,7 @@ namespace Roslynator.CSharp.Analysis
                             case "ElementAt":
                                 {
                                     if (!context.IsAnalyzerSuppressed(DiagnosticDescriptors.OptimizeLinqMethodCall)
-                                        && UseElementAccessAnalysis.ShouldAnalyze(context, invocationInfo)
+                                        && CanUseElementAccess(context, invocationInfo)
                                         && UseElementAccessAnalysis.IsFixableElementAt(invocationInfo, context.SemanticModel, context.CancellationToken))
                                     {
                                         DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.UseElementAccess, Location.Create(invocation.SyntaxTree, TextSpan.FromBounds(invocationInfo.Name.SpanStart, invocationInfo.ArgumentList.Span.End)));
@@ -447,6 +447,14 @@ namespace Roslynator.CSharp.Analysis
             {
                 DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.UseMethodChaining, invocationInfo.InvocationExpression);
             }
+        }
+
+        public static bool CanUseElementAccess(SyntaxNodeAnalysisContext context, in SimpleMemberInvocationExpressionInfo invocationInfo)
+        {
+            return (!invocationInfo.Expression.IsKind(SyntaxKind.InvocationExpression)
+                    || !context.IsAnalyzerSuppressed(DiagnosticDescriptors.UseElementAccess_NoUseElementAccessOnInvocation))
+                && (!invocationInfo.Expression.IsKind(SyntaxKind.ElementAccessExpression)
+                    || !context.IsAnalyzerSuppressed(DiagnosticDescriptors.UseElementAccess_NoUseElementAccessOnElementAccess));
         }
     }
 }
