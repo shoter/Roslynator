@@ -27,21 +27,36 @@ namespace Roslynator.CodeGeneration.CSharp
                         className,
                         analyzers
                             .Where(f => f.IsObsolete == obsolete)
-                            .OrderBy(f => f.Id, comparer)
-                            .Select(f =>
-                            {
-                                FieldDeclarationSyntax fieldDeclaration = FieldDeclaration(
-                                    Modifiers.Public_Const(),
-                                    PredefinedStringType(),
-                                    f.Identifier,
-                                    StringLiteralExpression(f.Id));
-
-                                if (f.IsObsolete)
-                                    fieldDeclaration = fieldDeclaration.AddObsoleteAttributeIf(f.IsObsolete, error: true);
-
-                                return fieldDeclaration;
-                            })
+                            .SelectMany(f => CreateMembers(f))
+                            .OrderBy(f => f.Declaration.Variables[0].Identifier.ValueText, comparer)
                             .ToSyntaxList<MemberDeclarationSyntax>())));
+        }
+
+        private static IEnumerable<FieldDeclarationSyntax> CreateMembers(AnalyzerMetadata analyzer)
+        {
+            string id = analyzer.Id;
+            string identifier = analyzer.Identifier;
+
+            yield return CreateMember(id, identifier, analyzer.IsObsolete);
+
+            foreach (AnalyzerOptionMetadata option in analyzer.Options)
+            {
+                yield return CreateMember($"{id}.{option.Identifier}", $"{identifier}.{option.Identifier}", option.IsObsolete);
+            }
+        }
+
+        private static FieldDeclarationSyntax CreateMember(string id, string identifier, bool isObsolete)
+        {
+            FieldDeclarationSyntax fieldDeclaration = FieldDeclaration(
+                Modifiers.Public_Const(),
+                PredefinedStringType(),
+                identifier,
+                StringLiteralExpression(id));
+
+            if (isObsolete)
+                fieldDeclaration = fieldDeclaration.AddObsoleteAttributeIf(isObsolete, error: true);
+
+            return fieldDeclaration;
         }
     }
 }

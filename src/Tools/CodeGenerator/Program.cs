@@ -36,7 +36,6 @@ namespace Roslynator.CodeGeneration
             ImmutableArray<RefactoringMetadata> refactorings = metadata.Refactorings;
             ImmutableArray<CodeFixMetadata> codeFixes = metadata.CodeFixes;
             ImmutableArray<CompilerDiagnosticMetadata> compilerDiagnostics = metadata.CompilerDiagnostics;
-            ImmutableArray<AnalyzerMetadata> analyzerOptions = metadata.AnalyzerOptions;
 
             WriteCompilationUnit(
                 @"Refactorings\CSharp\RefactoringIdentifiers.Generated.cs",
@@ -56,7 +55,8 @@ namespace Roslynator.CodeGeneration
 
             WriteDiagnostics(@"Formatting.Analyzers\CSharp", formattingAnalyzers, @namespace: "Roslynator.Formatting.CSharp");
 
-            WriteDiagnostics(@"Common\Options", analyzerOptions, @namespace: "Roslynator.Options", descriptorsClassName: "AnalyzerOptionDescriptors", identifiersClassName: "AnalyzerOptionIdentifiers");
+            //TODO: del
+            //WriteDiagnostics(@"Common\Options", analyzerOptions, @namespace: "Roslynator.Options", descriptorsClassName: "AnalyzerOptionDescriptors", identifiersClassName: "AnalyzerOptionIdentifiers");
 
             WriteCompilationUnit(
                 @"CodeFixes\CSharp\CompilerDiagnosticDescriptors.Generated.cs",
@@ -75,16 +75,6 @@ namespace Roslynator.CodeGeneration
             WriteCompilationUnit(
                 @"VisualStudio.Common\CodeFixesOptionsPage.Generated.cs",
                 CodeFixesOptionsPageGenerator.Generate(codeFixes, comparer));
-
-            //TODO: del
-            //WriteCompilationUnit(
-            //    @"Common\Options\AnalyzerOptionDescriptors.Generated.cs",
-            //    AnalyzerOptionDescriptorsGenerator.Generate(analyzerOptions, comparer),
-            //    normalizeWhitespace: false);
-
-            //WriteCompilationUnit(
-            //    @"Common\Options\AnalyzerOptionIdentifiers.Generated.cs",
-            //    AnalyzerOptionIdentifiersGenerator.Generate(analyzerOptions, comparer));
 
             WriteCompilationUnit(
                 @"CSharp\CSharp\CompilerDiagnosticIdentifiers.Generated.cs",

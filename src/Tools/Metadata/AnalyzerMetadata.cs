@@ -24,7 +24,8 @@ namespace Roslynator.Metadata
             string summary,
             string remarks,
             IEnumerable<SampleMetadata> samples,
-            IEnumerable<LinkMetadata> links)
+            IEnumerable<LinkMetadata> links,
+            IEnumerable<AnalyzerOptionMetadata> options)
         {
             Id = id;
             Identifier = identifier;
@@ -41,6 +42,7 @@ namespace Roslynator.Metadata
             Remarks = remarks;
             Samples = new ReadOnlyCollection<SampleMetadata>(samples?.ToArray() ?? Array.Empty<SampleMetadata>());
             Links = new ReadOnlyCollection<LinkMetadata>(links?.ToArray() ?? Array.Empty<LinkMetadata>());
+            Options = new ReadOnlyCollection<AnalyzerOptionMetadata>(options?.ToArray() ?? Array.Empty<AnalyzerOptionMetadata>());
         }
 
         public string Id { get; }
@@ -72,5 +74,7 @@ namespace Roslynator.Metadata
         public IReadOnlyList<SampleMetadata> Samples { get; }
 
         public IReadOnlyList<LinkMetadata> Links { get; }
+
+        public IReadOnlyList<AnalyzerOptionMetadata> Options { get; }
     }
 }

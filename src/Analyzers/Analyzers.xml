@@ -1084,10 +1084,22 @@ if (!f)
     <SupportsFadeOutAnalyzer>false</SupportsFadeOutAnalyzer>
     <Samples>
       <Sample>
-        <Before Option="Roslynator.ParenthesizeSimpleConditionOfConditionalExpression"><![CDATA[object x = condition ? WhenTrue() : WhenFalse(); // [|Id|]]]></Before>
-        <After><![CDATA[object x = (condition) ? WhenTrue() : WhenFalse();]]></After>
+        <Before><![CDATA[x = y != null ? "true" : "false"]]></Before>
+        <After><![CDATA[x = (y != null) ? "true" : "false"]]></After>
       </Sample>
     </Samples>
+    <Options>
+      <Option Identifier="NoParenthesesForSingleTokenExpression">
+        <Kind>Change</Kind>
+        <Title>Remove parentheses from condition of conditional expression.</Title>
+        <Samples>
+          <Sample>
+            <Before><![CDATA[x = (condition) ? "true" : "false"; // [|Id|]]]></Before>
+            <After><![CDATA[x = condition ? "true" : "false";]]></After>
+          </Sample>
+        </Samples>
+      </Option>
+    </Options>
   </Analyzer>
   <Analyzer Identifier="DeclareEachAttributeSeparately">
     <Id>RCS1052</Id>
@@ -5758,14 +5770,24 @@ public class C
         <Before><![CDATA[list.ElementAt(1)]]></Before>
         <After><![CDATA[list[1]]]></After>
       </Sample>
-      <Sample>
-        <Before Option="Roslynator.UseElementAccessOnInvocation"><![CDATA[M().First()]]></Before>
-        <After><![CDATA[M()[0]]]></After>
-      </Sample>
-      <Sample>
-        <Before Option="Roslynator.UseElementAccessOnElementAccess"><![CDATA[M[index].First()]]></Before>
-        <After><![CDATA[M[index][0]]]></After>
-      </Sample>
     </Samples>
+    <Options>
+      <Option Identifier="NoUseElementAccessOnInvocation">
+        <Kind>Disable</Kind>
+        <Samples>
+          <Sample>
+            <Before><![CDATA[M().First()]]></Before>
+          </Sample>
+        </Samples>
+      </Option>
+      <Option Identifier="NoUseElementAccessOnElementAccess">
+        <Kind>Disable</Kind>
+        <Samples>
+          <Sample>
+            <Before><![CDATA[M[index].First()]]></Before>
+          </Sample>
+        </Samples>
+      </Option>
+    </Options>
   </Analyzer>
 </Analyzers>
