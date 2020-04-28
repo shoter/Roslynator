@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
@@ -82,26 +83,17 @@ namespace Roslynator.CodeGeneration
 #endif
             foreach (AnalyzerMetadata analyzer in codeAnalysisAnalyzers)
             {
-                WriteAllText(
-                    $@"..\docs\analyzers\{analyzer.Id}.md",
-                    MarkdownGenerator.CreateAnalyzerMarkdown(analyzer, new (string, string)[] { ("Roslynator.CodeAnalysis.Analyzers", "https://www.nuget.org/packages/Roslynator.CodeAnalysis.Analyzers") }),
-                    fileMustExists: false);
+                WriteAnalyzerMarkdown(analyzer, new (string, string)[] { ("Roslynator.CodeAnalysis.Analyzers", "https://www.nuget.org/packages/Roslynator.CodeAnalysis.Analyzers") });
             }
 
-            foreach (AnalyzerMetadata analyzer in analyzers.Concat(formattingAnalyzers))
+            foreach (AnalyzerMetadata analyzer in formattingAnalyzers)
             {
-                WriteAllText(
-                    $@"..\docs\analyzers\{analyzer.Id}.md",
-                    MarkdownGenerator.CreateAnalyzerMarkdown(analyzer, new (string, string)[] { ("Roslynator.Formatting.Analyzers", "https://www.nuget.org/packages/Roslynator.Formatting.Analyzers") }),
-                    fileMustExists: false);
+                WriteAnalyzerMarkdown(analyzer, new (string, string)[] { ("Roslynator.Formatting.Analyzers", "https://www.nuget.org/packages/Roslynator.Formatting.Analyzers") });
             }
 
             foreach (AnalyzerMetadata analyzer in analyzers)
             {
-                WriteAllText(
-                    $@"..\docs\analyzers\{analyzer.Id}.md",
-                    MarkdownGenerator.CreateAnalyzerMarkdown(analyzer),
-                    fileMustExists: false);
+                WriteAnalyzerMarkdown(analyzer);
             }
 
             foreach (RefactoringMetadata refactoring in refactorings)
@@ -155,6 +147,24 @@ namespace Roslynator.CodeGeneration
                         if (!File.Exists(imagePath))
                             Console.WriteLine($"MISSING SAMPLE: {imagePath}");
                     }
+                }
+            }
+
+            void WriteAnalyzerMarkdown(AnalyzerMetadata analyzer, IEnumerable<(string title, string url)> appliesTo = null)
+            {
+                WriteAllText(
+                    $@"..\docs\analyzers\{analyzer.Id}.md",
+                    MarkdownGenerator.CreateAnalyzerMarkdown(analyzer, appliesTo),
+                    fileMustExists: false);
+
+                foreach (AnalyzerOptionMetadata option in analyzer.Options)
+                {
+                    AnalyzerMetadata optionAnalyzer = option.CreateAnalyzerMetadata(analyzer);
+
+                    WriteAllText(
+                        $@"..\docs\analyzers\{optionAnalyzer.Id}.md",
+                        MarkdownGenerator.CreateAnalyzerMarkdown(optionAnalyzer),
+                        fileMustExists: false);
                 }
             }
 

@@ -119,9 +119,7 @@ namespace Roslynator.Metadata
 
                     return new SampleMetadata(
                         before.Value.NormalizeNewLine(),
-                        after?.Value.NormalizeNewLine(),
-                        beforeOption: before.Attribute("Option")?.Value,
-                        afterOption: after?.Attribute("Option")?.Value);
+                        after?.Value.NormalizeNewLine());
                 });
         }
 
@@ -148,6 +146,8 @@ namespace Roslynator.Metadata
             string identifier = element.Attribute("Identifier").Value;
             var kind = (AnalyzerOptionKind)Enum.Parse(typeof(AnalyzerOptionKind), element.Element("Kind").Value);
             string messageFormat = element.Element("MessageFormat")?.Value ?? title;
+            bool isEnabledByDefault = element.ElementValueAsBooleanOrDefault("IsEnabledByDefault");
+            bool supportsFadeOut = element.ElementValueAsBooleanOrDefault("SupportsFadeOut");
             string summary = element.Element("Summary")?.Value.NormalizeNewLine();
             IEnumerable<SampleMetadata> samples = LoadSamples(element);
             bool isObsolete = element.AttributeValueAsBooleanOrDefault("IsObsolete");
@@ -157,6 +157,8 @@ namespace Roslynator.Metadata
                 kind: kind,
                 title: title,
                 messageFormat: messageFormat,
+                isEnabledByDefault: isEnabledByDefault,
+                supportsFadeOut: supportsFadeOut,
                 summary: summary,
                 samples: samples,
                 isObsolete: isObsolete);

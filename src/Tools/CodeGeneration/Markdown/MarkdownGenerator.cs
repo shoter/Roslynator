@@ -111,20 +111,10 @@ namespace Roslynator.CodeGeneration.Markdown
                         yield return beforeHeader;
                         yield return FencedCodeBlock(en.Current.Before, LanguageIdentifiers.CSharp);
 
-                        string beforeOptions = GetOptions(en.Current.BeforeOption);
-
-                        if (beforeOptions != null)
-                            yield return new MText("Options: " + beforeOptions);
-
                         if (!string.IsNullOrEmpty(en.Current.After))
                         {
                             yield return afterHeader;
                             yield return FencedCodeBlock(en.Current.After, LanguageIdentifiers.CSharp);
-
-                            string afterOptions = GetOptions(en.Current.AfterOption);
-
-                            if (afterOptions != null)
-                                yield return new MText("Options: " + afterOptions);
                         }
 
                         if (en.MoveNext())
@@ -138,17 +128,16 @@ namespace Roslynator.CodeGeneration.Markdown
                     }
                 }
             }
+        }
 
-            static string GetOptions(string options)
+        private static IEnumerable<MElement> GetAnalyzerSamples(IReadOnlyList<SampleMetadata> samples)
+        {
+            if (samples.Count > 0)
             {
-                if (options != null)
-                {
-                    string[] splits = options.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                yield return Heading2((samples.Count == 1) ? "Example" : "Examples");
 
-                    return string.Join(", ", splits);
-                }
-
-                return null;
+                foreach (MElement item in GetSamples(samples, Heading3("Code with Diagnostic"), Heading3("Code with Fix")))
+                    yield return item;
             }
         }
 
@@ -200,7 +189,7 @@ namespace Roslynator.CodeGeneration.Markdown
                     TableRow("Severity", (analyzer.IsEnabledByDefault) ? analyzer.DefaultSeverity : "None"),
                     (!string.IsNullOrEmpty(analyzer.MinLanguageVersion)) ? TableRow("Minimal Language Version", analyzer.MinLanguageVersion) : null),
                 CreateSummary(analyzer.Summary),
-                Samples(),
+                GetAnalyzerSamples(analyzer.Samples),
                 CreateOptions(analyzer),
                 CreateRemarks(analyzer.Remarks),
                 CreateAppliesTo(appliesTo),
@@ -211,19 +200,6 @@ namespace Roslynator.CodeGeneration.Markdown
             document.AddFootnote();
 
             return document.ToString(format);
-
-            IEnumerable<MElement> Samples()
-            {
-                IReadOnlyList<SampleMetadata> samples = analyzer.Samples;
-
-                if (samples.Count > 0)
-                {
-                    yield return Heading2((samples.Count == 1) ? "Example" : "Examples");
-
-                    foreach (MElement item in GetSamples(samples, Heading3("Code with Diagnostic"), Heading3("Code with Fix")))
-                        yield return item;
-                }
-            }
         }
 
         private static IEnumerable<MElement> CreateAppliesTo(IEnumerable<(string title, string url)> appliesTo)
@@ -368,17 +344,20 @@ namespace Roslynator.CodeGeneration.Markdown
 
         private static IEnumerable<MElement> CreateOptions(AnalyzerMetadata analyzer)
         {
-            IEnumerable<string> ids1 = analyzer.Samples.SelectMany(f => (f.BeforeOption ?? "").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
-            IEnumerable<string> ids2 = analyzer.Samples.SelectMany(f => (f.AfterOption ?? "").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
-
-            IEnumerable<string> ids = ids1.Concat(ids2).Distinct().OrderBy(f => f);
-
-            if (ids.Any())
+            using (IEnumerator<AnalyzerOptionMetadata> en = analyzer.Options.GetEnumerator())
             {
-                yield return Heading2("Options");
+                if (en.MoveNext())
+                {
+                    yield return Heading2("Options");
 
-                foreach (string id in ids)
-                    yield return BulletItem(id);
+                    do
+                    {
+                        string id = $"{analyzer.Id}_{en.Current.Identifier}";
+
+                        yield return BulletItem(Link(id, $"{id}.md"));
+
+                    } while (en.MoveNext());
+                }
             }
         }
 

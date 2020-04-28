@@ -55,9 +55,6 @@ namespace Roslynator.CodeGeneration
 
             WriteDiagnostics(@"Formatting.Analyzers\CSharp", formattingAnalyzers, @namespace: "Roslynator.Formatting.CSharp");
 
-            //TODO: del
-            //WriteDiagnostics(@"Common\Options", analyzerOptions, @namespace: "Roslynator.Options", descriptorsClassName: "AnalyzerOptionDescriptors", identifiersClassName: "AnalyzerOptionIdentifiers");
-
             WriteCompilationUnit(
                 @"CodeFixes\CSharp\CompilerDiagnosticDescriptors.Generated.cs",
                 CompilerDiagnosticDescriptorsGenerator.Generate(compilerDiagnostics, comparer: comparer, @namespace: "Roslynator.CSharp"),

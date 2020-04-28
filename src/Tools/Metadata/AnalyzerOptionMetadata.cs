@@ -14,6 +14,8 @@ namespace Roslynator.Metadata
             AnalyzerOptionKind kind,
             string title,
             string messageFormat,
+            bool isEnabledByDefault,
+            bool supportsFadeOut,
             string summary,
             IEnumerable<SampleMetadata> samples,
             bool isObsolete)
@@ -22,20 +24,45 @@ namespace Roslynator.Metadata
             Kind = kind;
             Title = title;
             MessageFormat = messageFormat;
+            IsEnabledByDefault = isEnabledByDefault;
+            SupportsFadeOut = supportsFadeOut;
             Summary = summary;
             Samples = new ReadOnlyCollection<SampleMetadata>(samples?.ToArray() ?? Array.Empty<SampleMetadata>());
             IsObsolete = isObsolete;
+        }
+
+        public AnalyzerMetadata CreateAnalyzerMetadata(AnalyzerMetadata parent)
+        {
+            return new AnalyzerMetadata(
+                id: parent.Id + "_" + Identifier,
+                identifier: parent.Identifier + "_" + Identifier,
+                title: Title,
+                messageFormat: MessageFormat,
+                category: "AnalyzerOption",
+                defaultSeverity: parent.DefaultSeverity,
+                isEnabledByDefault: IsEnabledByDefault,
+                isObsolete: parent.IsEnabledByDefault || IsObsolete,
+                supportsFadeOut: false,
+                supportsFadeOutAnalyzer: false,
+                minLanguageVersion: parent.MinLanguageVersion,
+                summary: Summary,
+                remarks: null,
+                samples: Samples,
+                links: null,
+                options: null);
         }
 
         public string Identifier { get; }
 
         public AnalyzerOptionKind Kind { get; }
 
-        public string AnalyzerId { get; }
-
         public string Title { get; }
 
         public string MessageFormat { get; }
+
+        public bool IsEnabledByDefault { get; }
+
+        public bool SupportsFadeOut { get; }
 
         public string Summary { get; }
 
