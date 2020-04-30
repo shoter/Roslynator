@@ -716,6 +716,41 @@ if (f)
 }]]></After>
       </Sample>
     </Samples>
+    <Options>
+      <Option Identifier="RemoveEmptyLineBetweenClosingBraceAndSwitchSection">
+        <Id>a</Id>
+        <Title>Remove empty line between closing brace and switch section.</Title>
+        <MessageFormat>Remove empty line.</MessageFormat>
+        <Kind>Enable</Kind>
+        <Samples>
+          <Sample>
+            <Before><![CDATA[switch (x)
+{
+    case "a":
+        {
+            M();
+            break;
+        }
+            
+    case "b":
+        break;
+}
+    ]]></Before>
+            <After><![CDATA[switch (x)
+{
+    case "a":
+        {
+            M();
+            break;
+        }
+    case "b":
+        break;
+}
+    ]]></After>
+          </Sample>
+        </Samples>
+      </Option>
+    </Options>
   </Analyzer>
   <Analyzer Identifier="RemoveTrailingWhitespace">
     <Id>RCS1037</Id>
@@ -983,6 +1018,7 @@ if (!f)
   <Analyzer Identifier="ParenthesizeConditionOfConditionalExpression">
     <Id>RCS1051</Id>
     <Title>Parenthesize condition of conditional expression.</Title>
+    <MessageFormat>{0}</MessageFormat>
     <Category>Style</Category>
     <DefaultSeverity>Info</DefaultSeverity>
     <IsEnabledByDefault>false</IsEnabledByDefault>
@@ -996,6 +1032,7 @@ if (!f)
       <Option Identifier="RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken">
         <Id>a</Id>
         <Title>Remove parentheses from condition of conditional expression (when condition is a single token).</Title>
+        <MessageFormat>Remove parentheses from condition.</MessageFormat>
         <Kind>Change</Kind>
         <Samples>
           <Sample>

@@ -435,6 +435,18 @@ namespace Roslynator.CSharp
             helpLinkUri:        DiagnosticIdentifiers.RemoveRedundantEmptyLine, 
             customTags:         Array.Empty<string>());
 
+        /// <summary>RCS1036a</summary>
+        public static readonly DiagnosticDescriptor RemoveEmptyLineBetweenClosingBraceAndSwitchSection = Factory.Create(
+            id:                 DiagnosticIdentifiers.RemoveEmptyLineBetweenClosingBraceAndSwitchSection, 
+            title:              "Remove empty line between closing brace and switch section.", 
+            messageFormat:      "Remove empty line.", 
+            category:           DiagnosticCategories.AnalyzerOption, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: false, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.RemoveEmptyLineBetweenClosingBraceAndSwitchSection, 
+            customTags:         Array.Empty<string>());
+
         /// <summary>RCS1037</summary>
         public static readonly DiagnosticDescriptor RemoveTrailingWhitespace = Factory.Create(
             id:                 DiagnosticIdentifiers.RemoveTrailingWhitespace, 
@@ -613,7 +625,7 @@ namespace Roslynator.CSharp
         public static readonly DiagnosticDescriptor ParenthesizeConditionOfConditionalExpression = Factory.Create(
             id:                 DiagnosticIdentifiers.ParenthesizeConditionOfConditionalExpression, 
             title:              "Parenthesize condition of conditional expression.", 
-            messageFormat:      "Parenthesize condition of conditional expression.", 
+            messageFormat:      "{0}", 
             category:           DiagnosticCategories.Style, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 
@@ -625,7 +637,7 @@ namespace Roslynator.CSharp
         public static readonly DiagnosticDescriptor RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken = Factory.Create(
             id:                 DiagnosticIdentifiers.RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken, 
             title:              "Remove parentheses from condition of conditional expression (when condition is a single token).", 
-            messageFormat:      "Remove parentheses from condition of conditional expression (when condition is a single token).", 
+            messageFormat:      "Remove parentheses from condition.", 
             category:           DiagnosticCategories.AnalyzerOption, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 

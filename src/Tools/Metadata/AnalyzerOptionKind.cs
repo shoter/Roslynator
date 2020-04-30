@@ -4,8 +4,10 @@ namespace Roslynator.Metadata
 {
     public enum AnalyzerOptionKind
     {
-        Change = 0,
-        Disable = 1,
-        Invert = 2,
+        None = 0,
+        Enable = 1,
+        Disable = 2,
+        Change = 3,
+        Invert = 4,
     }
 }

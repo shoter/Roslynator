@@ -53,14 +53,22 @@ namespace Roslynator.CSharp.Analysis
                     if (!expression.IsMissing
                         && CSharpFacts.IsSingleTokenExpression(expression.Kind()))
                     {
-                        DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression, condition);
+                        DiagnosticHelpers.ReportDiagnostic(
+                            context,
+                            DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression,
+                            condition,
+                            messageArgs: DiagnosticDescriptors.RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken.MessageFormat);
                     }
                 }
             }
             else if (!CSharpFacts.IsSingleTokenExpression(kind)
                 || context.IsAnalyzerSuppressed(DiagnosticDescriptors.RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken))
             {
-                DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression, condition);
+                DiagnosticHelpers.ReportDiagnostic(
+                    context,
+                    DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression,
+                    condition,
+                    messageArgs: DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression.Title);
             }
         }
     }

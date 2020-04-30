@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -15,7 +14,12 @@ namespace Roslynator.CSharp.Analysis
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
-            get { return ImmutableArray.Create(DiagnosticDescriptors.RemoveRedundantEmptyLine); }
+            get
+            {
+                return ImmutableArray.Create(
+                    DiagnosticDescriptors.RemoveRedundantEmptyLine,
+                    DiagnosticDescriptors.RemoveEmptyLineBetweenClosingBraceAndSwitchSection);
+            }
         }
 
         public override void Initialize(AnalysisContext context)
@@ -23,31 +27,38 @@ namespace Roslynator.CSharp.Analysis
             base.Initialize(context);
             context.EnableConcurrentExecution();
 
-            context.RegisterSyntaxNodeAction(AnalyzeClassDeclaration, SyntaxKind.ClassDeclaration);
-            context.RegisterSyntaxNodeAction(AnalyzeStructDeclaration, SyntaxKind.StructDeclaration);
-            context.RegisterSyntaxNodeAction(AnalyzeInterfaceDeclaration, SyntaxKind.InterfaceDeclaration);
-            context.RegisterSyntaxNodeAction(AnalyzeNamespaceDeclaration, SyntaxKind.NamespaceDeclaration);
-            context.RegisterSyntaxNodeAction(AnalyzeSwitchStatement, SyntaxKind.SwitchStatement);
-            context.RegisterSyntaxNodeAction(AnalyzeTryStatement, SyntaxKind.TryStatement);
-            context.RegisterSyntaxNodeAction(AnalyzeElseClause, SyntaxKind.ElseClause);
+            context.RegisterCompilationStartAction(startContext =>
+            {
+                if (!startContext.IsAnalyzerSuppressed(DiagnosticDescriptors.RemoveRedundantEmptyLine))
+                {
+                    startContext.RegisterSyntaxNodeAction(AnalyzeClassDeclaration, SyntaxKind.ClassDeclaration);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeStructDeclaration, SyntaxKind.StructDeclaration);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeInterfaceDeclaration, SyntaxKind.InterfaceDeclaration);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeNamespaceDeclaration, SyntaxKind.NamespaceDeclaration);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeTryStatement, SyntaxKind.TryStatement);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeElseClause, SyntaxKind.ElseClause);
 
-            context.RegisterSyntaxNodeAction(AnalyzeIfStatement, SyntaxKind.IfStatement);
-            context.RegisterSyntaxNodeAction(AnalyzeCommonForEachStement, SyntaxKind.ForEachStatement);
-            context.RegisterSyntaxNodeAction(AnalyzeCommonForEachStement, SyntaxKind.ForEachVariableStatement);
-            context.RegisterSyntaxNodeAction(AnalyzeForStatement, SyntaxKind.ForStatement);
-            context.RegisterSyntaxNodeAction(AnalyzeUsingStatement, SyntaxKind.UsingStatement);
-            context.RegisterSyntaxNodeAction(AnalyzeWhileStatement, SyntaxKind.WhileStatement);
-            context.RegisterSyntaxNodeAction(AnalyzeDoStatement, SyntaxKind.DoStatement);
-            context.RegisterSyntaxNodeAction(AnalyzeLockStatement, SyntaxKind.LockStatement);
-            context.RegisterSyntaxNodeAction(AnalyzeFixedStatement, SyntaxKind.FixedStatement);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeIfStatement, SyntaxKind.IfStatement);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeCommonForEachStement, SyntaxKind.ForEachStatement);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeCommonForEachStement, SyntaxKind.ForEachVariableStatement);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeForStatement, SyntaxKind.ForStatement);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeUsingStatement, SyntaxKind.UsingStatement);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeWhileStatement, SyntaxKind.WhileStatement);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeDoStatement, SyntaxKind.DoStatement);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeLockStatement, SyntaxKind.LockStatement);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeFixedStatement, SyntaxKind.FixedStatement);
 
-            context.RegisterSyntaxNodeAction(AnalyzeAccessorList, SyntaxKind.AccessorList);
-            context.RegisterSyntaxNodeAction(AnalyzeBlock, SyntaxKind.Block);
-            context.RegisterSyntaxNodeAction(AnalyzeSingleLineDocumentationCommentTrivia, SyntaxKind.SingleLineDocumentationCommentTrivia);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeAccessorList, SyntaxKind.AccessorList);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeBlock, SyntaxKind.Block);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeSingleLineDocumentationCommentTrivia, SyntaxKind.SingleLineDocumentationCommentTrivia);
 
-            context.RegisterSyntaxNodeAction(AnalyzeInitializer, SyntaxKind.ArrayInitializerExpression);
-            context.RegisterSyntaxNodeAction(AnalyzeInitializer, SyntaxKind.CollectionInitializerExpression);
-            context.RegisterSyntaxNodeAction(AnalyzeInitializer, SyntaxKind.ObjectInitializerExpression);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeInitializer, SyntaxKind.ArrayInitializerExpression);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeInitializer, SyntaxKind.CollectionInitializerExpression);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeInitializer, SyntaxKind.ObjectInitializerExpression);
+                }
+
+                startContext.RegisterSyntaxNodeAction(AnalyzeSwitchStatement, SyntaxKind.SwitchStatement);
+            });
         }
 
         private static void AnalyzeClassDeclaration(SyntaxNodeAnalysisContext context)
@@ -120,8 +131,29 @@ namespace Roslynator.CSharp.Analysis
 
             if (sections.Any())
             {
-                AnalyzeStart(context, sections[0], switchStatement.OpenBraceToken);
-                AnalyzeEnd(context, sections.Last(), switchStatement.CloseBraceToken);
+                if (!context.IsAnalyzerSuppressed(DiagnosticDescriptors.RemoveRedundantEmptyLine))
+                {
+                    AnalyzeStart(context, sections[0], switchStatement.OpenBraceToken);
+                    AnalyzeEnd(context, sections.Last(), switchStatement.CloseBraceToken);
+                }
+
+                if (sections.Count > 1
+                    && !context.IsAnalyzerSuppressed(DiagnosticDescriptors.RemoveEmptyLineBetweenClosingBraceAndSwitchSection))
+                {
+                    SwitchSectionSyntax prevSection = sections.First();
+
+                    for (int i = 1; i < sections.Count; i++)
+                    {
+                        SwitchSectionSyntax section = sections[i];
+
+                        if (prevSection.Statements.LastOrDefault() is BlockSyntax block)
+                        {
+                            Analyze(context, block.CloseBraceToken, section);
+                        }
+
+                        prevSection = section;
+                    }
+                }
             }
         }
 

@@ -42,6 +42,7 @@ namespace Roslynator.CSharp
         public const string RemoveRedundantSealedModifier = "RCS1034";
         public const string RemoveRedundantCommaInInitializer = "RCS1035";
         public const string RemoveRedundantEmptyLine = "RCS1036";
+        public const string RemoveEmptyLineBetweenClosingBraceAndSwitchSection = "RCS1036a";
         public const string RemoveTrailingWhitespace = "RCS1037";
         public const string RemoveEmptyStatement = "RCS1038";
         public const string RemoveArgumentListFromAttribute = "RCS1039";

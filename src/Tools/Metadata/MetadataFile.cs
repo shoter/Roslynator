@@ -66,7 +66,8 @@ namespace Roslynator.Metadata
                     remarks: remarks,
                     samples: samples,
                     links: links,
-                    options: options);
+                    options: options,
+                    kind: AnalyzerOptionKind.None);
             }
         }
 

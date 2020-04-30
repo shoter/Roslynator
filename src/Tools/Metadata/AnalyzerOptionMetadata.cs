@@ -51,7 +51,8 @@ namespace Roslynator.Metadata
                 remarks: null,
                 samples: Samples,
                 links: null,
-                options: null);
+                options: null,
+                kind: Kind);
         }
 
         public string Identifier { get; }

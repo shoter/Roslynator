@@ -15,7 +15,7 @@ namespace Roslynator.CSharp.Analysis.Tests
 
         public override DiagnosticAnalyzer Analyzer { get; } = new ParenthesizeConditionOfConditionalExpressionAnalyzer();
 
-        public override CodeFixProvider FixProvider { get; } = new ConditionalExpressionCodeFixProvider();
+        public override CodeFixProvider FixProvider { get; } = new ExpressionCodeFixProvider();
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ParenthesizeConditionOfConditionalExpression)]
         public async Task Test()
