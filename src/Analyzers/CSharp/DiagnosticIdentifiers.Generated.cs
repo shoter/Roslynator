@@ -57,7 +57,7 @@ namespace Roslynator.CSharp
         public const string SimplifyBooleanComparison = "RCS1049";
         public const string AddArgumentListToObjectCreation = "RCS1050";
         public const string ParenthesizeConditionOfConditionalExpression = "RCS1051";
-        public const string ParenthesizeConditionOfConditionalExpression_NoParenthesesForSingleTokenExpression = "RCS1051_NoParenthesesForSingleTokenExpression";
+        public const string RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken = "RCS1051a";
         public const string DeclareEachAttributeSeparately = "RCS1052";
         public const string AvoidSemicolonAtEndOfDeclaration = "RCS1055";
         public const string AvoidUsageOfUsingAliasDirective = "RCS1056";
@@ -229,7 +229,6 @@ namespace Roslynator.CSharp
         public const string SimplifyDefaultExpression = "RCS1244";
         public const string SimplifyConditionalExpression2 = "RCS1245";
         public const string UseElementAccess = "RCS1246";
-        public const string UseElementAccess_NoUseElementAccessOnElementAccess = "RCS1246_NoUseElementAccessOnElementAccess";
-        public const string UseElementAccess_NoUseElementAccessOnInvocation = "RCS1246_NoUseElementAccessOnInvocation";
+        public const string UseElementAccess_ExceptWhenExpressionIsInvocation = "RCS1246a";
     }
 }

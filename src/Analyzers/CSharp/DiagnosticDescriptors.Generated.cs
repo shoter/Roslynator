@@ -621,16 +621,16 @@ namespace Roslynator.CSharp
             helpLinkUri:        DiagnosticIdentifiers.ParenthesizeConditionOfConditionalExpression, 
             customTags:         Array.Empty<string>());
 
-        /// <summary>RCS1051_NoParenthesesForSingleTokenExpression</summary>
-        public static readonly DiagnosticDescriptor ParenthesizeConditionOfConditionalExpression_NoParenthesesForSingleTokenExpression = Factory.Create(
-            id:                 DiagnosticIdentifiers.ParenthesizeConditionOfConditionalExpression_NoParenthesesForSingleTokenExpression, 
-            title:              "Remove parentheses from condition of conditional expression.", 
-            messageFormat:      "Remove parentheses from condition of conditional expression.", 
+        /// <summary>RCS1051a</summary>
+        public static readonly DiagnosticDescriptor RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken = Factory.Create(
+            id:                 DiagnosticIdentifiers.RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken, 
+            title:              "Remove parentheses from condition of conditional expression (when condition is a single token).", 
+            messageFormat:      "Remove parentheses from condition of conditional expression (when condition is a single token).", 
             category:           DiagnosticCategories.AnalyzerOption, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 
             description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.ParenthesizeConditionOfConditionalExpression_NoParenthesesForSingleTokenExpression, 
+            helpLinkUri:        DiagnosticIdentifiers.RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken, 
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS1052</summary>
@@ -2715,28 +2715,16 @@ namespace Roslynator.CSharp
             helpLinkUri:        DiagnosticIdentifiers.UseElementAccess, 
             customTags:         Array.Empty<string>());
 
-        /// <summary>RCS1246_NoUseElementAccessOnInvocation</summary>
-        public static readonly DiagnosticDescriptor UseElementAccess_NoUseElementAccessOnInvocation = Factory.Create(
-            id:                 DiagnosticIdentifiers.UseElementAccess_NoUseElementAccessOnInvocation, 
-            title:              "Do not use element access on invocation.", 
-            messageFormat:      "Do not use element access on invocation.", 
+        /// <summary>RCS1246a</summary>
+        public static readonly DiagnosticDescriptor UseElementAccess_ExceptWhenExpressionIsInvocation = Factory.Create(
+            id:                 DiagnosticIdentifiers.UseElementAccess_ExceptWhenExpressionIsInvocation, 
+            title:              "Use element access except when expression is invocation.", 
+            messageFormat:      "Use element access except when expression is invocation.", 
             category:           DiagnosticCategories.AnalyzerOption, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 
             description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.UseElementAccess_NoUseElementAccessOnInvocation, 
-            customTags:         Array.Empty<string>());
-
-        /// <summary>RCS1246_NoUseElementAccessOnElementAccess</summary>
-        public static readonly DiagnosticDescriptor UseElementAccess_NoUseElementAccessOnElementAccess = Factory.Create(
-            id:                 DiagnosticIdentifiers.UseElementAccess_NoUseElementAccessOnElementAccess, 
-            title:              "Do not use element access on element access.", 
-            messageFormat:      "Do not use element access on element access.", 
-            category:           DiagnosticCategories.AnalyzerOption, 
-            defaultSeverity:    DiagnosticSeverity.Info, 
-            isEnabledByDefault: false, 
-            description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.UseElementAccess_NoUseElementAccessOnElementAccess, 
+            helpLinkUri:        DiagnosticIdentifiers.UseElementAccess_ExceptWhenExpressionIsInvocation, 
             customTags:         Array.Empty<string>());
 
     }

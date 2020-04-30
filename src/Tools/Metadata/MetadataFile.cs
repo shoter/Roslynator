@@ -35,9 +35,6 @@ namespace Roslynator.Metadata
             {
                 string id = element.Element("Id").Value;
                 string title = element.Element("Title").Value;
-
-                string title = element.Element("Title").Value;
-
                 string identifier = element.Attribute("Identifier").Value;
                 string messageFormat = element.Element("MessageFormat")?.Value ?? title;
                 string category = element.Element("Category").Value;
@@ -147,6 +144,7 @@ namespace Roslynator.Metadata
             string title = element.Element("Title").Value;
 
             string identifier = element.Attribute("Identifier").Value;
+            string id = element.Element("Id").Value;
             var kind = (AnalyzerOptionKind)Enum.Parse(typeof(AnalyzerOptionKind), element.Element("Kind").Value);
             string messageFormat = element.Element("MessageFormat")?.Value ?? title;
             bool isEnabledByDefault = element.ElementValueAsBooleanOrDefault("IsEnabledByDefault");
@@ -157,6 +155,7 @@ namespace Roslynator.Metadata
 
             return new AnalyzerOptionMetadata(
                 identifier: identifier,
+                id: id,
                 kind: kind,
                 title: title,
                 messageFormat: messageFormat,

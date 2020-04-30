@@ -66,6 +66,30 @@ class C
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ParenthesizeConditionOfConditionalExpression)]
+        public async Task Test_RemoveParenthesesFromSingleTokenExpression()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+class C
+{
+    void M()
+    {
+        bool b = false;
+        string s = [|(b)|] ? ""true"" : ""false"";
+    }
+}
+", @"
+class C
+{
+    void M()
+    {
+        bool b = false;
+        string s = b ? ""true"" : ""false"";
+    }
+}
+", options: Options.WithEnabled(DiagnosticDescriptors.RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken));
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ParenthesizeConditionOfConditionalExpression)]
         public async Task TestNoDiagnostic_SingleTokenExpression()
         {
             await VerifyNoDiagnosticAsync(@"
@@ -77,7 +101,7 @@ public class C
         string s = b ? ""true"" : ""false"";
     }
 }
-", options: Options.WithEnabled(DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression_NoParenthesesForSingleTokenExpression));
+", options: Options.WithEnabled(DiagnosticDescriptors.RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken));
         }
     }
 }

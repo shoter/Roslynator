@@ -11,6 +11,7 @@ namespace Roslynator.Metadata
     {
         public AnalyzerOptionMetadata(
             string identifier,
+            string id,
             AnalyzerOptionKind kind,
             string title,
             string messageFormat,
@@ -21,6 +22,7 @@ namespace Roslynator.Metadata
             bool isObsolete)
         {
             Identifier = identifier;
+            Id = id;
             Kind = kind;
             Title = title;
             MessageFormat = messageFormat;
@@ -34,14 +36,14 @@ namespace Roslynator.Metadata
         public AnalyzerMetadata CreateAnalyzerMetadata(AnalyzerMetadata parent)
         {
             return new AnalyzerMetadata(
-                id: parent.Id + "_" + Identifier,
-                identifier: parent.Identifier + "_" + Identifier,
+                id: parent.Id + Id,
+                identifier: Identifier,
                 title: Title,
                 messageFormat: MessageFormat,
                 category: "AnalyzerOption",
                 defaultSeverity: parent.DefaultSeverity,
                 isEnabledByDefault: IsEnabledByDefault,
-                isObsolete: parent.IsEnabledByDefault || IsObsolete,
+                isObsolete: parent.IsObsolete || IsObsolete,
                 supportsFadeOut: false,
                 supportsFadeOutAnalyzer: false,
                 minLanguageVersion: parent.MinLanguageVersion,
@@ -53,6 +55,8 @@ namespace Roslynator.Metadata
         }
 
         public string Identifier { get; }
+
+        public string Id { get; }
 
         public AnalyzerOptionKind Kind { get; }
 

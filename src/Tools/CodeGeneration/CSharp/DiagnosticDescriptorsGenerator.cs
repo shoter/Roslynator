@@ -121,7 +121,7 @@ namespace Roslynator.CodeGeneration.CSharp
             if (!analyzer.IsObsolete)
             {
                 var settings = new DocumentationCommentGeneratorSettings(
-                    summary: new string[] { analyzer.Identifier },
+                    summary: new string[] { analyzer.Id },
                     indentation: "        ",
                     singleLineSummary: true);
 

@@ -452,9 +452,9 @@ namespace Roslynator.CSharp.Analysis
         public static bool CanUseElementAccess(SyntaxNodeAnalysisContext context, in SimpleMemberInvocationExpressionInfo invocationInfo)
         {
             return (!invocationInfo.Expression.IsKind(SyntaxKind.InvocationExpression)
-                    || !context.IsAnalyzerSuppressed(DiagnosticDescriptors.UseElementAccess_NoUseElementAccessOnInvocation))
+                    || !context.IsAnalyzerSuppressed(DiagnosticDescriptors.UseElementAccess_ExceptWhenExpressionIsInvocation))
                 && (!invocationInfo.Expression.IsKind(SyntaxKind.ElementAccessExpression)
-                    || !context.IsAnalyzerSuppressed(DiagnosticDescriptors.UseElementAccess_NoUseElementAccessOnElementAccess));
+                    || !context.IsAnalyzerSuppressed(DiagnosticDescriptors.UseElementAccess_ExceptWhenExpressionIsInvocation));
         }
     }
 }

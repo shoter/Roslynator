@@ -993,12 +993,13 @@ if (!f)
       </Sample>
     </Samples>
     <Options>
-      <Option Identifier="NoParenthesesForSingleTokenExpression">
-        <Title>Remove parentheses from condition of conditional expression.</Title>
+      <Option Identifier="RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken">
+        <Id>a</Id>
+        <Title>Remove parentheses from condition of conditional expression (when condition is a single token).</Title>
         <Kind>Change</Kind>
         <Samples>
           <Sample>
-            <Before><![CDATA[x = (condition) ? "true" : "false"; // [|Id|]]]></Before>
+            <Before><![CDATA[x = (condition) ? "true" : "false";]]></Before>
             <After><![CDATA[x = condition ? "true" : "false";]]></After>
           </Sample>
         </Samples>
@@ -5150,21 +5151,13 @@ public class C
       </Sample>
     </Samples>
     <Options>
-      <Option Identifier="NoUseElementAccessOnInvocation">
-        <Title>Do not use element access on invocation.</Title>
+      <Option Identifier="UseElementAccess_ExceptWhenExpressionIsInvocation">
+        <Title>Use element access except when expression is invocation.</Title>
+        <Id>a</Id>
         <Kind>Disable</Kind>
         <Samples>
           <Sample>
             <Before><![CDATA[M().First()]]></Before>
-          </Sample>
-        </Samples>
-      </Option>
-      <Option Identifier="NoUseElementAccessOnElementAccess">
-        <Title>Do not use element access on element access.</Title>
-        <Kind>Disable</Kind>
-        <Samples>
-          <Sample>
-            <Before><![CDATA[M[index].First()]]></Before>
           </Sample>
         </Samples>
       </Option>

@@ -17,12 +17,7 @@ namespace Roslynator.CSharp.CodeFixes
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
-            get
-            {
-                return ImmutableArray.Create(
-                    DiagnosticIdentifiers.RemoveRedundantParentheses,
-                    DiagnosticIdentifiers.ParenthesizeConditionOfConditionalExpression_NoParenthesesForSingleTokenExpression);
-            }
+            get { return ImmutableArray.Create(DiagnosticIdentifiers.RemoveRedundantParentheses); }
         }
 
         public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)

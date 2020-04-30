@@ -27,7 +27,7 @@ namespace Roslynator.CodeGeneration.CSharp
                         className,
                         analyzers
                             .Where(f => f.IsObsolete == obsolete)
-                            .OrderBy(f => f.Id)
+                            .OrderBy(f => f.Id, comparer)
                             .SelectMany(f => CreateMembers(f))
                             .ToSyntaxList<MemberDeclarationSyntax>())));
         }
@@ -41,7 +41,9 @@ namespace Roslynator.CodeGeneration.CSharp
 
             foreach (AnalyzerOptionMetadata option in analyzer.Options.OrderBy(f => f.Identifier))
             {
-                yield return CreateMember($"{id}_{option.Identifier}", $"{identifier}_{option.Identifier}", option.IsObsolete);
+                AnalyzerMetadata optionAnalyzer = option.CreateAnalyzerMetadata(analyzer);
+
+                yield return CreateMember(optionAnalyzer.Id, optionAnalyzer.Identifier, option.IsObsolete);
             }
         }
 
