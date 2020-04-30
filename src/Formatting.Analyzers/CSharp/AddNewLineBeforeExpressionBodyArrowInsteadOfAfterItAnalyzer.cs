@@ -43,7 +43,7 @@ namespace Roslynator.Formatting.CSharp
             if (!SyntaxTriviaAnalysis.IsEmptyOrSingleWhitespaceTrivia(arrowExpressionClause.Expression.GetLeadingTrivia()))
                 return;
 
-            context.ReportDiagnostic(DiagnosticDescriptors.AddNewLineBeforeExpressionBodyArrowInsteadOfAfterIt, arrowToken);
+            DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.AddNewLineBeforeExpressionBodyArrowInsteadOfAfterIt, arrowToken);
         }
     }
 }
