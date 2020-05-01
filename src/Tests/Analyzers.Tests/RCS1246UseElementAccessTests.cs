@@ -74,45 +74,6 @@ class C
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseElementAccess)]
-        public async Task Test_UseElementAccessOnElementAccess()
-        {
-            await VerifyDiagnosticAndFixAsync(@"
-using System.Linq;
-using System.Collections.Generic;
-
-class C
-{
-    List<object> this[int index] => null;
-
-    void M()
-    {
-        C x = default;
-
-        var first = x[0].[|First()|];
-        var second = x[0].[|ElementAt(1)|];
-    }
-}
-",
-@"
-using System.Linq;
-using System.Collections.Generic;
-
-class C
-{
-    List<object> this[int index] => null;
-
-    void M()
-    {
-        C x = default;
-
-        var first = x[0][0];
-        var second = x[0][1];
-    }
-}
-");
-        }
-
-        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseElementAccess)]
         public async Task Test_UseElementAccessOnInvocationExpression()
         {
             await VerifyDiagnosticAndFixAsync(@"
@@ -243,7 +204,7 @@ class C
         x = ((string)x).ToString().ElementAt(1);
     }
 }
-", options: Options.WithSuppressed(DiagnosticDescriptors.UseElementAccessExceptWhenExpressionIsInvocation));
+", options: Options.WithEnabled(DiagnosticDescriptors.UseElementAccessExceptWhenExpressionIsInvocation));
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseElementAccess)]
@@ -261,8 +222,8 @@ class C
     {
         C x = default;
 
-        var first = x[0].[|First()|];
-        var second = x[0].[|ElementAt(1)|];
+        var first = x[0].First();
+        var second = x[0].ElementAt(1);
     }
 }
 ");

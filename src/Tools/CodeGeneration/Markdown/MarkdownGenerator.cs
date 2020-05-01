@@ -99,8 +99,8 @@ namespace Roslynator.CodeGeneration.Markdown
 
         private static IEnumerable<MElement> GetSamples(
             IEnumerable<SampleMetadata> samples,
-            MHeading beforeHeader,
-            MHeading afterHeader)
+            MHeading beforeHeading,
+            MHeading afterHeading)
         {
             using (IEnumerator<SampleMetadata> en = samples.GetEnumerator())
             {
@@ -108,12 +108,12 @@ namespace Roslynator.CodeGeneration.Markdown
                 {
                     while (true)
                     {
-                        yield return beforeHeader;
+                        yield return beforeHeading;
                         yield return FencedCodeBlock(en.Current.Before, LanguageIdentifiers.CSharp);
 
                         if (!string.IsNullOrEmpty(en.Current.After))
                         {
-                            yield return afterHeader;
+                            yield return afterHeading;
                             yield return FencedCodeBlock(en.Current.After, LanguageIdentifiers.CSharp);
                         }
 
@@ -130,13 +130,19 @@ namespace Roslynator.CodeGeneration.Markdown
             }
         }
 
-        private static IEnumerable<MElement> GetAnalyzerSamples(IReadOnlyList<SampleMetadata> samples)
+        private static IEnumerable<MElement> GetAnalyzerSamples(AnalyzerMetadata analyzer)
         {
+            IReadOnlyList<SampleMetadata> samples = analyzer.Samples;
+
             if (samples.Count > 0)
             {
                 yield return Heading2((samples.Count == 1) ? "Example" : "Examples");
 
-                foreach (MElement item in GetSamples(samples, Heading3("Code with Diagnostic"), Heading3("Code with Fix")))
+                string beforeHeading = (analyzer.Kind == AnalyzerOptionKind.Disable)
+                    ? "Code"
+                    : "Code with Diagnostic";
+
+                foreach (MElement item in GetSamples(samples, Heading3(beforeHeading), Heading3("Code with Fix")))
                     yield return item;
             }
         }
@@ -189,7 +195,7 @@ namespace Roslynator.CodeGeneration.Markdown
                     TableRow("Severity", (analyzer.IsEnabledByDefault) ? analyzer.DefaultSeverity : "None"),
                     (!string.IsNullOrEmpty(analyzer.MinLanguageVersion)) ? TableRow("Minimal Language Version", analyzer.MinLanguageVersion) : null),
                 CreateSummary(),
-                GetAnalyzerSamples(analyzer.Samples),
+                GetAnalyzerSamples(analyzer),
                 CreateOptions(analyzer),
                 CreateRemarks(analyzer.Remarks),
                 CreateAppliesTo(appliesTo),
