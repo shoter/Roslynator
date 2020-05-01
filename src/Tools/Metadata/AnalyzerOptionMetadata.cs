@@ -14,7 +14,6 @@ namespace Roslynator.Metadata
             string id,
             AnalyzerOptionKind kind,
             string title,
-            string messageFormat,
             bool isEnabledByDefault,
             bool supportsFadeOut,
             string summary,
@@ -25,7 +24,6 @@ namespace Roslynator.Metadata
             Id = id;
             Kind = kind;
             Title = title;
-            MessageFormat = messageFormat;
             IsEnabledByDefault = isEnabledByDefault;
             SupportsFadeOut = supportsFadeOut;
             Summary = summary;
@@ -39,7 +37,7 @@ namespace Roslynator.Metadata
                 id: parent.Id + Id,
                 identifier: Identifier,
                 title: Title,
-                messageFormat: MessageFormat,
+                messageFormat: Title,
                 category: "AnalyzerOption",
                 defaultSeverity: parent.DefaultSeverity,
                 isEnabledByDefault: IsEnabledByDefault,
@@ -52,7 +50,8 @@ namespace Roslynator.Metadata
                 samples: Samples,
                 links: null,
                 options: null,
-                kind: Kind);
+                kind: Kind,
+                parent: parent);
         }
 
         public string Identifier { get; }
@@ -62,8 +61,6 @@ namespace Roslynator.Metadata
         public AnalyzerOptionKind Kind { get; }
 
         public string Title { get; }
-
-        public string MessageFormat { get; }
 
         public bool IsEnabledByDefault { get; }
 

@@ -720,7 +720,6 @@ if (f)
       <Option Identifier="RemoveEmptyLineBetweenClosingBraceAndSwitchSection">
         <Id>a</Id>
         <Title>Remove empty line between closing brace and switch section.</Title>
-        <MessageFormat>Remove empty line.</MessageFormat>
         <Kind>Enable</Kind>
         <Samples>
           <Sample>
@@ -1018,7 +1017,7 @@ if (!f)
   <Analyzer Identifier="ParenthesizeConditionOfConditionalExpression">
     <Id>RCS1051</Id>
     <Title>Parenthesize condition of conditional expression.</Title>
-    <MessageFormat>{0}</MessageFormat>
+    <MessageFormat>{0} condition of conditional expression.</MessageFormat>
     <Category>Style</Category>
     <DefaultSeverity>Info</DefaultSeverity>
     <IsEnabledByDefault>false</IsEnabledByDefault>
@@ -1032,7 +1031,6 @@ if (!f)
       <Option Identifier="RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken">
         <Id>a</Id>
         <Title>Remove parentheses from condition of conditional expression (when condition is a single token).</Title>
-        <MessageFormat>Remove parentheses from condition.</MessageFormat>
         <Kind>Change</Kind>
         <Samples>
           <Sample>
@@ -5188,7 +5186,7 @@ public class C
       </Sample>
     </Samples>
     <Options>
-      <Option Identifier="UseElementAccess_ExceptWhenExpressionIsInvocation">
+      <Option Identifier="UseElementAccessExceptWhenExpressionIsInvocation">
         <Title>Use element access except when expression is invocation.</Title>
         <Id>a</Id>
         <Kind>Disable</Kind>

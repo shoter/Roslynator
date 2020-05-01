@@ -67,7 +67,8 @@ namespace Roslynator.Metadata
                     samples: samples,
                     links: links,
                     options: options,
-                    kind: AnalyzerOptionKind.None);
+                    kind: AnalyzerOptionKind.None,
+                    parent: null);
             }
         }
 
@@ -147,7 +148,6 @@ namespace Roslynator.Metadata
             string identifier = element.Attribute("Identifier").Value;
             string id = element.Element("Id").Value;
             var kind = (AnalyzerOptionKind)Enum.Parse(typeof(AnalyzerOptionKind), element.Element("Kind").Value);
-            string messageFormat = element.Element("MessageFormat")?.Value ?? title;
             bool isEnabledByDefault = element.ElementValueAsBooleanOrDefault("IsEnabledByDefault");
             bool supportsFadeOut = element.ElementValueAsBooleanOrDefault("SupportsFadeOut");
             string summary = element.Element("Summary")?.Value.NormalizeNewLine();
@@ -159,7 +159,6 @@ namespace Roslynator.Metadata
                 id: id,
                 kind: kind,
                 title: title,
-                messageFormat: messageFormat,
                 isEnabledByDefault: isEnabledByDefault,
                 supportsFadeOut: supportsFadeOut,
                 summary: summary,

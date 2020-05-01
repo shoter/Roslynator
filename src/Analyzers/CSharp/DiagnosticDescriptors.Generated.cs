@@ -439,11 +439,11 @@ namespace Roslynator.CSharp
         public static readonly DiagnosticDescriptor RemoveEmptyLineBetweenClosingBraceAndSwitchSection = Factory.Create(
             id:                 DiagnosticIdentifiers.RemoveEmptyLineBetweenClosingBraceAndSwitchSection, 
             title:              "Remove empty line between closing brace and switch section.", 
-            messageFormat:      "Remove empty line.", 
+            messageFormat:      "Remove empty line between closing brace and switch section.", 
             category:           DiagnosticCategories.AnalyzerOption, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 
-            description:        null, 
+            description:        "This analyzer modifies behavior of analyzer RCS1036. It requires RCS1036 to be enabled.", 
             helpLinkUri:        DiagnosticIdentifiers.RemoveEmptyLineBetweenClosingBraceAndSwitchSection, 
             customTags:         Array.Empty<string>());
 
@@ -625,7 +625,7 @@ namespace Roslynator.CSharp
         public static readonly DiagnosticDescriptor ParenthesizeConditionOfConditionalExpression = Factory.Create(
             id:                 DiagnosticIdentifiers.ParenthesizeConditionOfConditionalExpression, 
             title:              "Parenthesize condition of conditional expression.", 
-            messageFormat:      "{0}", 
+            messageFormat:      "{0} condition of conditional expression.", 
             category:           DiagnosticCategories.Style, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 
@@ -637,11 +637,11 @@ namespace Roslynator.CSharp
         public static readonly DiagnosticDescriptor RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken = Factory.Create(
             id:                 DiagnosticIdentifiers.RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken, 
             title:              "Remove parentheses from condition of conditional expression (when condition is a single token).", 
-            messageFormat:      "Remove parentheses from condition.", 
+            messageFormat:      "Remove parentheses from condition of conditional expression (when condition is a single token).", 
             category:           DiagnosticCategories.AnalyzerOption, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 
-            description:        null, 
+            description:        "This analyzer modifies behavior of analyzer RCS1051. It requires RCS1051 to be enabled.", 
             helpLinkUri:        DiagnosticIdentifiers.RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken, 
             customTags:         Array.Empty<string>());
 
@@ -2728,15 +2728,15 @@ namespace Roslynator.CSharp
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS1246a</summary>
-        public static readonly DiagnosticDescriptor UseElementAccess_ExceptWhenExpressionIsInvocation = Factory.Create(
-            id:                 DiagnosticIdentifiers.UseElementAccess_ExceptWhenExpressionIsInvocation, 
+        public static readonly DiagnosticDescriptor UseElementAccessExceptWhenExpressionIsInvocation = Factory.Create(
+            id:                 DiagnosticIdentifiers.UseElementAccessExceptWhenExpressionIsInvocation, 
             title:              "Use element access except when expression is invocation.", 
             messageFormat:      "Use element access except when expression is invocation.", 
             category:           DiagnosticCategories.AnalyzerOption, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 
-            description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.UseElementAccess_ExceptWhenExpressionIsInvocation, 
+            description:        "This analyzer modifies behavior of analyzer RCS1246. It requires RCS1246 to be enabled.", 
+            helpLinkUri:        DiagnosticIdentifiers.UseElementAccessExceptWhenExpressionIsInvocation, 
             customTags:         Array.Empty<string>());
 
     }

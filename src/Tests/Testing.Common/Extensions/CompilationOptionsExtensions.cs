@@ -9,11 +9,21 @@ namespace Roslynator
     {
         public static CompilationOptions EnsureEnabled(this CompilationOptions compilationOptions, DiagnosticDescriptor descriptor)
         {
+            return SetSeverity(compilationOptions, descriptor, descriptor.DefaultSeverity.ToReportDiagnostic());
+        }
+
+        public static CompilationOptions EnsureSuppressed(this CompilationOptions compilationOptions, DiagnosticDescriptor descriptor)
+        {
+            return SetSeverity(compilationOptions, descriptor, ReportDiagnostic.Suppress);
+        }
+
+        private static CompilationOptions SetSeverity(this CompilationOptions compilationOptions, DiagnosticDescriptor descriptor, ReportDiagnostic reportDiagnostic)
+        {
             ImmutableDictionary<string, ReportDiagnostic> specificDiagnosticOptions = compilationOptions.SpecificDiagnosticOptions;
 
             specificDiagnosticOptions = specificDiagnosticOptions.SetItem(
                 descriptor.Id,
-                descriptor.DefaultSeverity.ToReportDiagnostic());
+                reportDiagnostic);
 
             return compilationOptions.WithSpecificDiagnosticOptions(specificDiagnosticOptions);
         }

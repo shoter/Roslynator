@@ -13,12 +13,7 @@ namespace Roslynator.CSharp.Analysis
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
-            get
-            {
-                return ImmutableArray.Create(
-                    DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression,
-                    DiagnosticDescriptors.RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken);
-            }
+            get { return ImmutableArray.Create(DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression); }
         }
 
         public override void Initialize(AnalysisContext context)
@@ -53,22 +48,23 @@ namespace Roslynator.CSharp.Analysis
                     if (!expression.IsMissing
                         && CSharpFacts.IsSingleTokenExpression(expression.Kind()))
                     {
-                        DiagnosticHelpers.ReportDiagnostic(
-                            context,
-                            DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression,
-                            condition,
-                            messageArgs: DiagnosticDescriptors.RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken.MessageFormat);
+                        ReportDiagnostic("Remove parentheses from");
                     }
                 }
             }
             else if (!CSharpFacts.IsSingleTokenExpression(kind)
                 || context.IsAnalyzerSuppressed(DiagnosticDescriptors.RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken))
             {
+                ReportDiagnostic("Parenthesize");
+            }
+
+            void ReportDiagnostic(params string[] messageArgs)
+            {
                 DiagnosticHelpers.ReportDiagnostic(
                     context,
                     DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression,
                     condition,
-                    messageArgs: DiagnosticDescriptors.ParenthesizeConditionOfConditionalExpression.Title);
+                    messageArgs: messageArgs);
             }
         }
     }
