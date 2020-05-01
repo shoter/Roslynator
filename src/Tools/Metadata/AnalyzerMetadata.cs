@@ -4,11 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 
 namespace Roslynator.Metadata
 {
     public class AnalyzerMetadata
     {
+        private IReadOnlyList<AnalyzerMetadata> _optionAnalyzers;
+
         public AnalyzerMetadata(
             string id,
             string identifier,
@@ -47,6 +50,9 @@ namespace Roslynator.Metadata
             Options = new ReadOnlyCollection<AnalyzerOptionMetadata>(options?.ToArray() ?? Array.Empty<AnalyzerOptionMetadata>());
             Kind = kind;
             Parent = parent;
+
+            if (Parent != null)
+                _optionAnalyzers = new ReadOnlyCollection<AnalyzerMetadata>(new List<AnalyzerMetadata>());
         }
 
         public string Id { get; }
@@ -80,6 +86,22 @@ namespace Roslynator.Metadata
         public IReadOnlyList<LinkMetadata> Links { get; }
 
         public IReadOnlyList<AnalyzerOptionMetadata> Options { get; }
+
+        public IReadOnlyList<AnalyzerMetadata> OptionAnalyzers
+        {
+            get
+            {
+                if (_optionAnalyzers == null)
+                {
+                    Interlocked.CompareExchange(
+                        ref _optionAnalyzers,
+                        new ReadOnlyCollection<AnalyzerMetadata>(Options.Select(f => f.CreateAnalyzerMetadata(this)).ToList()),
+                        null);
+                }
+
+                return _optionAnalyzers;
+            }
+        }
 
         public AnalyzerOptionKind Kind { get; }
 

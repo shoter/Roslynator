@@ -66,10 +66,8 @@ namespace Roslynator.CodeGeneration.CSharp
                             ArgumentList(Argument(IdentifierName(identifier))))).AddObsoleteAttributeIf(analyzer.IsObsolete, error: true);
                 }
 
-                foreach (AnalyzerOptionMetadata option in analyzer.Options)
+                foreach (AnalyzerMetadata optionAnalyzer in analyzer.OptionAnalyzers)
                 {
-                    AnalyzerMetadata optionAnalyzer = option.CreateAnalyzerMetadata(analyzer);
-
                     yield return CreateMember(optionAnalyzer, identifiersClassName);
                 }
             }

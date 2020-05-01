@@ -7,9 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.MSBuild;
 using Roslynator.CodeGeneration.Markdown;
 using Roslynator.Metadata;
 using Roslynator.Utilities;
@@ -81,20 +79,11 @@ namespace Roslynator.CodeGeneration
                 MetadataFile.SaveSourceFiles(sourceFiles, @"..\SourceFiles.xml");
             }
 #endif
-            foreach (AnalyzerMetadata analyzer in codeAnalysisAnalyzers)
-            {
-                WriteAnalyzerMarkdown(analyzer, new (string, string)[] { ("Roslynator.CodeAnalysis.Analyzers", "https://www.nuget.org/packages/Roslynator.CodeAnalysis.Analyzers") });
-            }
+            WriteAnalyzerMarkdowns(codeAnalysisAnalyzers, new (string, string)[] { ("Roslynator.CodeAnalysis.Analyzers", "https://www.nuget.org/packages/Roslynator.CodeAnalysis.Analyzers") });
 
-            foreach (AnalyzerMetadata analyzer in formattingAnalyzers)
-            {
-                WriteAnalyzerMarkdown(analyzer, new (string, string)[] { ("Roslynator.Formatting.Analyzers", "https://www.nuget.org/packages/Roslynator.Formatting.Analyzers") });
-            }
+            WriteAnalyzerMarkdowns(formattingAnalyzers, new (string, string)[] { ("Roslynator.Formatting.Analyzers", "https://www.nuget.org/packages/Roslynator.Formatting.Analyzers") });
 
-            foreach (AnalyzerMetadata analyzer in analyzers)
-            {
-                WriteAnalyzerMarkdown(analyzer);
-            }
+            WriteAnalyzerMarkdowns(analyzers);
 
             foreach (RefactoringMetadata refactoring in refactorings)
             {
@@ -150,6 +139,19 @@ namespace Roslynator.CodeGeneration
                 }
             }
 
+            void WriteAnalyzerMarkdowns(IEnumerable<AnalyzerMetadata> analyzers, IEnumerable<(string title, string url)> appliesTo = null)
+            {
+                foreach (AnalyzerMetadata analyzer in analyzers)
+                {
+                    WriteAnalyzerMarkdown(analyzer, appliesTo);
+                }
+
+                foreach (AnalyzerMetadata analyzer in analyzers.SelectMany(a => a.OptionAnalyzers))
+                {
+                    WriteAnalyzerMarkdown(analyzer, appliesTo);
+                }
+            }
+
             void WriteAnalyzerMarkdown(AnalyzerMetadata analyzer, IEnumerable<(string title, string url)> appliesTo = null)
             {
                 WriteAllText(
@@ -157,10 +159,8 @@ namespace Roslynator.CodeGeneration
                     MarkdownGenerator.CreateAnalyzerMarkdown(analyzer, appliesTo),
                     fileMustExists: false);
 
-                foreach (AnalyzerOptionMetadata option in analyzer.Options)
+                foreach (AnalyzerMetadata optionAnalyzer in analyzer.OptionAnalyzers)
                 {
-                    AnalyzerMetadata optionAnalyzer = option.CreateAnalyzerMetadata(analyzer);
-
                     WriteAllText(
                         $@"..\docs\analyzers\{optionAnalyzer.Id}.md",
                         MarkdownGenerator.CreateAnalyzerMarkdown(optionAnalyzer),

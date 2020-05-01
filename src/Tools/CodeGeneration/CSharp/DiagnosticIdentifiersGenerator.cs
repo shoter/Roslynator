@@ -39,11 +39,9 @@ namespace Roslynator.CodeGeneration.CSharp
 
             yield return CreateMember(id, identifier, analyzer.IsObsolete);
 
-            foreach (AnalyzerOptionMetadata option in analyzer.Options.OrderBy(f => f.Identifier))
+            foreach (AnalyzerMetadata optionAnalyzer in analyzer.OptionAnalyzers.OrderBy(f => f.Identifier))
             {
-                AnalyzerMetadata optionAnalyzer = option.CreateAnalyzerMetadata(analyzer);
-
-                yield return CreateMember(optionAnalyzer.Id, optionAnalyzer.Identifier, option.IsObsolete);
+                yield return CreateMember(optionAnalyzer.Id, optionAnalyzer.Identifier, optionAnalyzer.IsObsolete);
             }
         }
 

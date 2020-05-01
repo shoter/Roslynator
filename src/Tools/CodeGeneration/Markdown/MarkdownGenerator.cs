@@ -188,7 +188,7 @@ namespace Roslynator.CodeGeneration.Markdown
                     TableRow("Category", analyzer.Category),
                     TableRow("Severity", (analyzer.IsEnabledByDefault) ? analyzer.DefaultSeverity : "None"),
                     (!string.IsNullOrEmpty(analyzer.MinLanguageVersion)) ? TableRow("Minimal Language Version", analyzer.MinLanguageVersion) : null),
-                CreateSummary(analyzer.Summary),
+                CreateSummary(),
                 GetAnalyzerSamples(analyzer.Samples),
                 CreateOptions(analyzer),
                 CreateRemarks(analyzer.Remarks),
@@ -200,6 +200,25 @@ namespace Roslynator.CodeGeneration.Markdown
             document.AddFootnote();
 
             return document.ToString(format);
+
+            IEnumerable<MElement> CreateSummary()
+            {
+                if (string.IsNullOrEmpty(analyzer.Summary)
+                    && analyzer.Parent != null)
+                {
+                    yield return Inline(
+                        "This analyzer modifies behavior of analyzer ",
+                        Link(analyzer.Parent.Id, analyzer.Parent.Id + ".md"),
+                        ". It requires ",
+                        Link(analyzer.Parent.Id, analyzer.Parent.Id + ".md"),
+                        " to be enabled.");
+                }
+                else
+                {
+                    foreach (MElement element in MarkdownGenerator.CreateSummary(analyzer.Summary))
+                        yield return element;
+                }
+            }
         }
 
         private static IEnumerable<MElement> CreateAppliesTo(IEnumerable<(string title, string url)> appliesTo)
@@ -344,7 +363,7 @@ namespace Roslynator.CodeGeneration.Markdown
 
         private static IEnumerable<MElement> CreateOptions(AnalyzerMetadata analyzer)
         {
-            using (IEnumerator<AnalyzerOptionMetadata> en = analyzer.Options.GetEnumerator())
+            using (IEnumerator<AnalyzerMetadata> en = analyzer.OptionAnalyzers.GetEnumerator())
             {
                 if (en.MoveNext())
                 {
@@ -352,9 +371,9 @@ namespace Roslynator.CodeGeneration.Markdown
 
                     do
                     {
-                        string id = $"{analyzer.Id}_{en.Current.Identifier}";
+                        string id = en.Current.Id;
 
-                        yield return BulletItem(Link(id, $"{id}.md"));
+                        yield return BulletItem(Link(id, $"{id}.md"), " - ", en.Current.Title);
 
                     } while (en.MoveNext());
                 }
