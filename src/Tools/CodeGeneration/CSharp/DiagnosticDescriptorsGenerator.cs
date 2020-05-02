@@ -105,7 +105,7 @@ namespace Roslynator.CodeGeneration.CSharp
                             BooleanLiteralExpression(analyzer.IsEnabledByDefault)),
                         Argument(
                             NameColon("description"),
-                            (analyzer.Parent == null) ? NullLiteralExpression() : StringLiteralExpression($"This analyzer modifies behavior of analyzer {analyzer.Parent.Id}. It requires {analyzer.Parent.Id} to be enabled.")),
+                            NullLiteralExpression()),
                         Argument(
                             NameColon("helpLinkUri"),
                             SimpleMemberAccessExpression(IdentifierName(identifiersClassName), IdentifierName(analyzer.Identifier))),

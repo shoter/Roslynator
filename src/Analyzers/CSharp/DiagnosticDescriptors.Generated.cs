@@ -443,7 +443,7 @@ namespace Roslynator.CSharp
             category:           DiagnosticCategories.AnalyzerOption, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 
-            description:        "This analyzer modifies behavior of analyzer RCS1036. It requires RCS1036 to be enabled.", 
+            description:        null, 
             helpLinkUri:        DiagnosticIdentifiers.RemoveEmptyLineBetweenClosingBraceAndSwitchSection, 
             customTags:         Array.Empty<string>());
 
@@ -641,7 +641,7 @@ namespace Roslynator.CSharp
             category:           DiagnosticCategories.AnalyzerOption, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 
-            description:        "This analyzer modifies behavior of analyzer RCS1051. It requires RCS1051 to be enabled.", 
+            description:        null, 
             helpLinkUri:        DiagnosticIdentifiers.RemoveParenthesesFromConditionOfConditionalExpressionWhenExpressionIsSingleToken, 
             customTags:         Array.Empty<string>());
 
@@ -2735,7 +2735,7 @@ namespace Roslynator.CSharp
             category:           DiagnosticCategories.AnalyzerOption, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 
-            description:        "This analyzer modifies behavior of analyzer RCS1246. It requires RCS1246 to be enabled.", 
+            description:        null, 
             helpLinkUri:        DiagnosticIdentifiers.UseElementAccessExceptWhenExpressionIsInvocation, 
             customTags:         Array.Empty<string>());
 
