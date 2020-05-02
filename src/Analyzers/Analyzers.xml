@@ -911,6 +911,18 @@ catch (Exception ex)
         <After><![CDATA[private string _f;]]></After>
       </Sample>
     </Samples>
+    <Options>
+      <Option Identifier="DoNotRenamePrivateStaticReadOnlyFieldToCamelCaseWithUnderscore">
+        <Title>Do not rename private static read-only field to camel case with underscore.</Title>
+        <Id>a</Id>
+        <Kind>Disable</Kind>
+        <Samples>
+          <Sample>
+            <Before><![CDATA[private static readonly string f;]]></Before>
+          </Sample>
+        </Samples>
+      </Option>
+    </Options>
   </Analyzer>
   <Analyzer Identifier="AsynchronousMethodNameShouldEndWithAsync">
     <Id>RCS1046</Id>

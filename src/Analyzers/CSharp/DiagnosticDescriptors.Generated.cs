@@ -555,6 +555,18 @@ namespace Roslynator.CSharp
             helpLinkUri:        DiagnosticIdentifiers.RenamePrivateFieldAccordingToCamelCaseWithUnderscore, 
             customTags:         Array.Empty<string>());
 
+        /// <summary>RCS1045a</summary>
+        public static readonly DiagnosticDescriptor DoNotRenamePrivateStaticReadOnlyFieldToCamelCaseWithUnderscore = Factory.Create(
+            id:                 DiagnosticIdentifiers.DoNotRenamePrivateStaticReadOnlyFieldToCamelCaseWithUnderscore, 
+            title:              "Do not rename private static read-only field to camel case with underscore.", 
+            messageFormat:      "Do not rename private static read-only field to camel case with underscore.", 
+            category:           DiagnosticCategories.AnalyzerOption, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: false, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.DoNotRenamePrivateStaticReadOnlyFieldToCamelCaseWithUnderscore, 
+            customTags:         Array.Empty<string>());
+
         /// <summary>RCS1046</summary>
         public static readonly DiagnosticDescriptor AsynchronousMethodNameShouldEndWithAsync = Factory.Create(
             id:                 DiagnosticIdentifiers.AsynchronousMethodNameShouldEndWithAsync, 

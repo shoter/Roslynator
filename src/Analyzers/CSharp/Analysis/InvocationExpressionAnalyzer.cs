@@ -453,7 +453,7 @@ namespace Roslynator.CSharp.Analysis
         {
             return !invocationInfo.Expression.IsKind(SyntaxKind.ElementAccessExpression)
                 && (!invocationInfo.Expression.IsKind(SyntaxKind.InvocationExpression)
-                    || context.IsAnalyzerSuppressed(DiagnosticDescriptors.UseElementAccessExceptWhenExpressionIsInvocation));
+                    || context.IsAnalyzerSuppressed(DiagnosticDescriptors.DoNotUseElementAccessWhenExpressionIsInvocation));
         }
     }
 }

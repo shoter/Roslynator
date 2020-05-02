@@ -52,6 +52,7 @@ namespace Roslynator.CSharp
         public const string RemovePartialModifierFromTypeWithSinglePart = "RCS1043";
         public const string RemoveOriginalExceptionFromThrowStatement = "RCS1044";
         public const string RenamePrivateFieldAccordingToCamelCaseWithUnderscore = "RCS1045";
+        public const string DoNotRenamePrivateStaticReadOnlyFieldToCamelCaseWithUnderscore = "RCS1045a";
         public const string AsynchronousMethodNameShouldEndWithAsync = "RCS1046";
         public const string NonAsynchronousMethodNameShouldNotEndWithAsync = "RCS1047";
         public const string UseLambdaExpressionInsteadOfAnonymousMethod = "RCS1048";
