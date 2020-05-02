@@ -8,6 +8,7 @@ using System.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Roslynator.CodeGeneration.CSharp;
 using Roslynator.Metadata;
+using System.Collections.Generic;
 
 namespace Roslynator.CodeGeneration
 {
@@ -145,6 +146,15 @@ namespace Roslynator.CodeGeneration
                 WriteCompilationUnit(
                     Path.Combine(dirPath, $"{identifiersClassName}.Deprecated.Generated.cs"),
                     DiagnosticIdentifiersGenerator.Generate(analyzers, obsolete: true, comparer: comparer, @namespace: @namespace, className: identifiersClassName));
+
+                IEnumerable<string> identifiers = analyzers
+                    .SelectMany(f => f.OptionAnalyzers)
+                    .Select(f => f.Identifier);
+
+                WriteCompilationUnit(
+                    Path.Combine(dirPath, "AnalyzerOptionsAnalyzer.Generated.cs"),
+                    AnalyzerOptionsAnalyzerGenerator.Generate(identifiers, @namespace: @namespace),
+                    fileMustExist: false);
             }
 
             void WriteCompilationUnit(

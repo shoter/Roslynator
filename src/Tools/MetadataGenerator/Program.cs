@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -85,6 +86,8 @@ namespace Roslynator.CodeGeneration
 
             WriteAnalyzerMarkdowns(analyzers);
 
+            DeleteInvalidAnalyzerMarkdowns();
+
             foreach (RefactoringMetadata refactoring in refactorings)
             {
                 WriteAllText(
@@ -165,6 +168,34 @@ namespace Roslynator.CodeGeneration
                         $@"..\docs\analyzers\{optionAnalyzer.Id}.md",
                         MarkdownGenerator.CreateAnalyzerMarkdown(optionAnalyzer),
                         fileMustExists: false);
+                }
+            }
+
+            void DeleteInvalidAnalyzerMarkdowns()
+            {
+                AnalyzerMetadata[] allAnalyzers = analyzers
+                    .Concat(codeAnalysisAnalyzers)
+                    .Concat(formattingAnalyzers)
+                    .ToArray();
+
+                IEnumerable<string> allIds = allAnalyzers
+                    .Concat(allAnalyzers.SelectMany(f => f.OptionAnalyzers))
+                    .Select(f => f.Id);
+
+                string directoryPath = GetPath(@"..\docs\analyzers");
+
+                foreach (string id in Directory.GetFiles(directoryPath, "*.*", SearchOption.TopDirectoryOnly)
+                    .Select(f => Path.GetFileNameWithoutExtension(f))
+                    .Except(allIds))
+                {
+                    if (id == "RCSXXXX")
+                        break;
+
+                    string filePath = Path.Combine(directoryPath, Path.ChangeExtension(id, ".md"));
+
+                    Console.WriteLine($"Delete file '{filePath}'");
+
+                    File.Delete(filePath);
                 }
             }
 
