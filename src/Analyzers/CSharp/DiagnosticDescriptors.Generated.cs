@@ -2728,15 +2728,15 @@ namespace Roslynator.CSharp
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS1246a</summary>
-        public static readonly DiagnosticDescriptor UseElementAccessExceptWhenExpressionIsInvocation = Factory.Create(
-            id:                 DiagnosticIdentifiers.UseElementAccessExceptWhenExpressionIsInvocation, 
-            title:              "Use element access except when expression is invocation.", 
-            messageFormat:      "Use element access except when expression is invocation.", 
+        public static readonly DiagnosticDescriptor DoNotUseElementAccessWhenExpressionIsInvocation = Factory.Create(
+            id:                 DiagnosticIdentifiers.DoNotUseElementAccessWhenExpressionIsInvocation, 
+            title:              "Do not use element access when expression is invocation.", 
+            messageFormat:      "Do not use element access when expression is invocation.", 
             category:           DiagnosticCategories.AnalyzerOption, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 
             description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.UseElementAccessExceptWhenExpressionIsInvocation, 
+            helpLinkUri:        DiagnosticIdentifiers.DoNotUseElementAccessWhenExpressionIsInvocation, 
             customTags:         Array.Empty<string>());
 
     }

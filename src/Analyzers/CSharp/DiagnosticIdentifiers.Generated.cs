@@ -230,6 +230,6 @@ namespace Roslynator.CSharp
         public const string SimplifyDefaultExpression = "RCS1244";
         public const string SimplifyConditionalExpression2 = "RCS1245";
         public const string UseElementAccess = "RCS1246";
-        public const string UseElementAccessExceptWhenExpressionIsInvocation = "RCS1246a";
+        public const string DoNotUseElementAccessWhenExpressionIsInvocation = "RCS1246a";
     }
 }

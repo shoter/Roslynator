@@ -5186,8 +5186,8 @@ public class C
       </Sample>
     </Samples>
     <Options>
-      <Option Identifier="UseElementAccessExceptWhenExpressionIsInvocation">
-        <Title>Use element access except when expression is invocation.</Title>
+      <Option Identifier="DoNotUseElementAccessWhenExpressionIsInvocation">
+        <Title>Do not use element access when expression is invocation.</Title>
         <Id>a</Id>
         <Kind>Disable</Kind>
         <Samples>
