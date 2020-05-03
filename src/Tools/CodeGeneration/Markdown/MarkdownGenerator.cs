@@ -200,7 +200,9 @@ namespace Roslynator.CodeGeneration.Markdown
                 CreateAppliesTo(appliesTo),
                 CreateSeeAlso(
                     analyzer.Links.Select(f => CreateLink(f)),
-                    (analyzer.Options.Count > 0) ? Link("Analyzer Options", "../AnalyzerOptions.md") : null,
+                    (analyzer.Options.Count > 0 || analyzer.Kind != AnalyzerOptionKind.None)
+                        ? Link("Analyzer Options", "../AnalyzerOptions.md")
+                        : null,
                     Link("How to Suppress a Diagnostic", "../HowToConfigureAnalyzers.md#how-to-suppress-a-diagnostic")));
 
             document.AddFootnote();
@@ -213,7 +215,7 @@ namespace Roslynator.CodeGeneration.Markdown
                     && analyzer.Parent != null)
                 {
                     yield return Inline(
-                        "This analyzer modifies behavior of analyzer ",
+                        "This option modifies behavior of analyzer ",
                         Link(analyzer.Parent.Id, analyzer.Parent.Id + ".md"),
                         ". It requires ",
                         Link(analyzer.Parent.Id, analyzer.Parent.Id + ".md"),
