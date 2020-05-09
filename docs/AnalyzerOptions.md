@@ -15,7 +15,7 @@ Analyzer option has following properties:
 
 Analyzer [RCS1051](analyzers/RCS1051.md) suggest to parenthesize each condition of conditional expression.
 
-`x ? y : z` >>> `(x) ? y : z`
+`x ? y : z` &ensp;>&ensp; `(x) ? y : z`
 
 Long after this analyzer was introduced it was [proposed](https://github.com/JosefPihrt/Roslynator/issues/169) to keep condition without parentheses if it is a single token.
 That is reasonable proposal. It could be solved just by adding new analyzer, ID let's say RCS1234.
@@ -24,9 +24,9 @@ But that would be very confusing for the user because no one expects that there 
 Solution to this proposal it to add new "analyzer option" [RCS1051a](analyzers/RCS1051a.md) which changes behavior of RCS1051 in a following manner:
 
 * Parenthesize condition only in cases where expression is not a single token.
-  `x != null ? y : z` >>> `(x != null) ? y : z`
+  * `x != null ? y : z` >>> `(x != null) ? y : z`
 * Remove parentheses from condition if it is a single token.
-  `(x) ? y : z` >>> `x ? y : z`
+  * `(x) ? y : z` >>> `x ? y : z`
 
 ## Types of Analyzer Options
 
