@@ -6,10 +6,10 @@ Each analyzer option is represented by an "analyzer" that is is not real analyze
 
 Analyzer option has following properties:
 
-* it has ID that is derived from its parent analyzer (RCS0000 can have option RCS0000a, RCS0000b etc.)
-* it is displayed in section "Options" in documentation of its parent analyzer.
-* it requires its parent analyzer to be enabled.
-* it is never reported as a diagnostic.
+* It has ID that is derived from its parent analyzer (RCS0000 can have option RCS0000a, RCS0000b etc.).
+* It is displayed in section "Options" in documentation of its parent analyzer.
+* It requires its parent analyzer to be enabled.
+* It is never reported as a diagnostic.
 
 ## Example
 
