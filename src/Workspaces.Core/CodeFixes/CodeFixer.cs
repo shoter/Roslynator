@@ -452,8 +452,6 @@ namespace Roslynator.CodeFixes
                             .Where(f => f.Location.IsInSource && project.GetDocument(f.Location.SourceTree).Id == diagnosticFix.Document.Id)
                             .ToImmutableArray();
 
-                        WriteLine($"    Fix '{PathUtilities.TrimStart(diagnosticFix.Document.FilePath, basePath: baseDirectoryPath)}", Verbosity.Normal);
-
                         if (fixedDiagnostics.Length != diagnostics.Length)
                             diagnosticFixKind = DiagnosticFixKind.PartiallyFixed;
                     }
