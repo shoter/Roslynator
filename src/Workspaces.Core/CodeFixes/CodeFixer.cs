@@ -420,7 +420,7 @@ namespace Roslynator.CodeFixes
         {
             WriteLine($"  Fix {diagnostics.Length} {descriptor.Id} '{descriptor.Title}'", diagnostics[0].Severity.GetColor(), Verbosity.Normal);
 
-            LogHelpers.WriteDiagnostics(diagnostics, baseDirectoryPath: Path.GetDirectoryName(project.FilePath), formatProvider: FormatProvider, indentation: "    ", verbosity: Verbosity.Detailed);
+            string baseDirectoryPath = Path.GetDirectoryName(project.FilePath);
 
             DiagnosticFix diagnosticFix = await DiagnosticFixProvider.GetFixAsync(
                 diagnostics,
@@ -442,11 +442,34 @@ namespace Roslynator.CodeFixes
 
                 if (operations.Length == 1)
                 {
+                    var diagnosticFixKind = DiagnosticFixKind.Success;
+
+                    ImmutableArray<Diagnostic> fixedDiagnostics = diagnostics;
+
+                    if (Options.FixAllScope == FixAllScope.Document)
+                    {
+                        fixedDiagnostics = diagnostics
+                            .Where(f => f.Location.IsInSource && project.GetDocument(f.Location.SourceTree).Id == diagnosticFix.Document.Id)
+                            .ToImmutableArray();
+
+                        WriteLine($"    Fix '{PathUtilities.TrimStart(diagnosticFix.Document.FilePath, basePath: baseDirectoryPath)}", Verbosity.Normal);
+
+                        if (fixedDiagnostics.Length != diagnostics.Length)
+                            diagnosticFixKind = DiagnosticFixKind.PartiallyFixed;
+                    }
+
+                    if (diagnosticFixKind != DiagnosticFixKind.PartiallyFixed
+                        && fixedDiagnostics.Length != 1
+                        && diagnosticFix.FixProvider.GetFixAllProvider() == null)
+                    {
+                        diagnosticFixKind = DiagnosticFixKind.PartiallyFixed;
+                    }
+
+                    LogHelpers.WriteDiagnostics(fixedDiagnostics, baseDirectoryPath: baseDirectoryPath, formatProvider: FormatProvider, indentation: "    ", verbosity: Verbosity.Detailed);
+
                     operations[0].Apply(Workspace, cancellationToken);
 
-                    return (diagnostics.Length != 1 && diagnosticFix.FixProvider.GetFixAllProvider() == null)
-                        ? DiagnosticFixKind.PartiallyFixed
-                        : DiagnosticFixKind.Success;
+                    return diagnosticFixKind;
                 }
                 else if (operations.Length > 1)
                 {
