@@ -324,7 +324,7 @@ namespace Roslynator.CodeFixes
             Project project,
             CancellationToken cancellationToken)
         {
-            ImmutableArray<Diagnostic>.Builder fixedDiagostics = ImmutableArray.CreateBuilder<Diagnostic>();
+            ImmutableArray<Diagnostic>.Builder fixedDiagnostics = ImmutableArray.CreateBuilder<Diagnostic>();
 
             ImmutableArray<Diagnostic> diagnostics = ImmutableArray<Diagnostic>.Empty;
             ImmutableArray<Diagnostic> previousDiagnostics = ImmutableArray<Diagnostic>.Empty;
@@ -389,26 +389,53 @@ namespace Roslynator.CodeFixes
                     break;
                 }
 
-                fixedDiagostics.AddRange(previousDiagnosticsToFix.Except(diagnostics, DiagnosticDeepEqualityComparer.Instance));
+                fixedDiagnostics.AddRange(previousDiagnosticsToFix.Except(diagnostics, DiagnosticDeepEqualityComparer.Instance));
 
                 previousDiagnostics = diagnostics;
 
-                if (Options.BatchSize > 0
-                    && length > Options.BatchSize)
+                if (Options.FixAllScope == FixAllScope.Document)
                 {
-                    diagnostics = ImmutableArray.CreateRange(diagnostics, 0, Options.BatchSize, f => f);
-                }
+                    foreach (IGrouping<SyntaxTree, Diagnostic> grouping in diagnostics
+                        .GroupBy(f => f.Location.SourceTree)
+                        .OrderByDescending(f => f.Count()))
+                    {
+                        IEnumerable<Diagnostic> syntaxTreeDiagnostics = grouping.AsEnumerable();
 
-                fixKind = await FixDiagnosticsAsync(diagnostics, descriptor, fixers, project, cancellationToken).ConfigureAwait(false);
+                        if (Options.BatchSize > 0)
+                            syntaxTreeDiagnostics = syntaxTreeDiagnostics.Take(Options.BatchSize);
+
+                        ImmutableArray<Diagnostic> diagnosticsCandidate = syntaxTreeDiagnostics.ToImmutableArray();
+
+                        DiagnosticFixKind fixKindCandidate = await FixDiagnosticsAsync(diagnosticsCandidate, descriptor, fixers, project, cancellationToken).ConfigureAwait(false);
+
+                        if (fixKindCandidate == DiagnosticFixKind.Success
+                            || fixKindCandidate == DiagnosticFixKind.PartiallyFixed)
+                        {
+                            diagnostics = diagnosticsCandidate;
+                            fixKind = fixKindCandidate;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    if (Options.BatchSize > 0
+                        && length > Options.BatchSize)
+                    {
+                        diagnostics = ImmutableArray.CreateRange(diagnostics, 0, Options.BatchSize, f => f);
+                    }
+
+                    fixKind = await FixDiagnosticsAsync(diagnostics, descriptor, fixers, project, cancellationToken).ConfigureAwait(false);
+                }
 
                 previousDiagnosticsToFix = diagnostics;
 
                 project = CurrentSolution.GetProject(project.Id);
             }
 
-            fixedDiagostics.AddRange(previousDiagnosticsToFix.Except(diagnostics, DiagnosticDeepEqualityComparer.Instance));
+            fixedDiagnostics.AddRange(previousDiagnosticsToFix.Except(diagnostics, DiagnosticDeepEqualityComparer.Instance));
 
-            return new DiagnosticFixResult(fixKind, fixedDiagostics.ToImmutableArray());
+            return new DiagnosticFixResult(fixKind, fixedDiagnostics.ToImmutableArray());
         }
 
         private async Task<DiagnosticFixKind> FixDiagnosticsAsync(
@@ -420,7 +447,7 @@ namespace Roslynator.CodeFixes
         {
             WriteLine($"  Fix {diagnostics.Length} {descriptor.Id} '{descriptor.Title}'", diagnostics[0].Severity.GetColor(), Verbosity.Normal);
 
-            string baseDirectoryPath = Path.GetDirectoryName(project.FilePath);
+            LogHelpers.WriteDiagnostics(diagnostics, baseDirectoryPath: Path.GetDirectoryName(project.FilePath), formatProvider: FormatProvider, indentation: "    ", verbosity: Verbosity.Detailed);
 
             DiagnosticFix diagnosticFix = await DiagnosticFixProvider.GetFixAsync(
                 diagnostics,
@@ -442,32 +469,11 @@ namespace Roslynator.CodeFixes
 
                 if (operations.Length == 1)
                 {
-                    var diagnosticFixKind = DiagnosticFixKind.Success;
-
-                    ImmutableArray<Diagnostic> fixedDiagnostics = diagnostics;
-
-                    if (Options.FixAllScope == FixAllScope.Document)
-                    {
-                        fixedDiagnostics = diagnostics
-                            .Where(f => f.Location.IsInSource && project.GetDocument(f.Location.SourceTree).Id == diagnosticFix.Document.Id)
-                            .ToImmutableArray();
-
-                        if (fixedDiagnostics.Length != diagnostics.Length)
-                            diagnosticFixKind = DiagnosticFixKind.PartiallyFixed;
-                    }
-
-                    if (diagnosticFixKind != DiagnosticFixKind.PartiallyFixed
-                        && fixedDiagnostics.Length != 1
-                        && diagnosticFix.FixProvider.GetFixAllProvider() == null)
-                    {
-                        diagnosticFixKind = DiagnosticFixKind.PartiallyFixed;
-                    }
-
-                    LogHelpers.WriteDiagnostics(fixedDiagnostics, baseDirectoryPath: baseDirectoryPath, formatProvider: FormatProvider, indentation: "    ", verbosity: Verbosity.Detailed);
-
                     operations[0].Apply(Workspace, cancellationToken);
 
-                    return diagnosticFixKind;
+                    return (diagnostics.Length != 1 && diagnosticFix.FixProvider.GetFixAllProvider() == null)
+                        ? DiagnosticFixKind.PartiallyFixed
+                        : DiagnosticFixKind.Success;
                 }
                 else if (operations.Length > 1)
                 {
