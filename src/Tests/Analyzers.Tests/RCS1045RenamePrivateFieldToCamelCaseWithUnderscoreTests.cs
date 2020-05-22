@@ -101,7 +101,7 @@ class C
 ");
         }
 
-        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.RenamePrivateFieldAccordingToCamelCaseWithUnderscore)]
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.RenamePrivateFieldToCamelCaseWithUnderscore)]
         public async Task TestNoDiagnostic_StaticReadOnly()
         {
             await VerifyNoDiagnosticAsync(@"
@@ -112,7 +112,7 @@ class C
 ", options: Options.WithEnabled(DiagnosticDescriptors.DoNotRenamePrivateStaticReadOnlyFieldToCamelCaseWithUnderscore));
         }
 
-        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.RenamePrivateFieldAccordingToCamelCaseWithUnderscore)]
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.RenamePrivateFieldToCamelCaseWithUnderscore)]
         public async Task TestNoDiagnostic_StaticPrefix()
         {
             await VerifyNoDiagnosticAsync(@"
