@@ -225,18 +225,6 @@ namespace Roslynator.Formatting.CSharp
             helpLinkUri:        DiagnosticIdentifiers.AddNewLineAfterAttributeList, 
             customTags:         Array.Empty<string>());
 
-        /// <summary>RCS0017</summary>
-        public static readonly DiagnosticDescriptor AddNewLineAfterBinaryOperatorInsteadOfBeforeIt = Factory.Create(
-            id:                 DiagnosticIdentifiers.AddNewLineAfterBinaryOperatorInsteadOfBeforeIt, 
-            title:              "Add newline after binary operator instead of before it.", 
-            messageFormat:      "Add newline after binary operator instead of before it.", 
-            category:           DiagnosticCategories.Formatting, 
-            defaultSeverity:    DiagnosticSeverity.Info, 
-            isEnabledByDefault: false, 
-            description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.AddNewLineAfterBinaryOperatorInsteadOfBeforeIt, 
-            customTags:         Array.Empty<string>());
-
         /// <summary>RCS0018</summary>
         public static readonly DiagnosticDescriptor AddNewLineAfterConditionalOperatorInsteadOfBeforeIt = Factory.Create(
             id:                 DiagnosticIdentifiers.AddNewLineAfterConditionalOperatorInsteadOfBeforeIt, 
@@ -334,15 +322,27 @@ namespace Roslynator.Formatting.CSharp
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS0027</summary>
-        public static readonly DiagnosticDescriptor AddNewLineBeforeBinaryOperatorInsteadOfAfterIt = Factory.Create(
-            id:                 DiagnosticIdentifiers.AddNewLineBeforeBinaryOperatorInsteadOfAfterIt, 
-            title:              "Add newline before binary operator instead of after it.", 
-            messageFormat:      "Add newline before binary operator instead of after it.", 
+        public static readonly DiagnosticDescriptor AddNewLineBeforeBinaryOperatorInsteadOfAfterItOrViceVersa = Factory.Create(
+            id:                 DiagnosticIdentifiers.AddNewLineBeforeBinaryOperatorInsteadOfAfterItOrViceVersa, 
+            title:              "Add newline before binary operator instead of after it (or vice versa).", 
+            messageFormat:      "Add newline {0} binary operator instead of {1} it.", 
             category:           DiagnosticCategories.Formatting, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 
             description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.AddNewLineBeforeBinaryOperatorInsteadOfAfterIt, 
+            helpLinkUri:        DiagnosticIdentifiers.AddNewLineBeforeBinaryOperatorInsteadOfAfterItOrViceVersa, 
+            customTags:         Array.Empty<string>());
+
+        /// <summary>RCS0027i</summary>
+        public static readonly DiagnosticDescriptor AddNewLineAfterBinaryOperatorInsteadOfBeforeIt = Factory.Create(
+            id:                 DiagnosticIdentifiers.AddNewLineAfterBinaryOperatorInsteadOfBeforeIt, 
+            title:              "Add newline after binary operator instead of before it.", 
+            messageFormat:      "Add newline after binary operator instead of before it.", 
+            category:           DiagnosticCategories.AnalyzerOption, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: false, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.AddNewLineAfterBinaryOperatorInsteadOfBeforeIt, 
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS0028</summary>

@@ -26,7 +26,6 @@ namespace Roslynator.Formatting.CSharp
         public const string AddEmptyLineBetweenUsingDirectivesWithDifferentRootNamespaceOrViceVersa = "RCS0015";
         public const string RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace = "RCS0015i";
         public const string AddNewLineAfterAttributeList = "RCS0016";
-        public const string AddNewLineAfterBinaryOperatorInsteadOfBeforeIt = "RCS0017";
         public const string AddNewLineAfterConditionalOperatorInsteadOfBeforeIt = "RCS0018";
         public const string AddNewLineAfterExpressionBodyArrowInsteadOfBeforeIt = "RCS0019";
         public const string AddNewLineAfterOpeningBraceOfAccessor = "RCS0020";
@@ -35,7 +34,8 @@ namespace Roslynator.Formatting.CSharp
         public const string AddNewLineAfterOpeningBraceOfTypeDeclaration = "RCS0023";
         public const string AddNewLineAfterSwitchLabel = "RCS0024";
         public const string AddNewLineBeforeAccessorOfFullProperty = "RCS0025";
-        public const string AddNewLineBeforeBinaryOperatorInsteadOfAfterIt = "RCS0027";
+        public const string AddNewLineBeforeBinaryOperatorInsteadOfAfterItOrViceVersa = "RCS0027";
+        public const string AddNewLineAfterBinaryOperatorInsteadOfBeforeIt = "RCS0027i";
         public const string AddNewLineBeforeConditionalOperatorInsteadOfAfterIt = "RCS0028";
         public const string AddNewLineBeforeConstructorInitializer = "RCS0029";
         public const string AddNewLineBeforeEmbeddedStatement = "RCS0030";

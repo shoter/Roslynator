@@ -486,7 +486,7 @@ namespace N
       </Sample>
     </Samples>
   </Analyzer>
-  <Analyzer Identifier="AddNewLineAfterBinaryOperatorInsteadOfBeforeIt">
+  <Analyzer Identifier="AddNewLineAfterBinaryOperatorInsteadOfBeforeIt2" IsObsolete="true">
     <Id>RCS0017</Id>
     <Title>Add newline after binary operator instead of before it.</Title>
     <Category>Formatting</Category>
@@ -654,9 +654,10 @@ namespace N
     </Samples>
     <Remarks>This rule was derived from [RCS1024](RCS1024.md).</Remarks>
   </Analyzer>
-  <Analyzer Identifier="AddNewLineBeforeBinaryOperatorInsteadOfAfterIt">
+  <Analyzer Identifier="AddNewLineBeforeBinaryOperatorInsteadOfAfterItOrViceVersa">
     <Id>RCS0027</Id>
-    <Title>Add newline before binary operator instead of after it.</Title>
+    <Title>Add newline before binary operator instead of after it (or vice versa).</Title>
+    <MessageFormat>Add newline {0} binary operator instead of {1} it.</MessageFormat>
     <Category>Formatting</Category>
     <DefaultSeverity>Info</DefaultSeverity>
     <IsEnabledByDefault>false</IsEnabledByDefault>
@@ -674,6 +675,27 @@ namespace N
 }]]></After>
       </Sample>
     </Samples>
+    <Options>
+      <Option Identifier="AddNewLineAfterBinaryOperatorInsteadOfBeforeIt">
+        <Title>Add newline after binary operator instead of before it.</Title>
+        <Id>i</Id>
+        <Kind>Invert</Kind>
+        <Samples>
+          <Sample>
+            <Before><![CDATA[if (x
+    && y // [|Id|]
+    && z)
+{
+}]]></Before>
+            <After><![CDATA[if (x &&
+    y &&
+    z)
+{
+}]]></After>
+          </Sample>
+        </Samples>
+      </Option>
+    </Options>
     <Remarks>This rule was originally introduced as [RCS1029](RCS1029.md)</Remarks>
   </Analyzer>
   <Analyzer Identifier="AddNewLineBeforeConditionalOperatorInsteadOfAfterIt">

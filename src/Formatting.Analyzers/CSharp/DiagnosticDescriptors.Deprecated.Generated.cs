@@ -10,6 +10,18 @@ namespace Roslynator.Formatting.CSharp
     public static partial class DiagnosticDescriptors
     {
         [Obsolete("", error: true)]
+        internal static readonly DiagnosticDescriptor AddNewLineAfterBinaryOperatorInsteadOfBeforeIt2 = Factory.Create(
+            id:                 DiagnosticIdentifiers.AddNewLineAfterBinaryOperatorInsteadOfBeforeIt2, 
+            title:              "Add newline after binary operator instead of before it.", 
+            messageFormat:      "Add newline after binary operator instead of before it.", 
+            category:           DiagnosticCategories.Formatting, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: false, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.AddNewLineAfterBinaryOperatorInsteadOfBeforeIt2, 
+            customTags:         Array.Empty<string>());
+
+        [Obsolete("", error: true)]
         internal static readonly DiagnosticDescriptor RemoveEmptyLineBetweenSingleLineAccessors2 = Factory.Create(
             id:                 DiagnosticIdentifiers.RemoveEmptyLineBetweenSingleLineAccessors2, 
             title:              "Remove empty line between single-line accessors.", 
