@@ -960,7 +960,7 @@ namespace N
       </Sample>
     </Samples>
   </Analyzer>
-  <Analyzer Identifier="RemoveNewLineBetweenClosingBraceAndWhileKeyword">
+  <Analyzer Identifier="RemoveNewLineBetweenClosingBraceAndWhileKeyword2" IsObsolete="true">
     <Id>RCS0040</Id>
     <Title>Remove newline between closing brace and 'while' keyword.</Title>
     <Category>Formatting</Category>
@@ -1173,9 +1173,10 @@ namespace Foo
       </Sample>
     </Samples>
   </Analyzer>
-  <Analyzer Identifier="AddNewLineBetweenClosingBraceAndWhileKeyword">
+  <Analyzer Identifier="AddNewLineBetweenClosingBraceAndWhileKeywordOrViceVersa">
     <Id>RCS0051</Id>
-    <Title>Add newline between closing brace and 'while' keyword.</Title>
+    <Title>Add newline between closing brace and 'while' keyword (or vice versa).</Title>
+    <MessageFormat>{0} newline between closing brace and 'while' keyword.</MessageFormat>
     <Category>Formatting</Category>
     <DefaultSeverity>Info</DefaultSeverity>
     <IsEnabledByDefault>false</IsEnabledByDefault>
@@ -1192,5 +1193,25 @@ namespace Foo
 while (x);]]></After>
       </Sample>
     </Samples>
+    <Options>
+      <Option Identifier="RemoveNewLineBetweenClosingBraceAndWhileKeyword">
+        <Title>Remove newline between closing brace and 'while' keyword.</Title>
+        <Id>i</Id>
+        <Kind>Invert</Kind>
+        <Samples>
+          <Sample>
+            <Before><![CDATA[do
+{
+    Foo();
+} // [|Id|]
+while (x);]]></Before>
+            <After><![CDATA[do
+{
+    Foo();
+} while (x);]]></After>
+          </Sample>
+        </Samples>
+      </Option>
+    </Options>
   </Analyzer>
 </Analyzers>

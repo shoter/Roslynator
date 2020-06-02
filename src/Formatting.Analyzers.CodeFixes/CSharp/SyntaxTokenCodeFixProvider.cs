@@ -28,7 +28,7 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
                     DiagnosticIdentifiers.AddNewLineBeforeConditionalOperatorInsteadOfAfterItOrViceVersa,
                     DiagnosticIdentifiers.AddNewLineBeforeExpressionBodyArrowInsteadOfAfterItOrViceVersa,
                     DiagnosticIdentifiers.AddNewLineAfterAttributeList,
-                    DiagnosticIdentifiers.AddNewLineBetweenClosingBraceAndWhileKeyword);
+                    DiagnosticIdentifiers.AddNewLineBetweenClosingBraceAndWhileKeywordOrViceVersa);
             }
         }
 
@@ -148,14 +148,27 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
                         context.RegisterCodeFix(codeAction, diagnostic);
                         break;
                     }
-                case DiagnosticIdentifiers.AddNewLineBetweenClosingBraceAndWhileKeyword:
+                case DiagnosticIdentifiers.AddNewLineBetweenClosingBraceAndWhileKeywordOrViceVersa:
                     {
-                        CodeAction codeAction = CodeAction.Create(
-                            CodeFixTitles.AddNewLine,
-                            ct => CodeFixHelpers.AddNewLineBeforeAsync(document, token, ct),
-                            GetEquivalenceKey(diagnostic));
+                        if (DiagnosticProperties.ContainsInvert(diagnostic.Properties))
+                        {
+                            CodeAction codeAction = CodeAction.Create(
+                                CodeFixTitles.RemoveNewLine,
+                                ct => CodeFixHelpers.ReplaceTriviaBetweenAsync(document, token, token.GetNextToken(), cancellationToken: ct),
+                                GetEquivalenceKey(diagnostic));
 
-                        context.RegisterCodeFix(codeAction, diagnostic);
+                            context.RegisterCodeFix(codeAction, diagnostic);
+                        }
+                        else
+                        {
+                            CodeAction codeAction = CodeAction.Create(
+                                CodeFixTitles.AddNewLine,
+                                ct => CodeFixHelpers.AddNewLineBeforeAsync(document, token, ct),
+                                GetEquivalenceKey(diagnostic));
+
+                            context.RegisterCodeFix(codeAction, diagnostic);
+                        }
+
                         break;
                     }
             }

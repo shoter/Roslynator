@@ -465,18 +465,6 @@ namespace Roslynator.Formatting.CSharp
             helpLinkUri:        DiagnosticIdentifiers.RemoveNewLineBeforeBaseList, 
             customTags:         Array.Empty<string>());
 
-        /// <summary>RCS0040</summary>
-        public static readonly DiagnosticDescriptor RemoveNewLineBetweenClosingBraceAndWhileKeyword = Factory.Create(
-            id:                 DiagnosticIdentifiers.RemoveNewLineBetweenClosingBraceAndWhileKeyword, 
-            title:              "Remove newline between closing brace and 'while' keyword.", 
-            messageFormat:      "Remove newline between closing brace and 'while' keyword.", 
-            category:           DiagnosticCategories.Formatting, 
-            defaultSeverity:    DiagnosticSeverity.Info, 
-            isEnabledByDefault: false, 
-            description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.RemoveNewLineBetweenClosingBraceAndWhileKeyword, 
-            customTags:         Array.Empty<string>());
-
         /// <summary>RCS0041</summary>
         public static readonly DiagnosticDescriptor RemoveNewLineBetweenIfKeywordAndElseKeyword = Factory.Create(
             id:                 DiagnosticIdentifiers.RemoveNewLineBetweenIfKeywordAndElseKeyword, 
@@ -598,15 +586,27 @@ namespace Roslynator.Formatting.CSharp
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS0051</summary>
-        public static readonly DiagnosticDescriptor AddNewLineBetweenClosingBraceAndWhileKeyword = Factory.Create(
-            id:                 DiagnosticIdentifiers.AddNewLineBetweenClosingBraceAndWhileKeyword, 
-            title:              "Add newline between closing brace and 'while' keyword.", 
-            messageFormat:      "Add newline between closing brace and 'while' keyword.", 
+        public static readonly DiagnosticDescriptor AddNewLineBetweenClosingBraceAndWhileKeywordOrViceVersa = Factory.Create(
+            id:                 DiagnosticIdentifiers.AddNewLineBetweenClosingBraceAndWhileKeywordOrViceVersa, 
+            title:              "Add newline between closing brace and 'while' keyword (or vice versa).", 
+            messageFormat:      "{0} newline between closing brace and 'while' keyword.", 
             category:           DiagnosticCategories.Formatting, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 
             description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.AddNewLineBetweenClosingBraceAndWhileKeyword, 
+            helpLinkUri:        DiagnosticIdentifiers.AddNewLineBetweenClosingBraceAndWhileKeywordOrViceVersa, 
+            customTags:         Array.Empty<string>());
+
+        /// <summary>RCS0051i</summary>
+        public static readonly DiagnosticDescriptor RemoveNewLineBetweenClosingBraceAndWhileKeyword = Factory.Create(
+            id:                 DiagnosticIdentifiers.RemoveNewLineBetweenClosingBraceAndWhileKeyword, 
+            title:              "Remove newline between closing brace and 'while' keyword.", 
+            messageFormat:      "Remove newline between closing brace and 'while' keyword.", 
+            category:           DiagnosticCategories.AnalyzerOption, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: false, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.RemoveNewLineBetweenClosingBraceAndWhileKeyword, 
             customTags:         Array.Empty<string>());
 
     }

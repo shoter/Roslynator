@@ -46,7 +46,6 @@ namespace Roslynator.Formatting.CSharp
         public const string RemoveEmptyLineBetweenSingleLineDeclarationsOfSameKind = "RCS0036";
         public const string RemoveEmptyLineBetweenUsingDirectivesWithSameRootNamespace = "RCS0038";
         public const string RemoveNewLineBeforeBaseList = "RCS0039";
-        public const string RemoveNewLineBetweenClosingBraceAndWhileKeyword = "RCS0040";
         public const string RemoveNewLineBetweenIfKeywordAndElseKeyword = "RCS0041";
         public const string RemoveNewLinesFromAccessorListOfAutoProperty = "RCS0042";
         public const string RemoveNewLinesFromAccessorWithSingleLineExpression = "RCS0043";
@@ -57,6 +56,7 @@ namespace Roslynator.Formatting.CSharp
         public const string RemoveNewlinesFromInitializerWithSingleLineExpression = "RCS0048";
         public const string AddEmptyLineAfterTopComment = "RCS0049";
         public const string AddEmptyLineBeforeTopDeclaration = "RCS0050";
-        public const string AddNewLineBetweenClosingBraceAndWhileKeyword = "RCS0051";
+        public const string AddNewLineBetweenClosingBraceAndWhileKeywordOrViceVersa = "RCS0051";
+        public const string RemoveNewLineBetweenClosingBraceAndWhileKeyword = "RCS0051i";
     }
 }

@@ -28,8 +28,7 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
                     DiagnosticIdentifiers.RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace,
                     DiagnosticIdentifiers.RemoveEmptyLineBetweenUsingDirectivesWithSameRootNamespace,
                     DiagnosticIdentifiers.RemoveNewLineBetweenIfKeywordAndElseKeyword,
-                    DiagnosticIdentifiers.RemoveNewLineBeforeBaseList,
-                    DiagnosticIdentifiers.RemoveNewLineBetweenClosingBraceAndWhileKeyword);
+                    DiagnosticIdentifiers.RemoveNewLineBeforeBaseList);
             }
         }
 
@@ -101,7 +100,6 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
                         break;
                     }
                 case DiagnosticIdentifiers.RemoveNewLineBeforeBaseList:
-                case DiagnosticIdentifiers.RemoveNewLineBetweenClosingBraceAndWhileKeyword:
                 case DiagnosticIdentifiers.RemoveNewLineBetweenIfKeywordAndElseKeyword:
                     {
                         CodeAction codeAction = CodeAction.Create(

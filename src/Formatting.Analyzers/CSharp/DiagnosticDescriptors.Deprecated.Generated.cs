@@ -69,5 +69,17 @@ namespace Roslynator.Formatting.CSharp
             helpLinkUri:        DiagnosticIdentifiers.RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace2, 
             customTags:         Array.Empty<string>());
 
+        [Obsolete("", error: true)]
+        internal static readonly DiagnosticDescriptor RemoveNewLineBetweenClosingBraceAndWhileKeyword2 = Factory.Create(
+            id:                 DiagnosticIdentifiers.RemoveNewLineBetweenClosingBraceAndWhileKeyword2, 
+            title:              "Remove newline between closing brace and 'while' keyword.", 
+            messageFormat:      "Remove newline between closing brace and 'while' keyword.", 
+            category:           DiagnosticCategories.Formatting, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: false, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.RemoveNewLineBetweenClosingBraceAndWhileKeyword2, 
+            customTags:         Array.Empty<string>());
+
     }
 }
