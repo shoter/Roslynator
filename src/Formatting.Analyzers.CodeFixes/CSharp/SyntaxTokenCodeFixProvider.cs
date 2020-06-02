@@ -26,8 +26,7 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
                 return ImmutableArray.Create(
                     DiagnosticIdentifiers.AddEmptyLineBetweenBlockAndStatement,
                     DiagnosticIdentifiers.AddNewLineBeforeConditionalOperatorInsteadOfAfterItOrViceVersa,
-                    DiagnosticIdentifiers.AddNewLineAfterExpressionBodyArrowInsteadOfBeforeIt,
-                    DiagnosticIdentifiers.AddNewLineBeforeExpressionBodyArrowInsteadOfAfterIt,
+                    DiagnosticIdentifiers.AddNewLineBeforeExpressionBodyArrowInsteadOfAfterItOrViceVersa,
                     DiagnosticIdentifiers.AddNewLineAfterAttributeList,
                     DiagnosticIdentifiers.AddNewLineBetweenClosingBraceAndWhileKeyword);
             }
@@ -106,34 +105,37 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
 
                         break;
                     }
-                case DiagnosticIdentifiers.AddNewLineAfterExpressionBodyArrowInsteadOfBeforeIt:
+                case DiagnosticIdentifiers.AddNewLineBeforeExpressionBodyArrowInsteadOfAfterItOrViceVersa:
                     {
-                        CodeAction codeAction = CodeAction.Create(
-                            "Add newline after '=>' instead of before it",
-                            ct =>
-                            {
-                                var expressionBody = (ArrowExpressionClauseSyntax)token.Parent;
+                        if (DiagnosticProperties.ContainsInvert(diagnostic.Properties))
+                        {
+                            CodeAction codeAction = CodeAction.Create(
+                                "Add newline after '=>' instead of before it",
+                                ct =>
+                                {
+                                    var expressionBody = (ArrowExpressionClauseSyntax)token.Parent;
 
-                                return CodeFixHelpers.AddNewLineAfterInsteadOfBeforeAsync(document, token.GetPreviousToken(), token, expressionBody.Expression, ct);
-                            },
-                            GetEquivalenceKey(diagnostic));
+                                    return CodeFixHelpers.AddNewLineAfterInsteadOfBeforeAsync(document, token.GetPreviousToken(), token, expressionBody.Expression, ct);
+                                },
+                                GetEquivalenceKey(diagnostic));
 
-                        context.RegisterCodeFix(codeAction, diagnostic);
-                        break;
-                    }
-                case DiagnosticIdentifiers.AddNewLineBeforeExpressionBodyArrowInsteadOfAfterIt:
-                    {
-                        CodeAction codeAction = CodeAction.Create(
-                            "Add newline before '=>' instead of after it",
-                            ct =>
-                            {
-                                var expressionBody = (ArrowExpressionClauseSyntax)token.Parent;
+                            context.RegisterCodeFix(codeAction, diagnostic);
+                        }
+                        else
+                        {
+                            CodeAction codeAction = CodeAction.Create(
+                                "Add newline before '=>' instead of after it",
+                                ct =>
+                                {
+                                    var expressionBody = (ArrowExpressionClauseSyntax)token.Parent;
 
-                                return CodeFixHelpers.AddNewLineBeforeInsteadOfAfterAsync(document, token.GetPreviousToken(), token, expressionBody.Expression, ct);
-                            },
-                            GetEquivalenceKey(diagnostic));
+                                    return CodeFixHelpers.AddNewLineBeforeInsteadOfAfterAsync(document, token.GetPreviousToken(), token, expressionBody.Expression, ct);
+                                },
+                                GetEquivalenceKey(diagnostic));
 
-                        context.RegisterCodeFix(codeAction, diagnostic);
+                            context.RegisterCodeFix(codeAction, diagnostic);
+                        }
+
                         break;
                     }
                 case DiagnosticIdentifiers.AddNewLineAfterAttributeList:

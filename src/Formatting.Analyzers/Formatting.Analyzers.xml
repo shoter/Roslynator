@@ -524,7 +524,7 @@ namespace N
       </Sample>
     </Samples>
   </Analyzer>
-  <Analyzer Identifier="AddNewLineAfterExpressionBodyArrowInsteadOfBeforeIt">
+  <Analyzer Identifier="AddNewLineAfterExpressionBodyArrowInsteadOfBeforeIt2" IsObsolete="true">
     <Id>RCS0019</Id>
     <Title>Add newline after expression-body arrow instead of before it.</Title>
     <Category>Formatting</Category>
@@ -788,9 +788,10 @@ namespace N
     </Samples>
     <Remarks>This rule was originally introduced as [RCS1025](RCS1025.md)</Remarks>
   </Analyzer>
-  <Analyzer Identifier="AddNewLineBeforeExpressionBodyArrowInsteadOfAfterIt">
+  <Analyzer Identifier="AddNewLineBeforeExpressionBodyArrowInsteadOfAfterItOrViceVersa">
     <Id>RCS0032</Id>
-    <Title>Add newline before expression-body arrow instead of after it.</Title>
+    <Title>Add newline before expression-body arrow instead of after it (or vice versa).</Title>
+    <MessageFormat>Add newline {0} expression-body arrow instead of {1} it.</MessageFormat>
     <Category>Formatting</Category>
     <DefaultSeverity>Info</DefaultSeverity>
     <IsEnabledByDefault>false</IsEnabledByDefault>
@@ -802,6 +803,21 @@ namespace N
     => null;]]></After>
       </Sample>
     </Samples>
+    <Options>
+      <Option Identifier="AddNewLineAfterExpressionBodyArrowInsteadOfBeforeIt">
+        <Title>Add newline after expression-body arrow instead of before it.</Title>
+        <Id>i</Id>
+        <Kind>Invert</Kind>
+        <Samples>
+          <Sample>
+            <Before><![CDATA[object Foo()
+    => null; // [|Id|]]]></Before>
+            <After><![CDATA[object Foo() =>
+    null;]]></After>
+          </Sample>
+        </Samples>
+      </Option>
+    </Options>
   </Analyzer>
   <Analyzer Identifier="AddNewLineBeforeStatement">
     <Id>RCS0033</Id>

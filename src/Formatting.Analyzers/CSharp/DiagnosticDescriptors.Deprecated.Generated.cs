@@ -34,6 +34,18 @@ namespace Roslynator.Formatting.CSharp
             customTags:         Array.Empty<string>());
 
         [Obsolete("", error: true)]
+        internal static readonly DiagnosticDescriptor AddNewLineAfterExpressionBodyArrowInsteadOfBeforeIt2 = Factory.Create(
+            id:                 DiagnosticIdentifiers.AddNewLineAfterExpressionBodyArrowInsteadOfBeforeIt2, 
+            title:              "Add newline after expression-body arrow instead of before it.", 
+            messageFormat:      "Add newline after expression-body arrow instead of before it.", 
+            category:           DiagnosticCategories.Formatting, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: false, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.AddNewLineAfterExpressionBodyArrowInsteadOfBeforeIt2, 
+            customTags:         Array.Empty<string>());
+
+        [Obsolete("", error: true)]
         internal static readonly DiagnosticDescriptor RemoveEmptyLineBetweenSingleLineAccessors2 = Factory.Create(
             id:                 DiagnosticIdentifiers.RemoveEmptyLineBetweenSingleLineAccessors2, 
             title:              "Remove empty line between single-line accessors.", 

@@ -15,7 +15,7 @@ namespace Roslynator.Formatting.CSharp
         {
             get
             {
-                return ImmutableArray.Create(DiagnosticDescriptors.RemoveEmptyLineBetweenSingleLineAccessors, DiagnosticDescriptors.RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace, DiagnosticDescriptors.AddNewLineAfterBinaryOperatorInsteadOfBeforeIt, DiagnosticDescriptors.AddNewLineAfterConditionalOperatorInsteadOfBeforeIt);
+                return ImmutableArray.Create(DiagnosticDescriptors.RemoveEmptyLineBetweenSingleLineAccessors, DiagnosticDescriptors.RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace, DiagnosticDescriptors.AddNewLineAfterBinaryOperatorInsteadOfBeforeIt, DiagnosticDescriptors.AddNewLineAfterConditionalOperatorInsteadOfBeforeIt, DiagnosticDescriptors.AddNewLineAfterExpressionBodyArrowInsteadOfBeforeIt);
             }
         }
 
