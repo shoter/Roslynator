@@ -507,7 +507,7 @@ namespace N
       </Sample>
     </Samples>
   </Analyzer>
-  <Analyzer Identifier="AddNewLineAfterConditionalOperatorInsteadOfBeforeIt">
+  <Analyzer Identifier="AddNewLineAfterConditionalOperatorInsteadOfBeforeIt2" IsObsolete="true">
     <Id>RCS0018</Id>
     <Title>Add newline after conditional operator instead of before it.</Title>
     <Category>Formatting</Category>
@@ -698,22 +698,40 @@ namespace N
     </Options>
     <Remarks>This rule was originally introduced as [RCS1029](RCS1029.md)</Remarks>
   </Analyzer>
-  <Analyzer Identifier="AddNewLineBeforeConditionalOperatorInsteadOfAfterIt">
+  <Analyzer Identifier="AddNewLineBeforeConditionalOperatorInsteadOfAfterItOrViceVersa">
     <Id>RCS0028</Id>
-    <Title>Add newline before conditional operator instead of after it.</Title>
+    <Title>Add newline before conditional operator instead of after it (or vice versa).</Title>
+    <MessageFormat>Add newline {0} conditional operator instead of {1} it.</MessageFormat>
     <Category>Formatting</Category>
     <DefaultSeverity>Info</DefaultSeverity>
     <IsEnabledByDefault>false</IsEnabledByDefault>
     <Samples>
       <Sample>
-        <Before><![CDATA[var y = (x) ? // [|Id|]
+        <Before><![CDATA[var y = x ? // [|Id|]
     Foo() :
     Bar();]]></Before>
-        <After><![CDATA[var y = (x)
+        <After><![CDATA[var y = x
     ? Foo()
     : Bar();]]></After>
       </Sample>
     </Samples>
+    <Options>
+      <Option Identifier="AddNewLineAfterConditionalOperatorInsteadOfBeforeIt">
+        <Title>Add newline after conditional operator instead of before it.</Title>
+        <Id>i</Id>
+        <Kind>Invert</Kind>
+        <Samples>
+          <Sample>
+            <Before><![CDATA[var y = x
+    ? Foo() // [|Id|]
+    : Bar();]]></Before>
+            <After><![CDATA[var y = x ?
+    Foo() :
+    Bar();]]></After>
+          </Sample>
+        </Samples>
+      </Option>
+    </Options>
     <Remarks>This rule was originally introduced as [RCS1184](RCS1184.md)</Remarks>
   </Analyzer>
   <Analyzer Identifier="AddNewLineBeforeConstructorInitializer">

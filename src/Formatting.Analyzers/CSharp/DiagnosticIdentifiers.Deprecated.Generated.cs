@@ -11,6 +11,8 @@ namespace Roslynator.Formatting.CSharp
         [Obsolete("", error: true)]
         public const string AddNewLineAfterBinaryOperatorInsteadOfBeforeIt2 = "RCS0017";
         [Obsolete("", error: true)]
+        public const string AddNewLineAfterConditionalOperatorInsteadOfBeforeIt2 = "RCS0018";
+        [Obsolete("", error: true)]
         public const string RemoveEmptyLineBetweenSingleLineAccessors2 = "RCS0035";
         [Obsolete("", error: true)]
         public const string RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace2 = "RCS0037";

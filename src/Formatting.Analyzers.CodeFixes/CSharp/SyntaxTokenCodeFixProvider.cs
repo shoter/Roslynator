@@ -25,8 +25,7 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
             {
                 return ImmutableArray.Create(
                     DiagnosticIdentifiers.AddEmptyLineBetweenBlockAndStatement,
-                    DiagnosticIdentifiers.AddNewLineBeforeConditionalOperatorInsteadOfAfterIt,
-                    DiagnosticIdentifiers.AddNewLineAfterConditionalOperatorInsteadOfBeforeIt,
+                    DiagnosticIdentifiers.AddNewLineBeforeConditionalOperatorInsteadOfAfterItOrViceVersa,
                     DiagnosticIdentifiers.AddNewLineAfterExpressionBodyArrowInsteadOfBeforeIt,
                     DiagnosticIdentifiers.AddNewLineBeforeExpressionBodyArrowInsteadOfAfterIt,
                     DiagnosticIdentifiers.AddNewLineAfterAttributeList,
@@ -56,52 +55,55 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
                         context.RegisterCodeFix(codeAction, diagnostic);
                         break;
                     }
-                case DiagnosticIdentifiers.AddNewLineBeforeConditionalOperatorInsteadOfAfterIt:
+                case DiagnosticIdentifiers.AddNewLineBeforeConditionalOperatorInsteadOfAfterItOrViceVersa:
                     {
-                        var conditionalExpression = (ConditionalExpressionSyntax)token.Parent;
-
-                        string title = null;
-                        if (token.IsKind(SyntaxKind.QuestionToken))
+                        if (DiagnosticProperties.ContainsInvert(diagnostic.Properties))
                         {
-                            title = (SyntaxTriviaAnalysis.IsTokenFollowedWithNewLineAndNotPrecededWithNewLine(conditionalExpression.WhenTrue, conditionalExpression.ColonToken, conditionalExpression.WhenFalse))
-                                ? "Add newline before '?' and ':' instead of after it"
-                                : "Add newline before '?' instead of after it";
+                            var conditionalExpression = (ConditionalExpressionSyntax)token.Parent;
+
+                            string title = null;
+                            if (token.IsKind(SyntaxKind.QuestionToken))
+                            {
+                                title = (SyntaxTriviaAnalysis.IsTokenFollowedWithNewLineAndNotPrecededWithNewLine(conditionalExpression.WhenTrue, conditionalExpression.ColonToken, conditionalExpression.WhenFalse))
+                                    ? "Add newline after '?' and ':' instead of before it"
+                                    : "Add newline after '?' instead of before it";
+                            }
+                            else
+                            {
+                                title = "Add newline after ':' instead of before it";
+                            }
+
+                            CodeAction codeAction = CodeAction.Create(
+                                title,
+                                ct => AddNewLineAfterConditionalOperatorInsteadOfBeforeItAsync(document, conditionalExpression, ct),
+                                GetEquivalenceKey(diagnostic));
+
+                            context.RegisterCodeFix(codeAction, diagnostic);
                         }
                         else
                         {
-                            title = "Add newline before ':' instead of after it";
+                            var conditionalExpression = (ConditionalExpressionSyntax)token.Parent;
+
+                            string title = null;
+                            if (token.IsKind(SyntaxKind.QuestionToken))
+                            {
+                                title = (SyntaxTriviaAnalysis.IsTokenFollowedWithNewLineAndNotPrecededWithNewLine(conditionalExpression.WhenTrue, conditionalExpression.ColonToken, conditionalExpression.WhenFalse))
+                                    ? "Add newline before '?' and ':' instead of after it"
+                                    : "Add newline before '?' instead of after it";
+                            }
+                            else
+                            {
+                                title = "Add newline before ':' instead of after it";
+                            }
+
+                            CodeAction codeAction = CodeAction.Create(
+                                title,
+                                ct => AddNewLineBeforeConditionalOperatorInsteadOfAfterItAsync(document, conditionalExpression, ct),
+                                GetEquivalenceKey(diagnostic));
+
+                            context.RegisterCodeFix(codeAction, diagnostic);
                         }
 
-                        CodeAction codeAction = CodeAction.Create(
-                            title,
-                            ct => AddNewLineBeforeConditionalOperatorInsteadOfAfterItAsync(document, conditionalExpression, ct),
-                            GetEquivalenceKey(diagnostic));
-
-                        context.RegisterCodeFix(codeAction, diagnostic);
-                        break;
-                    }
-                case DiagnosticIdentifiers.AddNewLineAfterConditionalOperatorInsteadOfBeforeIt:
-                    {
-                        var conditionalExpression = (ConditionalExpressionSyntax)token.Parent;
-
-                        string title = null;
-                        if (token.IsKind(SyntaxKind.QuestionToken))
-                        {
-                            title = (SyntaxTriviaAnalysis.IsTokenFollowedWithNewLineAndNotPrecededWithNewLine(conditionalExpression.WhenTrue, conditionalExpression.ColonToken, conditionalExpression.WhenFalse))
-                                ? "Add newline after '?' and ':' instead of before it"
-                                : "Add newline after '?' instead of before it";
-                        }
-                        else
-                        {
-                            title = "Add newline after ':' instead of before it";
-                        }
-
-                        CodeAction codeAction = CodeAction.Create(
-                            title,
-                            ct => AddNewLineAfterConditionalOperatorInsteadOfBeforeItAsync(document, conditionalExpression, ct),
-                            GetEquivalenceKey(diagnostic));
-
-                        context.RegisterCodeFix(codeAction, diagnostic);
                         break;
                     }
                 case DiagnosticIdentifiers.AddNewLineAfterExpressionBodyArrowInsteadOfBeforeIt:

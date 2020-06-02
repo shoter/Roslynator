@@ -225,18 +225,6 @@ namespace Roslynator.Formatting.CSharp
             helpLinkUri:        DiagnosticIdentifiers.AddNewLineAfterAttributeList, 
             customTags:         Array.Empty<string>());
 
-        /// <summary>RCS0018</summary>
-        public static readonly DiagnosticDescriptor AddNewLineAfterConditionalOperatorInsteadOfBeforeIt = Factory.Create(
-            id:                 DiagnosticIdentifiers.AddNewLineAfterConditionalOperatorInsteadOfBeforeIt, 
-            title:              "Add newline after conditional operator instead of before it.", 
-            messageFormat:      "Add newline after conditional operator instead of before it.", 
-            category:           DiagnosticCategories.Formatting, 
-            defaultSeverity:    DiagnosticSeverity.Info, 
-            isEnabledByDefault: false, 
-            description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.AddNewLineAfterConditionalOperatorInsteadOfBeforeIt, 
-            customTags:         Array.Empty<string>());
-
         /// <summary>RCS0019</summary>
         public static readonly DiagnosticDescriptor AddNewLineAfterExpressionBodyArrowInsteadOfBeforeIt = Factory.Create(
             id:                 DiagnosticIdentifiers.AddNewLineAfterExpressionBodyArrowInsteadOfBeforeIt, 
@@ -346,15 +334,27 @@ namespace Roslynator.Formatting.CSharp
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS0028</summary>
-        public static readonly DiagnosticDescriptor AddNewLineBeforeConditionalOperatorInsteadOfAfterIt = Factory.Create(
-            id:                 DiagnosticIdentifiers.AddNewLineBeforeConditionalOperatorInsteadOfAfterIt, 
-            title:              "Add newline before conditional operator instead of after it.", 
-            messageFormat:      "Add newline before conditional operator instead of after it.", 
+        public static readonly DiagnosticDescriptor AddNewLineBeforeConditionalOperatorInsteadOfAfterItOrViceVersa = Factory.Create(
+            id:                 DiagnosticIdentifiers.AddNewLineBeforeConditionalOperatorInsteadOfAfterItOrViceVersa, 
+            title:              "Add newline before conditional operator instead of after it (or vice versa).", 
+            messageFormat:      "Add newline {0} conditional operator instead of {1} it.", 
             category:           DiagnosticCategories.Formatting, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 
             description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.AddNewLineBeforeConditionalOperatorInsteadOfAfterIt, 
+            helpLinkUri:        DiagnosticIdentifiers.AddNewLineBeforeConditionalOperatorInsteadOfAfterItOrViceVersa, 
+            customTags:         Array.Empty<string>());
+
+        /// <summary>RCS0028i</summary>
+        public static readonly DiagnosticDescriptor AddNewLineAfterConditionalOperatorInsteadOfBeforeIt = Factory.Create(
+            id:                 DiagnosticIdentifiers.AddNewLineAfterConditionalOperatorInsteadOfBeforeIt, 
+            title:              "Add newline after conditional operator instead of before it.", 
+            messageFormat:      "Add newline after conditional operator instead of before it.", 
+            category:           DiagnosticCategories.AnalyzerOption, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: false, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.AddNewLineAfterConditionalOperatorInsteadOfBeforeIt, 
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS0029</summary>
