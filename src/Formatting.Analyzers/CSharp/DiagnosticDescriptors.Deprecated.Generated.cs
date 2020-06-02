@@ -9,5 +9,17 @@ namespace Roslynator.Formatting.CSharp
 {
     public static partial class DiagnosticDescriptors
     {
+        [Obsolete("", error: true)]
+        internal static readonly DiagnosticDescriptor RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace2 = Factory.Create(
+            id:                 DiagnosticIdentifiers.RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace2, 
+            title:              "Remove empty line between using directives with different root namespace.", 
+            messageFormat:      "Remove empty line between using directives with different root namespace.", 
+            category:           DiagnosticCategories.Formatting, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: false, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace2, 
+            customTags:         Array.Empty<string>());
+
     }
 }

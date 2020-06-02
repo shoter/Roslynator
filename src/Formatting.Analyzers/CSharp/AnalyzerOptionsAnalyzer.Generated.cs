@@ -15,7 +15,7 @@ namespace Roslynator.Formatting.CSharp
         {
             get
             {
-                return ImmutableArray<DiagnosticDescriptor>.Empty;
+                return ImmutableArray.Create(DiagnosticDescriptors.RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace);
             }
         }
 

@@ -8,5 +8,7 @@ namespace Roslynator.Formatting.CSharp
 {
     public static partial class DiagnosticIdentifiers
     {
+        [Obsolete("", error: true)]
+        public const string RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace2 = "RCS0037";
     }
 }

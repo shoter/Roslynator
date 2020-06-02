@@ -390,9 +390,10 @@ object this[int index] { get; }]]></After>
       </Sample>
     </Samples>
   </Analyzer>
-  <Analyzer Identifier="AddEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace">
+  <Analyzer Identifier="AddEmptyLineBetweenUsingDirectivesWithDifferentRootNamespaceOrViceVersa">
     <Id>RCS0015</Id>
-    <Title>Add empty line between using directives with different root namespace.</Title>
+    <Title>Add empty line between using directives with different root namespace (or vice versa).</Title>
+    <MessageFormat>{0} empty line between using directives.</MessageFormat>
     <Category>Formatting</Category>
     <DefaultSeverity>Info</DefaultSeverity>
     <IsEnabledByDefault>false</IsEnabledByDefault>
@@ -413,6 +414,30 @@ namespace N
 }]]></After>
       </Sample>
     </Samples>
+    <Options>
+      <Option Identifier="RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace">
+        <Title>Remove empty line between using directives with different root namespace.</Title>
+        <Id>i</Id>
+        <Kind>Invert</Kind>
+        <Samples>
+          <Sample>
+            <Before><![CDATA[using System;
+// [|Id|]
+using Microsoft.CodeAnalysis;
+
+namespace N
+{
+}]]></Before>
+            <After><![CDATA[using System;
+using Microsoft.CodeAnalysis;
+
+namespace N
+{
+}]]></After>
+          </Sample>
+        </Samples>
+      </Option>
+    </Options>
   </Analyzer>
   <Analyzer Identifier="AddNewLineAfterAttributeList">
     <Id>RCS0016</Id>
@@ -789,7 +814,7 @@ object P2 { get; }]]></After>
       </Samples>
     </Samples>
   </Analyzer>
-  <Analyzer Identifier="RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace">
+  <Analyzer Identifier="RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace2" IsObsolete="true">
     <Id>RCS0037</Id>
     <Title>Remove empty line between using directives with different root namespace.</Title>
     <Category>Formatting</Category>
@@ -816,6 +841,7 @@ namespace N
   <Analyzer Identifier="RemoveEmptyLineBetweenUsingDirectivesWithSameRootNamespace">
     <Id>RCS0038</Id>
     <Title>Remove empty line between using directives with same root namespace.</Title>
+    <MessageFormat>Remove empty line between using directives.</MessageFormat>
     <Category>Formatting</Category>
     <DefaultSeverity>Info</DefaultSeverity>
     <IsEnabledByDefault>false</IsEnabledByDefault>

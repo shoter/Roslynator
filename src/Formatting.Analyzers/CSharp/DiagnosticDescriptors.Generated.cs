@@ -178,15 +178,27 @@ namespace Roslynator.Formatting.CSharp
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS0015</summary>
-        public static readonly DiagnosticDescriptor AddEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace = Factory.Create(
-            id:                 DiagnosticIdentifiers.AddEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace, 
-            title:              "Add empty line between using directives with different root namespace.", 
-            messageFormat:      "Add empty line between using directives with different root namespace.", 
+        public static readonly DiagnosticDescriptor AddEmptyLineBetweenUsingDirectivesWithDifferentRootNamespaceOrViceVersa = Factory.Create(
+            id:                 DiagnosticIdentifiers.AddEmptyLineBetweenUsingDirectivesWithDifferentRootNamespaceOrViceVersa, 
+            title:              "Add empty line between using directives with different root namespace (or vice versa).", 
+            messageFormat:      "{0} empty line between using directives.", 
             category:           DiagnosticCategories.Formatting, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 
             description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.AddEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace, 
+            helpLinkUri:        DiagnosticIdentifiers.AddEmptyLineBetweenUsingDirectivesWithDifferentRootNamespaceOrViceVersa, 
+            customTags:         Array.Empty<string>());
+
+        /// <summary>RCS0015i</summary>
+        public static readonly DiagnosticDescriptor RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace = Factory.Create(
+            id:                 DiagnosticIdentifiers.RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace, 
+            title:              "Remove empty line between using directives with different root namespace.", 
+            messageFormat:      "Remove empty line between using directives with different root namespace.", 
+            category:           DiagnosticCategories.AnalyzerOption, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: false, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace, 
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS0016</summary>
@@ -427,18 +439,6 @@ namespace Roslynator.Formatting.CSharp
             isEnabledByDefault: false, 
             description:        null, 
             helpLinkUri:        DiagnosticIdentifiers.RemoveEmptyLineBetweenSingleLineDeclarationsOfSameKind, 
-            customTags:         Array.Empty<string>());
-
-        /// <summary>RCS0037</summary>
-        public static readonly DiagnosticDescriptor RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace = Factory.Create(
-            id:                 DiagnosticIdentifiers.RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace, 
-            title:              "Remove empty line between using directives with different root namespace.", 
-            messageFormat:      "Remove empty line between using directives with different root namespace.", 
-            category:           DiagnosticCategories.Formatting, 
-            defaultSeverity:    DiagnosticSeverity.Info, 
-            isEnabledByDefault: false, 
-            description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace, 
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS0038</summary>
