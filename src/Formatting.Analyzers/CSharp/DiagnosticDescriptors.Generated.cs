@@ -130,15 +130,27 @@ namespace Roslynator.Formatting.CSharp
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS0011</summary>
-        public static readonly DiagnosticDescriptor AddEmptyLineBetweenSingleLineAccessors = Factory.Create(
-            id:                 DiagnosticIdentifiers.AddEmptyLineBetweenSingleLineAccessors, 
-            title:              "Add empty line between single-line accessors.", 
-            messageFormat:      "Add empty line between single-line accessors.", 
+        public static readonly DiagnosticDescriptor AddEmptyLineBetweenSingleLineAccessorsOrViceVersa = Factory.Create(
+            id:                 DiagnosticIdentifiers.AddEmptyLineBetweenSingleLineAccessorsOrViceVersa, 
+            title:              "Add empty line between single-line accessors (or vice versa).", 
+            messageFormat:      "{0} empty line between single-line accessors.", 
             category:           DiagnosticCategories.Formatting, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 
             description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.AddEmptyLineBetweenSingleLineAccessors, 
+            helpLinkUri:        DiagnosticIdentifiers.AddEmptyLineBetweenSingleLineAccessorsOrViceVersa, 
+            customTags:         Array.Empty<string>());
+
+        /// <summary>RCS0011i</summary>
+        public static readonly DiagnosticDescriptor RemoveEmptyLineBetweenSingleLineAccessors = Factory.Create(
+            id:                 DiagnosticIdentifiers.RemoveEmptyLineBetweenSingleLineAccessors, 
+            title:              "Remove empty line between single-line accessors.", 
+            messageFormat:      "Remove empty line between single-line accessors.", 
+            category:           DiagnosticCategories.AnalyzerOption, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: false, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.RemoveEmptyLineBetweenSingleLineAccessors, 
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS0012</summary>
@@ -417,18 +429,6 @@ namespace Roslynator.Formatting.CSharp
             helpLinkUri:        DiagnosticIdentifiers.AddNewLineBeforeTypeParameterConstraint, 
             customTags:         Array.Empty<string>());
 
-        /// <summary>RCS0035</summary>
-        public static readonly DiagnosticDescriptor RemoveEmptyLineBetweenSingleLineAccessors = Factory.Create(
-            id:                 DiagnosticIdentifiers.RemoveEmptyLineBetweenSingleLineAccessors, 
-            title:              "Remove empty line between single-line accessors.", 
-            messageFormat:      "Remove empty line between single-line accessors.", 
-            category:           DiagnosticCategories.Formatting, 
-            defaultSeverity:    DiagnosticSeverity.Info, 
-            isEnabledByDefault: false, 
-            description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.RemoveEmptyLineBetweenSingleLineAccessors, 
-            customTags:         Array.Empty<string>());
-
         /// <summary>RCS0036</summary>
         public static readonly DiagnosticDescriptor RemoveEmptyLineBetweenSingleLineDeclarationsOfSameKind = Factory.Create(
             id:                 DiagnosticIdentifiers.RemoveEmptyLineBetweenSingleLineDeclarationsOfSameKind, 
@@ -445,7 +445,7 @@ namespace Roslynator.Formatting.CSharp
         public static readonly DiagnosticDescriptor RemoveEmptyLineBetweenUsingDirectivesWithSameRootNamespace = Factory.Create(
             id:                 DiagnosticIdentifiers.RemoveEmptyLineBetweenUsingDirectivesWithSameRootNamespace, 
             title:              "Remove empty line between using directives with same root namespace.", 
-            messageFormat:      "Remove empty line between using directives with same root namespace.", 
+            messageFormat:      "Remove empty line between using directives.", 
             category:           DiagnosticCategories.Formatting, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: false, 

@@ -308,9 +308,10 @@ enum Bar
 
 This rule does not enforce an empty line between two single-line declaration.</Remarks>
   </Analyzer>
-  <Analyzer Identifier="AddEmptyLineBetweenSingleLineAccessors">
+  <Analyzer Identifier="AddEmptyLineBetweenSingleLineAccessorsOrViceVersa">
     <Id>RCS0011</Id>
-    <Title>Add empty line between single-line accessors.</Title>
+    <Title>Add empty line between single-line accessors (or vice versa).</Title>
+    <MessageFormat>{0} empty line between single-line accessors.</MessageFormat>
     <Category>Formatting</Category>
     <DefaultSeverity>Info</DefaultSeverity>
     <IsEnabledByDefault>false</IsEnabledByDefault>
@@ -329,6 +330,28 @@ This rule does not enforce an empty line between two single-line declaration.</R
 }]]></After>
       </Sample>
     </Samples>
+    <Options>
+      <Option Identifier="RemoveEmptyLineBetweenSingleLineAccessors">
+        <Title>Remove empty line between single-line accessors.</Title>
+        <Id>i</Id>
+        <Kind>Invert</Kind>
+        <Samples>
+          <Sample>
+            <Before><![CDATA[string P
+{
+    get { return _p; }
+// [|Id|]
+    set { _p = value; }
+}]]></Before>
+            <After><![CDATA[string P
+{
+    get { return _p; }
+    set { _p = value; }
+}]]></After>
+          </Sample>
+        </Samples>
+      </Option>
+    </Options>
   </Analyzer>
   <Analyzer Identifier="AddEmptyLineBetweenSingleLineDeclarations">
     <Id>RCS0012</Id>
@@ -774,7 +797,7 @@ Bar();]]></After>
       </Sample>
     </Samples>
   </Analyzer>
-  <Analyzer Identifier="RemoveEmptyLineBetweenSingleLineAccessors">
+  <Analyzer Identifier="RemoveEmptyLineBetweenSingleLineAccessors2" IsObsolete="true">
     <Id>RCS0035</Id>
     <Title>Remove empty line between single-line accessors.</Title>
     <Category>Formatting</Category>

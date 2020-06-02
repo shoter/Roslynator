@@ -23,9 +23,8 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
                     DiagnosticIdentifiers.AddEmptyLineAfterTopComment,
                     DiagnosticIdentifiers.AddEmptyLineBeforeTopDeclaration,
                     DiagnosticIdentifiers.AddEmptyLineBetweenAccessors,
-                    DiagnosticIdentifiers.AddEmptyLineBetweenSingleLineAccessors,
+                    DiagnosticIdentifiers.AddEmptyLineBetweenSingleLineAccessorsOrViceVersa,
                     DiagnosticIdentifiers.AddEmptyLineBetweenUsingDirectivesWithDifferentRootNamespaceOrViceVersa,
-                    DiagnosticIdentifiers.RemoveEmptyLineBetweenSingleLineAccessors,
                     DiagnosticIdentifiers.RemoveEmptyLineBetweenUsingDirectivesWithDifferentRootNamespace,
                     DiagnosticIdentifiers.RemoveEmptyLineBetweenUsingDirectivesWithSameRootNamespace,
                     DiagnosticIdentifiers.RemoveNewLineBetweenIfKeywordAndElseKeyword,
@@ -58,7 +57,6 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
                     }
                 case DiagnosticIdentifiers.AddEmptyLineBeforeTopDeclaration:
                 case DiagnosticIdentifiers.AddEmptyLineBetweenAccessors:
-                case DiagnosticIdentifiers.AddEmptyLineBetweenSingleLineAccessors:
                     {
                         CodeAction codeAction = CodeAction.Create(
                             CodeFixTitles.AddEmptyLine,
@@ -68,6 +66,7 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
                         context.RegisterCodeFix(codeAction, diagnostic);
                         break;
                     }
+                case DiagnosticIdentifiers.AddEmptyLineBetweenSingleLineAccessorsOrViceVersa:
                 case DiagnosticIdentifiers.AddEmptyLineBetweenUsingDirectivesWithDifferentRootNamespaceOrViceVersa:
                     {
                         if (DiagnosticProperties.ContainsInvert(diagnostic.Properties))
@@ -91,7 +90,6 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
 
                         break;
                     }
-                case DiagnosticIdentifiers.RemoveEmptyLineBetweenSingleLineAccessors:
                 case DiagnosticIdentifiers.RemoveEmptyLineBetweenUsingDirectivesWithSameRootNamespace:
                     {
                         CodeAction codeAction = CodeAction.Create(
