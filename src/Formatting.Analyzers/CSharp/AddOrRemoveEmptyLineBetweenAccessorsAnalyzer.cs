@@ -93,7 +93,7 @@ namespace Roslynator.Formatting.CSharp
                 DiagnosticHelpers.ReportDiagnosticIfNotSuppressed(
                     context,
                     DiagnosticDescriptors.AddEmptyLineBetweenAccessors,
-                    trailingTrivia.Last().GetLocation());
+                    Location.Create(context.Node.SyntaxTree, trailingTrivia.Last().Span.WithLength(0)));
             }
         }
     }
