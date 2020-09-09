@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Threading;
@@ -20,7 +21,12 @@ namespace Roslynator.CSharp.CodeFixes
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
-            get { return ImmutableArray.Create(DiagnosticIdentifiers.UnusedElementInDocumentationComment); }
+            get
+            {
+                return ImmutableArray.Create(
+                    DiagnosticIdentifiers.UnusedElementInDocumentationComment,
+                    DiagnosticIdentifiers.UseCorrectDocumentationCommentTag);
+            }
         }
 
         public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -29,6 +35,8 @@ namespace Roslynator.CSharp.CodeFixes
 
             if (!TryFindFirstAncestorOrSelf(root, context.Span, out XmlNodeSyntax xmlNode, findInsideTrivia: true))
                 return;
+
+            Document document = context.Document;
 
             foreach (Diagnostic diagnostic in context.Diagnostics)
             {
@@ -42,8 +50,22 @@ namespace Roslynator.CSharp.CodeFixes
 
                             CodeAction codeAction = CodeAction.Create(
                                 $"Remove element '{name}'",
-                                cancellationToken => RemoveUnusedElementInDocumentationCommentAsync(context.Document, elementInfo, cancellationToken),
+                                ct => RemoveUnusedElementInDocumentationCommentAsync(document, elementInfo, ct),
                                 GetEquivalenceKey(diagnostic, name));
+
+                            context.RegisterCodeFix(codeAction, diagnostic);
+                            break;
+                        }
+                    case DiagnosticIdentifiers.UseCorrectDocumentationCommentTag:
+                        {
+                            XmlElementInfo elementInfo = SyntaxInfo.XmlElementInfo(xmlNode);
+
+                            CodeAction codeAction = CodeAction.Create(
+                                (elementInfo.GetTag() == XmlTag.C)
+                                    ? "Change element name to 'code'"
+                                    : "Change element name to 'c'",
+                                ct => UseCorrectDocumentationCommentTagAsync(document, elementInfo, ct),
+                                GetEquivalenceKey(diagnostic));
 
                             context.RegisterCodeFix(codeAction, diagnostic);
                             break;
@@ -156,6 +178,33 @@ namespace Roslynator.CSharp.CodeFixes
             {
                 return xmlText.TextTokens.SingleOrDefault(shouldThrow: false).IsKind(SyntaxKind.XmlTextLiteralNewLineToken);
             }
+        }
+
+        private static Task<Document> UseCorrectDocumentationCommentTagAsync(
+            Document document,
+            in XmlElementInfo elementInfo,
+            CancellationToken cancellationToken)
+        {
+            var element = (XmlElementSyntax)elementInfo.Element;
+
+            XmlTag xmlTag = elementInfo.GetTag();
+
+            XmlElementSyntax newElement;
+
+            if (xmlTag == XmlTag.C)
+            {
+                newElement = element.UpdateName("code");
+            }
+            else if (xmlTag == XmlTag.Code)
+            {
+                newElement = element.UpdateName("c");
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
+
+            return document.ReplaceNodeAsync(element, newElement, cancellationToken);
         }
     }
 }
