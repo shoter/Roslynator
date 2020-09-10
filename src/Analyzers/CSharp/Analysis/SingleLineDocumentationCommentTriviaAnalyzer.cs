@@ -50,6 +50,7 @@ namespace Roslynator.CSharp.Analysis
             if (!documentationComment.IsPartOfMemberDeclaration())
                 return;
 
+            bool? useCorrectDocumentationTagEnabled = null;
             bool containsInheritDoc = false;
             bool containsIncludeOrExclude = false;
             bool containsSummaryElement = false;
@@ -95,7 +96,9 @@ namespace Roslynator.CSharp.Analysis
 
                                 containsSummaryElement = true;
 
-                                UseCorrectDocumentationCommentTagAnalysis.Analyze(context, info);
+                                if (useCorrectDocumentationTagEnabled ??= !context.IsAnalyzerSuppressed(DiagnosticDescriptors.UseCorrectDocumentationCommentTag))
+                                    UseCorrectDocumentationCommentTagAnalysis.Analyze(context, info);
+
                                 break;
                             }
                         case XmlTag.Example:
@@ -106,7 +109,9 @@ namespace Roslynator.CSharp.Analysis
                                 if (info.IsContentEmptyOrWhitespace)
                                     ReportUnusedElement(context, info.Element, i, content);
 
-                                UseCorrectDocumentationCommentTagAnalysis.Analyze(context, info);
+                                if (useCorrectDocumentationTagEnabled ??= !context.IsAnalyzerSuppressed(DiagnosticDescriptors.UseCorrectDocumentationCommentTag))
+                                    UseCorrectDocumentationCommentTagAnalysis.Analyze(context, info);
+
                                 break;
                             }
                         case XmlTag.Exception:
@@ -115,7 +120,9 @@ namespace Roslynator.CSharp.Analysis
                         case XmlTag.Permission:
                         case XmlTag.TypeParam:
                             {
-                                UseCorrectDocumentationCommentTagAnalysis.Analyze(context, info);
+                                if (useCorrectDocumentationTagEnabled ??= !context.IsAnalyzerSuppressed(DiagnosticDescriptors.UseCorrectDocumentationCommentTag))
+                                    UseCorrectDocumentationCommentTagAnalysis.Analyze(context, info);
+
                                 break;
                             }
                         case XmlTag.C:

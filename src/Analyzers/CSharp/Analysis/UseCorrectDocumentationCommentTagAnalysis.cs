@@ -1,11 +1,9 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Text;
 using Roslynator.CSharp.Syntax;
 using static Roslynator.DiagnosticHelpers;
 
@@ -13,34 +11,34 @@ namespace Roslynator.CSharp.Analysis
 {
     public static class UseCorrectDocumentationCommentTagAnalysis
     {
-        public static void Analyze(SyntaxNodeAnalysisContext context, XmlElementInfo info)
+        public static void Analyze(SyntaxNodeAnalysisContext context, XmlElementInfo elementInfo)
         {
-            if (info.IsEmptyElement)
+            if (elementInfo.IsEmptyElement)
                 return;
 
-            var element = (XmlElementSyntax)info.Element;
+            var element = (XmlElementSyntax)elementInfo.Element;
 
             foreach (XmlNodeSyntax node in element.Content)
             {
-                XmlElementInfo info2 = SyntaxInfo.XmlElementInfo(node);
+                XmlElementInfo elementInfo2 = SyntaxInfo.XmlElementInfo(node);
 
-                if (info2.Success)
+                if (elementInfo2.Success)
                 {
-                    switch (info2.GetTag())
+                    switch (elementInfo2.GetTag())
                     {
                         case XmlTag.C:
                             {
-                                AnalyzeCElement(context, info2);
+                                AnalyzeCElement(context, elementInfo2);
                                 break;
                             }
                         case XmlTag.Code:
                             {
-                                AnalyzeCodeElement(context, info2);
+                                AnalyzeCodeElement(context, elementInfo2);
                                 break;
                             }
                         case XmlTag.List:
                             {
-                                AnalyzeList(context, info2);
+                                AnalyzeList(context, elementInfo2);
                                 break;
                             }
                         case XmlTag.Para:
@@ -48,7 +46,7 @@ namespace Roslynator.CSharp.Analysis
                         case XmlTag.See:
                         case XmlTag.TypeParamRef:
                             {
-                                Analyze(context, info2);
+                                Analyze(context, elementInfo2);
                                 break;
                             }
                         case XmlTag.Content:
@@ -70,7 +68,7 @@ namespace Roslynator.CSharp.Analysis
                             }
                         default:
                             {
-                                Debug.Fail(info2.GetTag().ToString());
+                                Debug.Fail(elementInfo2.GetTag().ToString());
                                 break;
                             }
                     }
@@ -78,84 +76,74 @@ namespace Roslynator.CSharp.Analysis
             }
         }
 
-        private static void AnalyzeList(SyntaxNodeAnalysisContext context, XmlElementInfo info)
+        private static void AnalyzeList(SyntaxNodeAnalysisContext context, XmlElementInfo elementInfo)
         {
-            if (!info.IsEmptyElement)
+            if (elementInfo.IsEmptyElement)
+                return;
+
+            var element = (XmlElementSyntax)elementInfo.Element;
+
+            foreach (XmlNodeSyntax node in element.Content)
             {
-                var element = (XmlElementSyntax)info.Element;
+                XmlElementInfo elementInfo2 = SyntaxInfo.XmlElementInfo(node);
 
-                foreach (XmlNodeSyntax node in element.Content)
+                if (!elementInfo2.Success)
+                    continue;
+
+                if (elementInfo2.IsEmptyElement)
+                    continue;
+
+                if (!elementInfo2.HasLocalName("listheader", "item"))
+                    continue;
+
+                var element2 = (XmlElementSyntax)elementInfo2.Element;
+
+                foreach (XmlNodeSyntax node2 in element2.Content)
                 {
-                    XmlElementInfo info2 = SyntaxInfo.XmlElementInfo(node);
+                    XmlElementInfo elementInfo3 = SyntaxInfo.XmlElementInfo(node2);
 
-                    if (!info2.Success)
+                    if (!elementInfo3.Success)
                         continue;
 
-                    if (info2.IsEmptyElement)
+                    if (elementInfo3.IsEmptyElement)
                         continue;
 
-                    if (string.Equals(info2.LocalName, "listheader", StringComparison.OrdinalIgnoreCase)
-                        || string.Equals(info2.LocalName, "item", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var element2 = (XmlElementSyntax)info2.Element;
-
-                        foreach (XmlNodeSyntax node2 in element2.Content)
-                        {
-                            XmlElementInfo info3 = SyntaxInfo.XmlElementInfo(node2);
-
-                            if (!info3.Success)
-                                continue;
-
-                            if (info3.IsEmptyElement)
-                                continue;
-
-                            if (string.Equals(info3.LocalName, "term", StringComparison.OrdinalIgnoreCase)
-                                || string.Equals(info3.LocalName, "description", StringComparison.OrdinalIgnoreCase))
-                            {
-                                Analyze(context, info3);
-                            }
-                        }
-                    }
+                    if (elementInfo3.HasLocalName("term", "description"))
+                        Analyze(context, elementInfo3);
                 }
             }
         }
 
-        private static void AnalyzeCElement(SyntaxNodeAnalysisContext context, XmlElementInfo info)
+        private static void AnalyzeCElement(SyntaxNodeAnalysisContext context, XmlElementInfo elementInfo)
         {
-            if (info.IsEmptyElement)
+            if (elementInfo.IsEmptyElement)
                 return;
 
-            var element = (XmlElementSyntax)info.Element;
+            var element = (XmlElementSyntax)elementInfo.Element;
 
             SyntaxList<XmlNodeSyntax> content = element.Content;
 
             if (!content.Any())
                 return;
 
-            int start = content.First().FullSpan.Start;
-            int end = content.Last().FullSpan.End;
-
-            if (context.Node.SyntaxTree.IsMultiLineSpan(TextSpan.FromBounds(start, end)))
-                ReportDiagnostic(context, DiagnosticDescriptors.UseCorrectDocumentationCommentTag, info.Element);
+            if (context.Node.SyntaxTree.IsMultiLineSpan(content.FullSpan))
+                ReportDiagnostic(context, DiagnosticDescriptors.UseCorrectDocumentationCommentTag, elementInfo.Element);
         }
 
-        private static void AnalyzeCodeElement(SyntaxNodeAnalysisContext context, XmlElementInfo info)
+        private static void AnalyzeCodeElement(SyntaxNodeAnalysisContext context, XmlElementInfo elementInfo)
         {
-            if (info.IsEmptyElement)
+            if (elementInfo.IsEmptyElement)
                 return;
 
-            var element = (XmlElementSyntax)info.Element;
+            var element = (XmlElementSyntax)elementInfo.Element;
 
             SyntaxList<XmlNodeSyntax> content = element.Content;
 
             if (!content.Any())
                 return;
 
-            int start = content.First().FullSpan.Start;
-            int end = content.Last().FullSpan.End;
-
-            if (context.Node.SyntaxTree.IsSingleLineSpan(TextSpan.FromBounds(start, end)))
-                ReportDiagnostic(context, DiagnosticDescriptors.UseCorrectDocumentationCommentTag, info.Element);
+            if (context.Node.SyntaxTree.IsSingleLineSpan(content.FullSpan))
+                ReportDiagnostic(context, DiagnosticDescriptors.UseCorrectDocumentationCommentTag, elementInfo.Element);
         }
     }
 }
