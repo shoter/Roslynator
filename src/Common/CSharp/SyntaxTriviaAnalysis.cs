@@ -1,9 +1,11 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 using Roslynator.CSharp;
 
 namespace Roslynator.CSharp
@@ -196,6 +198,102 @@ namespace Roslynator.CSharp
             }
 
             return en.Current.IsEndOfLineTrivia();
+        }
+
+        public static IndentationAnalysis AnalyzeIndentation(SyntaxNode node, CancellationToken cancellationToken = default)
+        {
+            SyntaxTree tree = node.SyntaxTree;
+
+            if (tree == null)
+                return new IndentationAnalysis(node, CSharpFactory.EmptyWhitespace(), CSharpFactory.EmptyWhitespace());
+
+            TextSpan span = node.Span;
+
+            int lineStartIndex = span.Start - tree.GetLineSpan(span, cancellationToken).StartLinePosition.Character;
+
+            SyntaxTrivia indentation = DetermineIndentation(node, lineStartIndex);
+
+            while (lineStartIndex > 0)
+            {
+                lineStartIndex--;
+
+                while (!node.FullSpan.Contains(lineStartIndex))
+                {
+                    node = node.Parent;
+
+                    if (node == null)
+                        break;
+                }
+
+                SyntaxToken token = node.FindToken(lineStartIndex, findInsideTrivia: true);
+
+                if (token.IsKind(SyntaxKind.None))
+                    break;
+
+                span = token.Span;
+
+                int lineStartIndex2 = span.Start - tree.GetLineSpan(span, cancellationToken).StartLinePosition.Character;
+
+                SyntaxTrivia indentation2 = DetermineIndentation(node, lineStartIndex2);
+
+                if (indentation.Span.Length != indentation2.Span.Length)
+                    return new IndentationAnalysis(node, indentation, indentation2);
+
+                if (lineStartIndex == 0)
+                    break;
+            }
+
+            return new IndentationAnalysis(node, indentation, CSharpFactory.EmptyWhitespace());
+        }
+
+        public static SyntaxTrivia DetermineIndentation(SyntaxNode node, CancellationToken cancellationToken = default)
+        {
+            SyntaxTree tree = node.SyntaxTree;
+
+            if (tree == null)
+                return CSharpFactory.EmptyWhitespace();
+
+            TextSpan span = node.Span;
+
+            int lineStartIndex = span.Start - tree.GetLineSpan(span, cancellationToken).StartLinePosition.Character;
+
+            return DetermineIndentation(node, lineStartIndex);
+        }
+
+        private static SyntaxTrivia DetermineIndentation(SyntaxNode node, int lineStartIndex)
+        {
+            while (!node.FullSpan.Contains(lineStartIndex))
+                node = node.GetParent(ascendOutOfTrivia: true);
+
+            if (node.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia))
+            {
+                if (((DocumentationCommentTriviaSyntax)node)
+                    .ParentTrivia
+                    .TryGetContainingList(out SyntaxTriviaList leading, allowTrailing: false))
+                {
+                    SyntaxTrivia trivia = leading.Last();
+
+                    if (trivia.IsWhitespaceTrivia())
+                        return trivia;
+                }
+            }
+            else
+            {
+                SyntaxToken token = node.FindToken(lineStartIndex);
+
+                SyntaxTriviaList leading = token.LeadingTrivia;
+
+                if (leading.Any()
+                    && leading.FullSpan.Contains(lineStartIndex))
+                {
+                    SyntaxTrivia trivia = leading.Last();
+
+                    if (trivia.IsWhitespaceTrivia())
+                        return trivia;
+                }
+            }
+
+            return CSharpFactory.EmptyWhitespace();
         }
     }
 }

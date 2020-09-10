@@ -537,6 +537,18 @@ namespace Roslynator.Formatting.CSharp
             helpLinkUri:        DiagnosticIdentifiers.AddNewLineBetweenClosingBraceAndWhileKeywordOrViceVersa, 
             customTags:         Array.Empty<string>());
 
+        /// <summary>RCS0052</summary>
+        public static readonly DiagnosticDescriptor FixParameterListAlignment = DiagnosticDescriptorFactory.Default.Create(
+            id:                 DiagnosticIdentifiers.FixParameterListAlignment, 
+            title:              "Fix parameter list alignment.", 
+            messageFormat:      "Fix parameter list alignment.", 
+            category:           DiagnosticCategories.Formatting, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: false, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.FixParameterListAlignment, 
+            customTags:         Array.Empty<string>());
+
         public static partial class ReportOnly
         {
             /// <summary>RCS0011i</summary>
