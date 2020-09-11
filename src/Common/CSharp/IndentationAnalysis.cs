@@ -8,77 +8,33 @@ namespace Roslynator.CSharp
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     internal readonly struct IndentationAnalysis
     {
-        public static IndentationAnalysis Empty { get; } = new IndentationAnalysis(null, CSharpFactory.EmptyWhitespace(), CSharpFactory.EmptyWhitespace());
+        public static IndentationAnalysis Empty { get; } = new IndentationAnalysis(CSharpFactory.EmptyWhitespace(), 0);
 
-        public IndentationAnalysis(SyntaxNode node, SyntaxTrivia indentation, SyntaxTrivia indentation2)
+        internal IndentationAnalysis(SyntaxTrivia indentation, int indentSize)
         {
-            Node = node;
             Indentation = indentation;
-            Indentation2 = indentation2;
+            IndentSize = indentSize;
         }
-
-        public SyntaxNode Node { get; }
 
         public SyntaxTrivia Indentation { get; }
 
-        public SyntaxTrivia Indentation2 { get; }
+        public int IndentSize { get; }
 
-        public bool IsEmpty
-        {
-            get
-            {
-                return Indentation.Span.Length == 0
-                  && Indentation2.Span.Length == 0;
-            }
-        }
+        public bool IsEmpty => Indentation.Span.Length == 0;
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private string DebuggerDisplay => $"Length1 = {Indentation.Span.Length} Length2 = {Indentation2.Span.Length}";
-
-        public string GetSingleIndentation()
-        {
-            int length1 = Indentation.Span.Length;
-            int length2 = Indentation2.Span.Length;
-
-            if (length1 == length2)
-                return "";
-
-            return (length1 > length2)
-                ? Indentation.ToString().Substring(length2)
-                : Indentation2.ToString().Substring(length1);
-        }
+        private string DebuggerDisplay => $"\"{Indentation}\" Length = {Indentation.Span.Length} {nameof(IndentSize)} = {IndentSize}";
 
         public string GetIncreasedIndentation()
         {
             int length1 = Indentation.Span.Length;
-            int length2 = Indentation2.Span.Length;
 
-            if (length1 == length2)
+            if (length1 == 0)
                 return "";
 
-            if (length1 > length2)
-            {
-                string s = Indentation.ToString();
-                return s + s.Substring(length2);
-            }
-            else
-            {
-                string s = Indentation2.ToString();
-                return s + s.Substring(length1);
-            }
-        }
+            string s = Indentation.ToString();
 
-        public int GetIncreasedIndentationLength()
-        {
-            int length1 = Indentation.Span.Length;
-            int length2 = Indentation2.Span.Length;
-
-            if (length1 == length2)
-                return 0;
-
-            return (length1 > length2)
-                ? length1 + length1 - length2
-                : length2 + length2 - length1;
+            return s + new string(s[0], IndentSize);
         }
     }
 }

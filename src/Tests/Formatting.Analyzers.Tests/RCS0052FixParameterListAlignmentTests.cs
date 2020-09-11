@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -85,14 +86,14 @@ class C
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.FixParameterListAlignment)]
-        public async Task Test_Multiline()
+        public async Task Test_Singleline_EmptyLine_Comment()
         {
             await VerifyDiagnosticAndFixAsync(@"
 class C
 {
     void M(
-           [|object p1,
-           object p2|]) 
+// x
+[|object p1, object p2|]) 
     {
     }
 }
@@ -100,6 +101,44 @@ class C
 class C
 {
     void M(
+// x
+        object p1, object p2) 
+    {
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.FixParameterListAlignment)]
+        public async Task Test_Multiline()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+using System;
+
+class C
+{
+    void M()
+    {
+    }
+
+    [Obsolete]
+    void M2(
+           [|object p1,
+           object p2|]) 
+    {
+    }
+}
+", @"
+using System;
+
+class C
+{
+    void M()
+    {
+    }
+
+    [Obsolete]
+    void M2(
         object p1,
         object p2) 
     {

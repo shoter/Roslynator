@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -202,66 +203,41 @@ namespace Roslynator.CSharp
 
         public static IndentationAnalysis AnalyzeIndentation(SyntaxNode node, CancellationToken cancellationToken = default)
         {
-            SyntaxTree tree = node.SyntaxTree;
+            SyntaxTrivia indentation = DetermineIndentation(node, cancellationToken);
 
-            if (tree == null)
-                return new IndentationAnalysis(node, CSharpFactory.EmptyWhitespace(), CSharpFactory.EmptyWhitespace());
+            int size = DetermineIndentationSize(node, cancellationToken);
 
-            TextSpan span = node.Span;
-
-            int lineStartIndex = span.Start - tree.GetLineSpan(span, cancellationToken).StartLinePosition.Character;
-
-            SyntaxTrivia indentation = DetermineIndentation(node, lineStartIndex);
-
-            while (lineStartIndex > 0)
-            {
-                lineStartIndex--;
-
-                while (!node.FullSpan.Contains(lineStartIndex))
-                {
-                    node = node.Parent;
-
-                    if (node == null)
-                        break;
-                }
-
-                SyntaxToken token = node.FindToken(lineStartIndex, findInsideTrivia: true);
-
-                if (token.IsKind(SyntaxKind.None))
-                    break;
-
-                span = token.Span;
-
-                int lineStartIndex2 = span.Start - tree.GetLineSpan(span, cancellationToken).StartLinePosition.Character;
-
-                SyntaxTrivia indentation2 = DetermineIndentation(node, lineStartIndex2);
-
-                if (indentation.Span.Length != indentation2.Span.Length)
-                    return new IndentationAnalysis(node, indentation, indentation2);
-
-                if (lineStartIndex == 0)
-                    break;
-            }
-
-            return new IndentationAnalysis(node, indentation, CSharpFactory.EmptyWhitespace());
+            return new IndentationAnalysis(indentation, size);
         }
 
-        public static SyntaxTrivia DetermineIndentation(SyntaxNode node, CancellationToken cancellationToken = default)
+        public static SyntaxTrivia DetermineIndentation(SyntaxNodeOrToken nodeOrToken, CancellationToken cancellationToken = default)
         {
-            SyntaxTree tree = node.SyntaxTree;
+            SyntaxTree tree = nodeOrToken.SyntaxTree;
 
             if (tree == null)
                 return CSharpFactory.EmptyWhitespace();
 
-            TextSpan span = node.Span;
+            TextSpan span = nodeOrToken.Span;
 
             int lineStartIndex = span.Start - tree.GetLineSpan(span, cancellationToken).StartLinePosition.Character;
 
-            return DetermineIndentation(node, lineStartIndex);
-        }
+            SyntaxTriviaList leading = nodeOrToken.GetLeadingTrivia();
 
-        private static SyntaxTrivia DetermineIndentation(SyntaxNode node, int lineStartIndex)
-        {
+            if (leading.Any())
+            {
+                SyntaxTrivia last = leading.Last();
+
+                if (last.IsWhitespaceTrivia()
+                    && lineStartIndex == span.Start - last.Span.Length)
+                {
+                    return last;
+                }
+            }
+
+            SyntaxNode node = (nodeOrToken.IsNode)
+                ? nodeOrToken.AsNode()
+                : nodeOrToken.AsToken().Parent;
+
             while (!node.FullSpan.Contains(lineStartIndex))
                 node = node.GetParent(ascendOutOfTrivia: true);
 
@@ -269,7 +245,7 @@ namespace Roslynator.CSharp
             {
                 if (((DocumentationCommentTriviaSyntax)node)
                     .ParentTrivia
-                    .TryGetContainingList(out SyntaxTriviaList leading, allowTrailing: false))
+                    .TryGetContainingList(out leading, allowTrailing: false))
                 {
                     SyntaxTrivia trivia = leading.Last();
 
@@ -281,7 +257,7 @@ namespace Roslynator.CSharp
             {
                 SyntaxToken token = node.FindToken(lineStartIndex);
 
-                SyntaxTriviaList leading = token.LeadingTrivia;
+                leading = token.LeadingTrivia;
 
                 if (leading.Any()
                     && leading.FullSpan.Contains(lineStartIndex))
@@ -294,6 +270,147 @@ namespace Roslynator.CSharp
             }
 
             return CSharpFactory.EmptyWhitespace();
+        }
+
+        public static int DetermineIndentationSize(SyntaxNode node, CancellationToken cancellationToken = default)
+        {
+            do
+            {
+                switch (node)
+                {
+                    case MemberDeclarationSyntax member:
+                        {
+                            switch (node.Parent)
+                            {
+                                case NamespaceDeclarationSyntax @namespace:
+                                    {
+                                        int size = GetIndentationSize(member, @namespace.CloseBraceToken);
+
+                                        if (size > 0)
+                                            return size;
+
+                                        break;
+                                    }
+                                case BaseTypeDeclarationSyntax baseType:
+                                    {
+                                        int size = GetIndentationSize(member, baseType.CloseBraceToken);
+
+                                        if (size > 0)
+                                            return size;
+
+                                        break;
+                                    }
+                                case CompilationUnitSyntax compilationUnit:
+                                    {
+                                        return DetermineIndentationSize(compilationUnit);
+                                    }
+                                default:
+                                    {
+                                        Debug.Fail(node.Parent.Kind().ToString());
+                                        return 0;
+                                    }
+                            }
+
+                            break;
+                        }
+                    case AccessorDeclarationSyntax accessor:
+                        {
+                            switch (node.Parent)
+                            {
+                                case AccessorListSyntax accessorList:
+                                    {
+                                        int size = GetIndentationSize(accessor, accessorList.CloseBraceToken);
+
+                                        if (size > 0)
+                                            return size;
+
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        Debug.Fail(node.Parent.Kind().ToString());
+                                        return 0;
+                                    }
+                            }
+
+                            break;
+                        }
+                    case StatementSyntax statement:
+                        {
+                            switch (node.Parent)
+                            {
+                                case SwitchSectionSyntax switchSection:
+                                    {
+                                        int size = GetIndentationSize(statement, switchSection);
+
+                                        if (size > 0)
+                                            return size;
+
+                                        break;
+                                    }
+                                case BlockSyntax block:
+                                    {
+                                        int size = GetIndentationSize(statement, block.CloseBraceToken);
+
+                                        if (size > 0)
+                                            return size;
+
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        Debug.Fail(node.Parent.Kind().ToString());
+                                        return 0;
+                                    }
+                            }
+
+                            break;
+                        }
+                    case CompilationUnitSyntax compilationUnit:
+                        {
+                            return DetermineIndentationSize(compilationUnit);
+                        }
+                }
+
+                node = node.Parent;
+
+            } while (node != null);
+
+            Debug.Fail("");
+
+            return 0;
+
+            static int DetermineIndentationSize(CompilationUnitSyntax compilationUnit)
+            {
+                foreach (MemberDeclarationSyntax member in compilationUnit.Members)
+                {
+                    int size = SyntaxTriviaAnalysis.DetermineIndentationSize(member);
+
+                    if (size > 0)
+                        return size;
+                }
+
+                return 0;
+            }
+
+            int GetIndentationSize(SyntaxNodeOrToken nodeOrToken1, SyntaxNodeOrToken nodeOrToken2)
+            {
+                SyntaxTrivia indentation1 = DetermineIndentation(nodeOrToken1, cancellationToken);
+
+                int length1 = indentation1.Span.Length;
+
+                if (length1 > 0)
+                {
+                    SyntaxTrivia indentation2 = DetermineIndentation(nodeOrToken2, cancellationToken);
+
+                    int length2 = indentation2.Span.Length;
+
+                    if (length1 > length2)
+                        return length1 - length2;
+                }
+
+                return 0;
+            }
         }
     }
 }

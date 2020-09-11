@@ -106,7 +106,7 @@ namespace Roslynator.Formatting.CSharp
 
                 if (!indentationAnalysis.IsEmpty)
                 {
-                    return indentationAnalysis.GetIncreasedIndentationLength();
+                    return indentationAnalysis.Indentation.Span.Length + indentationAnalysis.IndentSize;
                 }
                 else
                 {
