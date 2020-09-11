@@ -2,6 +2,7 @@
 
 using System.Diagnostics;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Roslynator.CSharp
 {
@@ -35,6 +36,16 @@ namespace Roslynator.CSharp
             string s = Indentation.ToString();
 
             return s + new string(s[0], IndentSize);
+        }
+
+        public SyntaxTrivia GetIncreasedIndentationTrivia()
+        {
+            return SyntaxFactory.Whitespace(GetIncreasedIndentation());
+        }
+
+        public SyntaxTriviaList GetIncreasedIndentationTriviaList()
+        {
+            return SyntaxFactory.TriviaList(GetIncreasedIndentationTrivia());
         }
     }
 }

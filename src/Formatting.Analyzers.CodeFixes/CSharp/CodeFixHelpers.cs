@@ -41,7 +41,7 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
             SyntaxToken token,
             CancellationToken cancellationToken = default)
         {
-            SyntaxTrivia indentation = token.Parent.GetIndentation(cancellationToken);
+            SyntaxTrivia indentation = SyntaxTriviaAnalysis.DetermineIndentation(token.Parent, cancellationToken);
 
             return AddNewLineBeforeAsync(
                 document,
@@ -58,22 +58,20 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
             return AddNewLineBeforeAndIncreaseIndentationAsync(
                 document,
                 token,
-                token.Parent.GetIndentation(cancellationToken),
+                SyntaxTriviaAnalysis.AnalyzeIndentation(token.Parent, cancellationToken),
                 cancellationToken);
         }
 
         public static Task<Document> AddNewLineBeforeAndIncreaseIndentationAsync(
             Document document,
             SyntaxToken token,
-            SyntaxTrivia indentation,
+            IndentationAnalysis indentation,
             CancellationToken cancellationToken = default)
         {
-            SyntaxTrivia singleIndentation = token.SyntaxTree.GetFirstIndentation(cancellationToken);
-
             return AddNewLineBeforeAsync(
                 document,
                 token,
-                indentation.ToString() + singleIndentation.ToString(),
+                indentation.GetIncreasedIndentation(),
                 cancellationToken);
         }
 

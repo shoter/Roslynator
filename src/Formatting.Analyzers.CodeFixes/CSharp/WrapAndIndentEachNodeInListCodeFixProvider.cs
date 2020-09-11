@@ -165,7 +165,7 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
                     }
                 }
 
-                return nodes[0].GetIndentation(cancellationToken).ToString() + nodes[0].SyntaxTree.GetFirstIndentation(cancellationToken);
+                return SyntaxTriviaAnalysis.GetIncreasedIndentation(nodes[0], cancellationToken);
             }
         }
     }

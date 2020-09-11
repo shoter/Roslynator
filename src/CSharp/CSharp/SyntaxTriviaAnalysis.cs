@@ -428,5 +428,20 @@ namespace Roslynator.CSharp
                 return 0;
             }
         }
+
+        public static string GetIncreasedIndentation(SyntaxNode node, CancellationToken cancellationToken = default)
+        {
+            return AnalyzeIndentation(node, cancellationToken).GetIncreasedIndentation();
+        }
+
+        public static SyntaxTrivia GetIncreasedIndentationTrivia(SyntaxNode node, CancellationToken cancellationToken = default)
+        {
+            return AnalyzeIndentation(node, cancellationToken).GetIncreasedIndentationTrivia();
+        }
+
+        public static SyntaxTriviaList GetIncreasedIndentationTriviaList(SyntaxNode node, CancellationToken cancellationToken = default)
+        {
+            return AnalyzeIndentation(node, cancellationToken).GetIncreasedIndentationTriviaList();
+        }
     }
 }
