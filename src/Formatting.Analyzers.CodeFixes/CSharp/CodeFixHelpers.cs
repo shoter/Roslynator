@@ -85,7 +85,7 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
         {
             var textChange = new TextChange(
                 TextSpan.FromBounds(token.GetPreviousToken().Span.End, token.SpanStart),
-                SyntaxTriviaAnalysis.GetEndOfLine(token).ToString() + indentation);
+                SyntaxTriviaAnalysis.DetermineEndOfLine(token).ToString() + indentation);
 
             return document.WithTextChangeAsync(textChange, cancellationToken);
         }
@@ -135,7 +135,7 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
                 index--;
             }
 
-            SyntaxTriviaList newLeadingTrivia = leadingTrivia.Insert(index, SyntaxTriviaAnalysis.GetEndOfLine(token));
+            SyntaxTriviaList newLeadingTrivia = leadingTrivia.Insert(index, SyntaxTriviaAnalysis.DetermineEndOfLine(token));
 
             SyntaxToken newToken = token.WithLeadingTrivia(newLeadingTrivia);
 
@@ -153,7 +153,7 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
 
             int index = leadingTrivia.IndexOf(parentTrivia);
 
-            SyntaxTriviaList newLeadingTrivia = leadingTrivia.Insert(index + 1, SyntaxTriviaAnalysis.GetEndOfLine(token));
+            SyntaxTriviaList newLeadingTrivia = leadingTrivia.Insert(index + 1, SyntaxTriviaAnalysis.DetermineEndOfLine(token));
 
             SyntaxToken newToken = token.WithLeadingTrivia(newLeadingTrivia);
 
@@ -176,7 +176,7 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
 
             if (SyntaxTriviaAnalysis.IsOptionalWhitespaceThenEndOfLineTrivia(trailingTrivia))
             {
-                sb.Append(SyntaxTriviaAnalysis.GetEndOfLine(left).ToString());
+                sb.Append(SyntaxTriviaAnalysis.DetermineEndOfLine(left).ToString());
             }
             else
             {
@@ -207,7 +207,7 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
 
             if (SyntaxTriviaAnalysis.IsOptionalWhitespaceThenEndOfLineTrivia(trailingTrivia))
             {
-                sb.Append(SyntaxTriviaAnalysis.GetEndOfLine(middle).ToString());
+                sb.Append(SyntaxTriviaAnalysis.DetermineEndOfLine(middle).ToString());
             }
             else
             {

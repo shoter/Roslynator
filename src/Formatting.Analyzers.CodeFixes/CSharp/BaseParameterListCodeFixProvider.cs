@@ -75,7 +75,7 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
             {
                 var textChanges = new List<TextChange>();
 
-                string endOfLineAndIndentation = SyntaxTriviaAnalysis.GetEndOfLine(baseParameterList).ToString()
+                string endOfLineAndIndentation = SyntaxTriviaAnalysis.DetermineEndOfLine(baseParameterList).ToString()
                     + increasedIndentation;
 
                 for (int i = 0; i < nodes.Count; i++)

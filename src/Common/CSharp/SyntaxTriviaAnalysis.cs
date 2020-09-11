@@ -33,15 +33,15 @@ namespace Roslynator.CSharp
                 || (count == 1 && triviaList[0].IsWhitespaceTrivia());
         }
 
-        public static SyntaxTrivia GetEndOfLine(SyntaxNodeOrToken nodeOrToken)
+        public static SyntaxTrivia DetermineEndOfLine(SyntaxNodeOrToken nodeOrToken, SyntaxTrivia? defaultValue = null)
         {
             if (nodeOrToken.IsNode)
             {
-                return GetEndOfLine(nodeOrToken.AsNode());
+                return DetermineEndOfLine(nodeOrToken.AsNode(), defaultValue);
             }
             else if (nodeOrToken.IsToken)
             {
-                return GetEndOfLine(nodeOrToken.AsToken());
+                return DetermineEndOfLine(nodeOrToken.AsToken(), defaultValue);
             }
             else
             {
@@ -49,24 +49,21 @@ namespace Roslynator.CSharp
             }
         }
 
-        public static SyntaxTrivia GetEndOfLine(SyntaxNode node)
+        public static SyntaxTrivia DetermineEndOfLine(SyntaxNode node, SyntaxTrivia? defaultValue = null)
         {
-            return GetEndOfLine(node.GetFirstToken());
+            return DetermineEndOfLine(node.GetFirstToken(), defaultValue);
         }
 
-        public static SyntaxTrivia GetEndOfLine(SyntaxToken token)
+        public static SyntaxTrivia DetermineEndOfLine(SyntaxToken token, SyntaxTrivia? defaultValue = null)
         {
             SyntaxTrivia trivia = FindEndOfLine(token);
 
-            return (trivia.IsEndOfLineTrivia()) ? trivia : CSharpFactory.NewLine();
+            return (trivia.IsEndOfLineTrivia())
+                ? trivia
+                : defaultValue ?? CSharpFactory.NewLine();
         }
 
-        public static SyntaxTrivia FindEndOfLine(SyntaxNode node)
-        {
-            return FindEndOfLine(node.GetFirstToken());
-        }
-
-        public static SyntaxTrivia FindEndOfLine(SyntaxToken token)
+        private static SyntaxTrivia FindEndOfLine(SyntaxToken token)
         {
             SyntaxToken t = token;
 

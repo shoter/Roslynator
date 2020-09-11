@@ -127,7 +127,7 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
 
             IEnumerable<TextChange> GetTextChanges()
             {
-                string newText = SyntaxTriviaAnalysis.GetEndOfLine(nodes[0]).ToString() + GetIndentation();
+                string newText = SyntaxTriviaAnalysis.DetermineEndOfLine(nodes[0]).ToString() + GetIndentation();
 
                 yield return GetTextChange(nodes[0].GetFirstToken().GetPreviousToken(), nodes[0]);
 
