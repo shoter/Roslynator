@@ -10,11 +10,11 @@ using Roslynator.CSharp;
 namespace Roslynator.Formatting.CSharp
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    internal class FixParameterListAlignmentAnalyzer : BaseDiagnosticAnalyzer
+    internal class FixParameterListFormattingAnalyzer : BaseDiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
-            get { return ImmutableArray.Create(DiagnosticDescriptors.FixParameterListAlignment); }
+            get { return ImmutableArray.Create(DiagnosticDescriptors.FixParameterListFormatting); }
         }
 
         public override void Initialize(AnalysisContext context)
@@ -51,11 +51,11 @@ namespace Roslynator.Formatting.CSharp
 
             SyntaxTree syntaxTree = first.SyntaxTree;
 
-            if (syntaxTree.IsSingleLineSpan(nodes.Span))
+            if (syntaxTree.IsSingleLineSpan(nodes.Span, context.CancellationToken))
             {
                 SyntaxTriviaList trailing = openToken.TrailingTrivia;
 
-                if (SyntaxTriviaAnalysis.IsOptionalWhitespaceThenEndOfLineTrivia(trailing))
+                if (SyntaxTriviaAnalysis.IsOptionalWhitespaceThenOptionalSingleLineCommentThenEndOfLineTrivia(trailing))
                 {
                     int indentationLength = GetIndentationLength();
 
@@ -64,7 +64,7 @@ namespace Roslynator.Formatting.CSharp
                         SyntaxTriviaList leading = first.GetLeadingTrivia();
 
                         if (!leading.Any()
-                            || leading.Last().IsKind(SyntaxKind.EndOfLineTrivia)
+                            || !leading.Last().IsWhitespaceTrivia()
                             || leading.Last().Span.Length != indentationLength)
                         {
                             ReportDiagnostic();
@@ -76,26 +76,31 @@ namespace Roslynator.Formatting.CSharp
             {
                 int indentationLength = GetIndentationLength();
 
-                for (int i = 0; i < nodes.Count; i++)
+                if (indentationLength > 0)
                 {
-                    SyntaxTriviaList trailing = (i == 0)
-                        ? openToken.TrailingTrivia
-                        : nodes.GetSeparator(i - 1).TrailingTrivia;
-
-                    if (!SyntaxTriviaAnalysis.IsOptionalWhitespaceThenEndOfLineTrivia(trailing))
+                    for (int i = 0; i < nodes.Count; i++)
                     {
-                        ReportDiagnostic();
-                        return;
-                    }
+                        SyntaxTriviaList trailing = (i == 0)
+                            ? openToken.TrailingTrivia
+                            : nodes.GetSeparator(i - 1).TrailingTrivia;
 
-                    SyntaxTriviaList leading = nodes[i].GetLeadingTrivia();
+                        if (!SyntaxTriviaAnalysis.IsOptionalWhitespaceThenOptionalSingleLineCommentThenEndOfLineTrivia(trailing))
+                        {
+                            ReportDiagnostic();
+                            return;
+                        }
 
-                    SyntaxTrivia last = (leading.Any()) ? leading.Last() : default;
+                        SyntaxTriviaList leading = nodes[i].GetLeadingTrivia();
 
-                    if (indentationLength != last.Span.Length)
-                    {
-                        ReportDiagnostic();
-                        return;
+                        SyntaxTrivia last = (leading.Any() && leading.Last().IsWhitespaceTrivia())
+                            ? leading.Last()
+                            : default;
+
+                        if (indentationLength != last.Span.Length)
+                        {
+                            ReportDiagnostic();
+                            return;
+                        }
                     }
                 }
             }
@@ -118,7 +123,7 @@ namespace Roslynator.Formatting.CSharp
             {
                 DiagnosticHelpers.ReportDiagnostic(
                     context,
-                    DiagnosticDescriptors.FixParameterListAlignment,
+                    DiagnosticDescriptors.FixParameterListFormatting,
                     Location.Create(syntaxTree, nodes.Span));
             }
         }

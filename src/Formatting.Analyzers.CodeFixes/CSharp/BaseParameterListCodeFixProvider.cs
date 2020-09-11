@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Roslynator.CSharp;
@@ -22,7 +21,7 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
-            get { return ImmutableArray.Create(DiagnosticIdentifiers.FixParameterListAlignment); }
+            get { return ImmutableArray.Create(DiagnosticIdentifiers.FixParameterListFormatting); }
         }
 
         public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -36,14 +35,14 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
             Diagnostic diagnostic = context.Diagnostics[0];
 
             CodeAction codeAction = CodeAction.Create(
-                "Fix alignment",
-                ct => FixParameterListAlignmentAsync(document, baseParameterList, ct),
+                "Fix formatting",
+                ct => FixParameterListFormattingAsync(document, baseParameterList, ct),
                 GetEquivalenceKey(diagnostic));
 
             context.RegisterCodeFix(codeAction, diagnostic);
         }
 
-        private static Task<Document> FixParameterListAlignmentAsync(
+        private static Task<Document> FixParameterListFormattingAsync(
             Document document,
             BaseParameterListSyntax baseParameterList,
             CancellationToken cancellationToken)
@@ -56,25 +55,25 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
 
             IndentationAnalysis indentationAnalysis = SyntaxTriviaAnalysis.AnalyzeIndentation(baseParameterList, cancellationToken);
 
+            string increasedIndentation = indentationAnalysis.GetIncreasedIndentation();
+
             if (baseParameterList.SyntaxTree.IsSingleLineSpan(nodes.Span, cancellationToken))
             {
                 ParameterSyntax first = nodes.First();
 
                 SyntaxTriviaList leading = first.GetLeadingTrivia();
 
-                TextSpan span = (leading.Any())
+                TextSpan span = (leading.Any() && leading.Last().IsWhitespaceTrivia())
                     ? leading.Last().Span
                     : new TextSpan(first.SpanStart, 0);
 
-                var textChange = new TextChange(span, indentationAnalysis.GetIncreasedIndentation());
+                var textChange = new TextChange(span, increasedIndentation);
 
                 return document.WithTextChangeAsync(textChange, cancellationToken);
             }
             else
             {
                 var textChanges = new List<TextChange>();
-
-                string increasedIndentation = indentationAnalysis.GetIncreasedIndentation();
 
                 string endOfLineAndIndentation = SyntaxTriviaAnalysis.GetEndOfLine(baseParameterList).ToString()
                     + increasedIndentation;
@@ -87,7 +86,7 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
 
                     SyntaxTriviaList trailing = token.TrailingTrivia;
 
-                    if (!SyntaxTriviaAnalysis.IsOptionalWhitespaceThenEndOfLineTrivia(trailing))
+                    if (!SyntaxTriviaAnalysis.IsOptionalWhitespaceThenOptionalSingleLineCommentThenEndOfLineTrivia(trailing))
                     {
                         TextSpan span = (trailing.Any() && trailing.Last().IsWhitespaceTrivia())
                             ? trailing.Last().Span
@@ -99,12 +98,14 @@ namespace Roslynator.Formatting.CodeFixes.CSharp
 
                     SyntaxTriviaList leading = nodes[i].GetLeadingTrivia();
 
-                    SyntaxTrivia last = (leading.Any()) ? leading.Last() : default;
+                    SyntaxTrivia last = (leading.Any() && leading.Last().IsWhitespaceTrivia())
+                        ? leading.Last()
+                        : default;
 
                     if (increasedIndentation.Length != last.Span.Length)
                     {
-                        TextSpan span = (leading.Any() && leading.Last().IsWhitespaceTrivia())
-                            ? leading.Last().Span
+                        TextSpan span = (last.Span.Length > 0)
+                            ? last.Span
                             : new TextSpan(nodes[i].SpanStart, 0);
 
                         textChanges.Add(new TextChange(span, increasedIndentation));

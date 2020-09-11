@@ -380,14 +380,31 @@ namespace Roslynator.CSharp
 
             return 0;
 
-            static int DetermineIndentationSize(CompilationUnitSyntax compilationUnit)
+            int DetermineIndentationSize(CompilationUnitSyntax compilationUnit)
             {
                 foreach (MemberDeclarationSyntax member in compilationUnit.Members)
                 {
-                    int size = SyntaxTriviaAnalysis.DetermineIndentationSize(member);
+                    switch (member)
+                    {
+                        case NamespaceDeclarationSyntax namespaceDeclaration:
+                            {
+                                MemberDeclarationSyntax member2 = namespaceDeclaration.Members.FirstOrDefault();
 
-                    if (size > 0)
-                        return size;
+                                if (member2 != null)
+                                    return GetIndentationSize(member2, namespaceDeclaration.CloseBraceToken);
+
+                                break;
+                            }
+                        case TypeDeclarationSyntax typeDeclaration:
+                            {
+                                MemberDeclarationSyntax member2 = typeDeclaration.Members.FirstOrDefault();
+
+                                if (member2 != null)
+                                    return GetIndentationSize(member2, typeDeclaration.CloseBraceToken);
+
+                                break;
+                            }
+                    }
                 }
 
                 return 0;
@@ -404,6 +421,8 @@ namespace Roslynator.CSharp
                     SyntaxTrivia indentation2 = DetermineIndentation(nodeOrToken2, cancellationToken);
 
                     int length2 = indentation2.Span.Length;
+
+                    Debug.Assert(length1 >= length2, $"{length1} {length2}");
 
                     if (length1 > length2)
                         return length1 - length2;
