@@ -369,7 +369,122 @@ class C
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
-        public async Task TestNoDiagnostic_AnalyzerOptionDisabled()
+        public async Task Test_ReturnStatement()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+using System;
+
+class C
+{
+    static object M() => null;
+
+    Func<object> M2(Func<object> p)
+    {
+        return [|M|];
+    }
+}
+", @"
+using System;
+
+class C
+{
+    static object M() => null;
+
+    Func<object> M2(Func<object> p)
+    {
+        return () => M();
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
+        public async Task Test_ArrowExpressionClause()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+using System;
+
+class C
+{
+    static object M() => null;
+
+    Func<object> M2(Func<object> p) => M;
+}
+", @"
+using System;
+
+class C
+{
+    static object M() => null;
+
+    Func<object> M2(Func<object> p) => () => M();
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
+        public async Task Test_ArrayInitializer()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+using System;
+
+class C
+{
+    static object M() => null;
+
+    void M2(Func<object> p)
+    {
+        var x = new Func<object>[] { [|M|] };
+    }
+}
+", @"
+using System;
+
+class C
+{
+    static object M() => null;
+
+    void M2(Func<object> p)
+    {
+        var x = new Func<object>[] { () => M() };
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
+        public async Task Test_YieldReturnStatement()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+using System;
+using System.Collections.Generic;
+
+class C
+{
+    static object M() => null;
+
+    IEnumerable<Func<object>> M2(Func<object> p)
+    {
+        yield return [|M|];
+    }
+}
+", @"
+using System;
+
+class C
+{
+    static object M() => null;
+
+    IEnumerable<Func<object>> M2(Func<object> p)
+    {
+        yield return () => M();
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
+            public async Task TestNoDiagnostic_AnalyzerOptionDisabled()
         {
             await VerifyNoDiagnosticAsync(@"
 using System;

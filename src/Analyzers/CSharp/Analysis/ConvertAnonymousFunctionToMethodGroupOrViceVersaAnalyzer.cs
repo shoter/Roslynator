@@ -45,6 +45,11 @@ namespace Roslynator.CSharp.Analysis
                     startContext.RegisterSyntaxNodeAction(AnalyzeArgument, SyntaxKind.Argument);
                     startContext.RegisterSyntaxNodeAction(AnalyzeEqualsValueClause, SyntaxKind.EqualsValueClause);
                     startContext.RegisterSyntaxNodeAction(AnalyzeAssignment, SyntaxKind.SimpleAssignmentExpression, SyntaxKind.AddAssignmentExpression, SyntaxKind.SubtractAssignmentExpression, SyntaxKind.CoalesceAssignmentExpression);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeReturnStatement, SyntaxKind.ReturnStatement);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeYieldReturnStatement, SyntaxKind.YieldReturnStatement);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeArrowExpressionClause, SyntaxKind.ArrowExpressionClause);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeSwitchExpressionArm, SyntaxKind.SwitchExpressionArm);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeArrayInitializer, SyntaxKind.ArrayInitializerExpression);
 #if DEBUG
                     startContext.RegisterSyntaxNodeAction(AnalyzeIdentifierName, SyntaxKind.IdentifierName);
                     startContext.RegisterSyntaxNodeAction(AnalyzeSimpleMemberAccessExpression, SyntaxKind.SimpleMemberAccessExpression);
@@ -613,6 +618,92 @@ namespace Roslynator.CSharp.Analysis
 
             DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ReportOnly.ConvertMethodGroupToAnonymousFunction, expression);
         }
+
+        private static void AnalyzeReturnStatement(SyntaxNodeAnalysisContext context)
+        {
+            var returnStatement = (ReturnStatementSyntax)context.Node;
+
+            ExpressionSyntax expression = returnStatement.Expression?.WalkDownParentheses();
+
+            if (!expression.IsKind(SyntaxKind.IdentifierName, SyntaxKind.SimpleMemberAccessExpression))
+                return;
+
+            IMethodSymbol methodSymbol = context.SemanticModel.GetMethodSymbol(expression, context.CancellationToken);
+
+            if (methodSymbol == null)
+                return;
+
+            DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ReportOnly.ConvertMethodGroupToAnonymousFunction, expression);
+        }
+
+        private static void AnalyzeYieldReturnStatement(SyntaxNodeAnalysisContext context)
+        {
+            var yieldReturnStatement = (YieldStatementSyntax)context.Node;
+
+            ExpressionSyntax expression = yieldReturnStatement.Expression?.WalkDownParentheses();
+
+            if (!expression.IsKind(SyntaxKind.IdentifierName, SyntaxKind.SimpleMemberAccessExpression))
+                return;
+
+            IMethodSymbol methodSymbol = context.SemanticModel.GetMethodSymbol(expression, context.CancellationToken);
+
+            if (methodSymbol == null)
+                return;
+
+            DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ReportOnly.ConvertMethodGroupToAnonymousFunction, expression);
+        }
+
+        private static void AnalyzeArrowExpressionClause(SyntaxNodeAnalysisContext context)
+        {
+            var arrowExpressionClause = (ArrowExpressionClauseSyntax)context.Node;
+
+            ExpressionSyntax expression = arrowExpressionClause.Expression?.WalkDownParentheses();
+
+            if (!expression.IsKind(SyntaxKind.IdentifierName, SyntaxKind.SimpleMemberAccessExpression))
+                return;
+
+            IMethodSymbol methodSymbol = context.SemanticModel.GetMethodSymbol(expression, context.CancellationToken);
+
+            if (methodSymbol == null)
+                return;
+
+            DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ReportOnly.ConvertMethodGroupToAnonymousFunction, expression);
+        }
+
+        private static void AnalyzeSwitchExpressionArm(SyntaxNodeAnalysisContext context)
+        {
+            var switchExpressionArm = (SwitchExpressionArmSyntax)context.Node;
+
+            ExpressionSyntax expression = switchExpressionArm.Expression?.WalkDownParentheses();
+
+            if (!expression.IsKind(SyntaxKind.IdentifierName, SyntaxKind.SimpleMemberAccessExpression))
+                return;
+
+            IMethodSymbol methodSymbol = context.SemanticModel.GetMethodSymbol(expression, context.CancellationToken);
+
+            if (methodSymbol == null)
+                return;
+
+            DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ReportOnly.ConvertMethodGroupToAnonymousFunction, expression);
+        }
+
+        private static void AnalyzeArrayInitializer(SyntaxNodeAnalysisContext context)
+        {
+            var initializer = (InitializerExpressionSyntax)context.Node;
+
+            foreach (ExpressionSyntax expression in initializer.Expressions)
+            {
+                ExpressionSyntax expression2 = expression?.WalkDownParentheses();
+
+                if (expression2.IsKind(SyntaxKind.IdentifierName, SyntaxKind.SimpleMemberAccessExpression))
+                {
+                    IMethodSymbol methodSymbol = context.SemanticModel.GetMethodSymbol(expression2, context.CancellationToken);
+
+                    if (methodSymbol != null)
+                        DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ReportOnly.ConvertMethodGroupToAnonymousFunction, expression2);
+                }
+            }
+        }
 #if DEBUG
         private static void AnalyzeIdentifierName(SyntaxNodeAnalysisContext context)
         {
@@ -642,6 +733,11 @@ namespace Roslynator.CSharp.Analysis
                 case SyntaxKind.AddAssignmentExpression:
                 case SyntaxKind.SubtractAssignmentExpression:
                 case SyntaxKind.CoalesceAssignmentExpression:
+                case SyntaxKind.ReturnStatement:
+                case SyntaxKind.YieldReturnStatement:
+                case SyntaxKind.ArrowExpressionClause:
+                case SyntaxKind.ArrayInitializerExpression:
+                case SyntaxKind.SwitchExpressionArm:
                 //
                 case SyntaxKind.SimpleMemberAccessExpression:
                 case SyntaxKind.InvocationExpression:
@@ -653,6 +749,73 @@ namespace Roslynator.CSharp.Analysis
                 case SyntaxKind.AliasQualifiedName:
                 case SyntaxKind.VariableDeclaration:
                 case SyntaxKind.ObjectCreationExpression:
+                case SyntaxKind.NameEquals:
+                case SyntaxKind.SimpleBaseType:
+                case SyntaxKind.PropertyDeclaration:
+                case SyntaxKind.Parameter:
+                case SyntaxKind.LogicalAndExpression:
+                case SyntaxKind.LogicalOrExpression:
+                case SyntaxKind.LogicalNotExpression:
+                case SyntaxKind.Interpolation:
+                case SyntaxKind.PragmaWarningDirectiveTrivia:
+                case SyntaxKind.Attribute:
+                case SyntaxKind.TypeArgumentList:
+                case SyntaxKind.AttributeArgument:
+                case SyntaxKind.NameMemberCref:
+                case SyntaxKind.XmlNameAttribute:
+                case SyntaxKind.QualifiedCref:
+                case SyntaxKind.TypeConstraint:
+                case SyntaxKind.TypeParameterConstraintClause:
+                case SyntaxKind.IndexerDeclaration:
+                case SyntaxKind.ExplicitInterfaceSpecifier:
+                case SyntaxKind.BitwiseAndExpression:
+                case SyntaxKind.BitwiseNotExpression:
+                case SyntaxKind.BitwiseOrExpression:
+                case SyntaxKind.NameColon:
+                case SyntaxKind.CaseSwitchLabel:
+                case SyntaxKind.MethodDeclaration:
+                case SyntaxKind.SwitchStatement:
+                case SyntaxKind.DeclarationExpression:
+                case SyntaxKind.AddExpression:
+                case SyntaxKind.SubtractExpression:
+                case SyntaxKind.PostIncrementExpression:
+                case SyntaxKind.PostDecrementExpression:
+                case SyntaxKind.PreIncrementExpression:
+                case SyntaxKind.PreDecrementExpression:
+                case SyntaxKind.ArrayType:
+                case SyntaxKind.EqualsExpression:
+                case SyntaxKind.LessThanExpression:
+                case SyntaxKind.LessThanOrEqualExpression:
+                case SyntaxKind.GreaterThanOrEqualExpression:
+                case SyntaxKind.GreaterThanExpression:
+                case SyntaxKind.NotEqualsExpression:
+                case SyntaxKind.IsPatternExpression:
+                case SyntaxKind.DeclarationPattern:
+                case SyntaxKind.CastExpression:
+                case SyntaxKind.ConditionalExpression:
+                case SyntaxKind.CoalesceExpression:
+                case SyntaxKind.ElementAccessExpression:
+                case SyntaxKind.ForEachStatement:
+                case SyntaxKind.IfStatement:
+                case SyntaxKind.AsExpression:
+                case SyntaxKind.IsExpression:
+                case SyntaxKind.IfDirectiveTrivia:
+                case SyntaxKind.DefaultExpression:
+                case SyntaxKind.TypeOfExpression:
+                case SyntaxKind.MultiplyExpression:
+                case SyntaxKind.DivideExpression:
+                case SyntaxKind.SimpleLambdaExpression:
+                case SyntaxKind.ParenthesizedLambdaExpression:
+                case SyntaxKind.AndAssignmentExpression:
+                case SyntaxKind.MultiplyAssignmentExpression:
+                case SyntaxKind.OrAssignmentExpression:
+                case SyntaxKind.NullableType:
+                case SyntaxKind.LeftShiftExpression:
+                case SyntaxKind.RightShiftExpression:
+                case SyntaxKind.LocalFunctionStatement:
+                case SyntaxKind.CatchDeclaration:
+                case SyntaxKind.SwitchExpression:
+                case SyntaxKind.ConversionOperatorDeclaration:
                     {
                         return;
                     }
