@@ -122,15 +122,12 @@ namespace Roslynator.CSharp.CodeFixes
                 }
                 else
                 {
-                    var names = new List<string>()
-                    {
-                        NameGenerator.Default.EnsureUniqueLocalName(DefaultNames.LambdaParameter, semanticModel, expression.SpanStart, cancellationToken: cancellationToken)
-                    };
-
-                    for (int i = 1; i < parameterSymbols.Length; i++)
-                    {
-                        names.Add(NameGenerator.Default.EnsureUniqueLocalName(DefaultNames.LambdaParameter + (i + 1).ToString(), semanticModel, expression.SpanStart, cancellationToken: cancellationToken));
-                    }
+                    ImmutableArray<string> names = NameGenerator.Default.EnsureUniqueLocalNames(
+                        DefaultNames.LambdaParameter,
+                        semanticModel,
+                        expression.SpanStart,
+                        parameterSymbols.Length,
+                        cancellationToken: cancellationToken);
 
                     parameterList = ParameterList(names.Select(f => Parameter(Identifier(f).WithRenameAnnotation())).ToSeparatedSyntaxList());
 

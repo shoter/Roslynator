@@ -49,7 +49,7 @@ namespace Roslynator.CSharp.Analysis
                     startContext.RegisterSyntaxNodeAction(AnalyzeYieldReturnStatement, SyntaxKind.YieldReturnStatement);
                     startContext.RegisterSyntaxNodeAction(AnalyzeArrowExpressionClause, SyntaxKind.ArrowExpressionClause);
                     startContext.RegisterSyntaxNodeAction(AnalyzeSwitchExpressionArm, SyntaxKind.SwitchExpressionArm);
-                    startContext.RegisterSyntaxNodeAction(AnalyzeArrayInitializer, SyntaxKind.ArrayInitializerExpression);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeArrayInitializer, SyntaxKind.ArrayInitializerExpression, SyntaxKind.CollectionInitializerExpression);
 #if DEBUG
                     startContext.RegisterSyntaxNodeAction(AnalyzeIdentifierName, SyntaxKind.IdentifierName);
                     startContext.RegisterSyntaxNodeAction(AnalyzeSimpleMemberAccessExpression, SyntaxKind.SimpleMemberAccessExpression);
@@ -670,6 +670,7 @@ namespace Roslynator.CSharp.Analysis
             DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ReportOnly.ConvertMethodGroupToAnonymousFunction, expression);
         }
 
+        //TODO: test
         private static void AnalyzeSwitchExpressionArm(SyntaxNodeAnalysisContext context)
         {
             var switchExpressionArm = (SwitchExpressionArmSyntax)context.Node;
@@ -737,6 +738,7 @@ namespace Roslynator.CSharp.Analysis
                 case SyntaxKind.YieldReturnStatement:
                 case SyntaxKind.ArrowExpressionClause:
                 case SyntaxKind.ArrayInitializerExpression:
+                case SyntaxKind.CollectionInitializerExpression:
                 case SyntaxKind.SwitchExpressionArm:
                 //
                 case SyntaxKind.SimpleMemberAccessExpression:
@@ -816,6 +818,13 @@ namespace Roslynator.CSharp.Analysis
                 case SyntaxKind.CatchDeclaration:
                 case SyntaxKind.SwitchExpression:
                 case SyntaxKind.ConversionOperatorDeclaration:
+                case SyntaxKind.TupleElement:
+                case SyntaxKind.ForEachVariableStatement:
+                case SyntaxKind.ConstantPattern:
+                case SyntaxKind.DoStatement:
+                case SyntaxKind.WhileStatement:
+                case SyntaxKind.UnaryMinusExpression:
+                case SyntaxKind.ArrayRankSpecifier:
                     {
                         return;
                     }

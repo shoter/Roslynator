@@ -115,6 +115,42 @@ class C
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
+        public async Task Test_Argument_TwoParameters2()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+using System;
+
+class C
+{
+    static object M(object p1, object p2) => null;
+
+    void M2(Func<object, object, object> p)
+    {
+        object f = null;
+        object f2 = null;
+
+        M2([|M|]);
+    }
+}
+", @"
+using System;
+
+class C
+{
+    static object M(object p1, object p2) => null;
+
+    void M2(Func<object, object, object> p)
+    {
+        object f = null;
+        object f2 = null;
+
+        M2((f3, f4) => M(f3, f4));
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
         public async Task Test_Argument_WithClassName()
         {
             await VerifyDiagnosticAndFixAsync(@"
@@ -408,7 +444,7 @@ class C
 {
     static object M() => null;
 
-    Func<object> M2(Func<object> p) => M;
+    Func<object> M2(Func<object> p) => [|M|];
 }
 ", @"
 using System;
@@ -453,6 +489,38 @@ class C
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
+        public async Task Test_CollectionInitializer()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+using System;
+using System.Collections.Generic;
+
+class C
+{
+    static object M() => null;
+
+    void M2(Func<object> p)
+    {
+        var x = new List<Func<object>>() { [|M|] };
+    }
+}
+", @"
+using System;
+using System.Collections.Generic;
+
+class C
+{
+    static object M() => null;
+
+    void M2(Func<object> p)
+    {
+        var x = new List<Func<object>>() { () => M() };
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
         public async Task Test_YieldReturnStatement()
         {
             await VerifyDiagnosticAndFixAsync(@"
@@ -470,6 +538,7 @@ class C
 }
 ", @"
 using System;
+using System.Collections.Generic;
 
 class C
 {
@@ -478,6 +547,42 @@ class C
     IEnumerable<Func<object>> M2(Func<object> p)
     {
         yield return () => M();
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
+        public async Task Test_SwitchExpressionArm()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+using System;
+
+class C
+{
+    static object M() => null;
+
+    Func<object> M(Func<object> p)
+    {
+        return """" switch
+        {
+            _ => [|M|],
+        };
+    }
+}
+", @"
+using System;
+
+class C
+{
+    static object M() => null;
+
+    Func<object> M(Func<object> p)
+    {
+        return """" switch
+        {
+            _ => () => M(),
+        };
     }
 }
 ");
