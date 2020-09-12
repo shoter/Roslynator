@@ -42,8 +42,13 @@ namespace Roslynator.CSharp.Analysis
                 }
                 else
                 {
+                    startContext.RegisterSyntaxNodeAction(AnalyzeArgument, SyntaxKind.Argument);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeEqualsValueClause, SyntaxKind.EqualsValueClause);
+                    startContext.RegisterSyntaxNodeAction(AnalyzeAssignment, SyntaxKind.SimpleAssignmentExpression, SyntaxKind.AddAssignmentExpression, SyntaxKind.SubtractAssignmentExpression, SyntaxKind.CoalesceAssignmentExpression);
+#if DEBUG
                     startContext.RegisterSyntaxNodeAction(AnalyzeIdentifierName, SyntaxKind.IdentifierName);
                     startContext.RegisterSyntaxNodeAction(AnalyzeSimpleMemberAccessExpression, SyntaxKind.SimpleMemberAccessExpression);
+#endif
                 }
             });
         }
@@ -530,102 +535,134 @@ namespace Roslynator.CSharp.Analysis
             SyntaxToken arrowTokenOrDelegateKeyword,
             MemberAccessExpressionSyntax memberAccessExpression)
         {
+            DiagnosticDescriptor fadeOutDescriptor = DiagnosticDescriptors.ConvertAnonymousFunctionToMethodGroupOrViceVersaFadeOut;
+
             if (parameter != null)
-                DiagnosticHelpers.ReportNode(context, DiagnosticDescriptors.ConvertAnonymousFunctionToMethodGroupOrViceVersaFadeOut, parameter);
+                DiagnosticHelpers.ReportNode(context, fadeOutDescriptor, parameter);
 
             if (parameterList != null)
-                DiagnosticHelpers.ReportNode(context, DiagnosticDescriptors.ConvertAnonymousFunctionToMethodGroupOrViceVersaFadeOut, parameterList);
+                DiagnosticHelpers.ReportNode(context, fadeOutDescriptor, parameterList);
 
             if (!arrowTokenOrDelegateKeyword.IsKind(SyntaxKind.None))
-                DiagnosticHelpers.ReportToken(context, DiagnosticDescriptors.ConvertAnonymousFunctionToMethodGroupOrViceVersaFadeOut, arrowTokenOrDelegateKeyword);
+                DiagnosticHelpers.ReportToken(context, fadeOutDescriptor, arrowTokenOrDelegateKeyword);
 
             if (block != null)
             {
-                CSharpDiagnosticHelpers.ReportBraces(context, DiagnosticDescriptors.ConvertAnonymousFunctionToMethodGroupOrViceVersaFadeOut, block);
+                CSharpDiagnosticHelpers.ReportBraces(context, fadeOutDescriptor, block);
 
                 if (block.Statements.SingleOrDefault(shouldThrow: false) is ReturnStatementSyntax returnStatement)
-                    DiagnosticHelpers.ReportToken(context, DiagnosticDescriptors.ConvertAnonymousFunctionToMethodGroupOrViceVersaFadeOut, returnStatement.ReturnKeyword);
+                    DiagnosticHelpers.ReportToken(context, fadeOutDescriptor, returnStatement.ReturnKeyword);
             }
 
             if (memberAccessExpression != null)
             {
-                DiagnosticHelpers.ReportNode(context, DiagnosticDescriptors.ConvertAnonymousFunctionToMethodGroupOrViceVersaFadeOut, memberAccessExpression.Expression);
-                DiagnosticHelpers.ReportToken(context, DiagnosticDescriptors.ConvertAnonymousFunctionToMethodGroupOrViceVersaFadeOut, memberAccessExpression.OperatorToken);
+                DiagnosticHelpers.ReportNode(context, fadeOutDescriptor, memberAccessExpression.Expression);
+                DiagnosticHelpers.ReportToken(context, fadeOutDescriptor, memberAccessExpression.OperatorToken);
             }
 
-            DiagnosticHelpers.ReportNode(context, DiagnosticDescriptors.ConvertAnonymousFunctionToMethodGroupOrViceVersaFadeOut, argumentList);
+            DiagnosticHelpers.ReportNode(context, fadeOutDescriptor, argumentList);
         }
 
-        private static void AnalyzeIdentifierName(SyntaxNodeAnalysisContext context)
+        private static void AnalyzeArgument(SyntaxNodeAnalysisContext context)
         {
-            var identifierName = (IdentifierNameSyntax)context.Node;
+            var argument = (ArgumentSyntax)context.Node;
 
-            if (!CanBeMethodGroup(identifierName))
+            ExpressionSyntax expression = argument.Expression.WalkDownParentheses();
+
+            if (!expression.IsKind(SyntaxKind.IdentifierName, SyntaxKind.SimpleMemberAccessExpression))
                 return;
 
-            IMethodSymbol methodSymbol = context.SemanticModel.GetMethodSymbol(identifierName, context.CancellationToken);
+            IMethodSymbol methodSymbol = context.SemanticModel.GetMethodSymbol(expression, context.CancellationToken);
 
             if (methodSymbol == null)
                 return;
 
-            DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ReportOnly.ConvertMethodGroupToAnonymousFunction, identifierName);
+            DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ReportOnly.ConvertMethodGroupToAnonymousFunction, expression);
+        }
+
+        private static void AnalyzeEqualsValueClause(SyntaxNodeAnalysisContext context)
+        {
+            var argument = (EqualsValueClauseSyntax)context.Node;
+
+            ExpressionSyntax expression = argument.Value.WalkDownParentheses();
+
+            if (!expression.IsKind(SyntaxKind.IdentifierName, SyntaxKind.SimpleMemberAccessExpression))
+                return;
+
+            IMethodSymbol methodSymbol = context.SemanticModel.GetMethodSymbol(expression, context.CancellationToken);
+
+            if (methodSymbol == null)
+                return;
+
+            DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ReportOnly.ConvertMethodGroupToAnonymousFunction, expression);
+        }
+
+        private static void AnalyzeAssignment(SyntaxNodeAnalysisContext context)
+        {
+            var argument = (AssignmentExpressionSyntax)context.Node;
+
+            ExpressionSyntax expression = argument.Right.WalkDownParentheses();
+
+            if (!expression.IsKind(SyntaxKind.IdentifierName, SyntaxKind.SimpleMemberAccessExpression))
+                return;
+
+            IMethodSymbol methodSymbol = context.SemanticModel.GetMethodSymbol(expression, context.CancellationToken);
+
+            if (methodSymbol == null)
+                return;
+
+            DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ReportOnly.ConvertMethodGroupToAnonymousFunction, expression);
+        }
+#if DEBUG
+        private static void AnalyzeIdentifierName(SyntaxNodeAnalysisContext context)
+        {
+            var identifierName = (IdentifierNameSyntax)context.Node;
+
+            Analyze(identifierName);
         }
 
         private static void AnalyzeSimpleMemberAccessExpression(SyntaxNodeAnalysisContext context)
         {
             var simpleMemberAccess = (MemberAccessExpressionSyntax)context.Node;
 
-            if (!CanBeMethodGroup(simpleMemberAccess))
-                return;
-
-            IMethodSymbol methodSymbol = context.SemanticModel.GetMethodSymbol(simpleMemberAccess, context.CancellationToken);
-
-            if (methodSymbol == null)
-                return;
-
-            DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.ReportOnly.ConvertMethodGroupToAnonymousFunction, simpleMemberAccess);
+            Analyze(simpleMemberAccess);
         }
 
-        private static bool CanBeMethodGroup(ExpressionSyntax expression)
+        private static void Analyze(ExpressionSyntax expression)
         {
-            SyntaxNode parent = expression.WalkUpParentheses().Parent;
+            expression = expression.WalkUpParentheses();
+
+            SyntaxNode parent = expression.Parent;
 
             switch (parent.Kind())
             {
-                case SyntaxKind.SimpleMemberAccessExpression:
-                case SyntaxKind.InvocationExpression:
-                case SyntaxKind.MemberBindingExpression:
-                case SyntaxKind.ConditionalAccessExpression:
-                    {
-                        return false;
-                    }
                 case SyntaxKind.Argument:
-                    {
-                        var argument = (ArgumentSyntax)parent;
-
-                        return object.ReferenceEquals(argument.Expression, parent);
-                    }
                 case SyntaxKind.EqualsValueClause:
-                    {
-                        var objectCreation = (EqualsValueClauseSyntax)parent;
-
-                        return object.ReferenceEquals(objectCreation.Value, parent);
-                    }
                 case SyntaxKind.SimpleAssignmentExpression:
                 case SyntaxKind.AddAssignmentExpression:
                 case SyntaxKind.SubtractAssignmentExpression:
                 case SyntaxKind.CoalesceAssignmentExpression:
+                //
+                case SyntaxKind.SimpleMemberAccessExpression:
+                case SyntaxKind.InvocationExpression:
+                case SyntaxKind.MemberBindingExpression:
+                case SyntaxKind.ConditionalAccessExpression:
+                case SyntaxKind.UsingDirective:
+                case SyntaxKind.NamespaceDeclaration:
+                case SyntaxKind.QualifiedName:
+                case SyntaxKind.AliasQualifiedName:
+                case SyntaxKind.VariableDeclaration:
+                case SyntaxKind.ObjectCreationExpression:
                     {
-                        var assignment = (AssignmentExpressionSyntax)parent;
-
-                        return object.ReferenceEquals(assignment.Right, parent);
+                        return;
                     }
                 default:
                     {
-                        Debug.Fail(expression.ToString() + Environment.NewLine + Environment.NewLine + parent.ToString());
-                        return false;
+                        Debug.Fail($"{expression.Kind()} {expression}\n\n{parent.Kind()} {parent}");
+                        break;
                     }
             }
         }
+#endif
     }
 }

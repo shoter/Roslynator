@@ -11,7 +11,7 @@ using static Roslynator.CSharp.CSharpFactory;
 
 namespace Roslynator.CSharp.Refactorings
 {
-    internal static class ReplaceMethodGroupWithLambdaRefactoring
+    internal static class ConvertMethodGroupToLambdaRefactoring
     {
         public static async Task ComputeRefactoringAsync(RefactoringContext context, AssignmentExpressionSyntax assignment)
         {
@@ -53,9 +53,9 @@ namespace Roslynator.CSharp.Refactorings
                 return;
 
             context.RegisterRefactoring(
-                "Replace method group with lambda",
+                "Convert to lambda",
                 cancellationToken => RefactorAsync(context.Document, expression, methodSymbol, semanticModel, cancellationToken),
-                RefactoringIdentifiers.ReplaceMethodGroupWithLambda);
+                RefactoringIdentifiers.ConvertMethodGroupToLambda);
         }
 
         private static Task<Document> RefactorAsync(

@@ -36,7 +36,7 @@ namespace Roslynator.CSharp.Refactorings
             }
 
             if (context.IsRefactoringEnabled(RefactoringIdentifiers.ReplaceMethodGroupWithLambda))
-                await ReplaceMethodGroupWithLambdaRefactoring.ComputeRefactoringAsync(context, argument).ConfigureAwait(false);
+                await ConvertMethodGroupToLambdaRefactoring.ComputeRefactoringAsync(context, argument).ConfigureAwait(false);
         }
     }
 }

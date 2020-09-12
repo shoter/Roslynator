@@ -45,7 +45,7 @@ namespace Roslynator.CSharp.CodeFixes
             if (node is AnonymousFunctionExpressionSyntax anonymousFunction)
             {
                 CodeAction codeAction = CodeAction.Create(
-                    "Use method group",
+                    "Convert to method group",
                     ct => ConvertAnonymousFunctionToMethodGroupAsync(document, anonymousFunction, ct),
                     GetEquivalenceKey(diagnostic));
 
@@ -54,7 +54,7 @@ namespace Roslynator.CSharp.CodeFixes
             else
             {
                 CodeAction codeAction = CodeAction.Create(
-                    "Use lambda",
+                    "Convert to lambda",
                     ct => ConvertMethodGroupToAnonymousFunctionAsync(document, (ExpressionSyntax)node, ct),
                     GetEquivalenceKey(diagnostic));
 
@@ -94,19 +94,21 @@ namespace Roslynator.CSharp.CodeFixes
 
             IMethodSymbol methodSymbol = semanticModel.GetMethodSymbol(expression);
 
-            const string defaultParameterName = "f";
-
             LambdaExpressionSyntax lambda = null;
 
             ImmutableArray<IParameterSymbol> parameterSymbols = methodSymbol.Parameters;
 
             if (parameterSymbols.Length == 1)
             {
-                string parameterName = NameGenerator.Default.EnsureUniqueLocalName(defaultParameterName, semanticModel, expression.SpanStart, cancellationToken: cancellationToken);
+                string parameterName = NameGenerator.Default.EnsureUniqueLocalName(DefaultNames.LambdaParameter, semanticModel, expression.SpanStart, cancellationToken: cancellationToken);
 
                 invocationExpression = InvocationExpression(expression.WithoutTrivia(), ArgumentList(SingletonSeparatedList(Argument(IdentifierName(parameterName)))));
 
-                lambda = SimpleLambdaExpression(Parameter(Identifier(parameterName).WithRenameAnnotation()), invocationExpression);
+                lambda = SimpleLambdaExpression(
+                    (methodSymbol.IsAsync) ? Token(SyntaxKind.AsyncKeyword) : default,
+                    Parameter(Identifier(parameterName).WithRenameAnnotation()),
+                    Token(SyntaxKind.EqualsGreaterThanToken),
+                    invocationExpression);
             }
             else
             {
@@ -122,12 +124,12 @@ namespace Roslynator.CSharp.CodeFixes
                 {
                     var names = new List<string>()
                     {
-                        NameGenerator.Default.EnsureUniqueLocalName(defaultParameterName, semanticModel, expression.SpanStart, cancellationToken: cancellationToken)
+                        NameGenerator.Default.EnsureUniqueLocalName(DefaultNames.LambdaParameter, semanticModel, expression.SpanStart, cancellationToken: cancellationToken)
                     };
 
                     for (int i = 1; i < parameterSymbols.Length; i++)
                     {
-                        names.Add(NameGenerator.Default.EnsureUniqueLocalName(defaultParameterName + (i + 1).ToString(), semanticModel, expression.SpanStart, cancellationToken: cancellationToken));
+                        names.Add(NameGenerator.Default.EnsureUniqueLocalName(DefaultNames.LambdaParameter + (i + 1).ToString(), semanticModel, expression.SpanStart, cancellationToken: cancellationToken));
                     }
 
                     parameterList = ParameterList(names.Select(f => Parameter(Identifier(f).WithRenameAnnotation())).ToSeparatedSyntaxList());
@@ -135,10 +137,16 @@ namespace Roslynator.CSharp.CodeFixes
                     argumentList = ArgumentList(names.Select(f => Argument(IdentifierName(f))).ToSeparatedSyntaxList());
                 }
 
-                lambda = ParenthesizedLambdaExpression(parameterList, InvocationExpression(expression.WithoutTrivia(), argumentList));
+                lambda = ParenthesizedLambdaExpression(
+                    (methodSymbol.IsAsync) ? Token(SyntaxKind.AsyncKeyword) : default,
+                    parameterList,
+                    Token(SyntaxKind.EqualsGreaterThanToken),
+                    InvocationExpression(expression.WithoutTrivia(), argumentList));
             }
 
-            lambda = lambda.WithTriviaFrom(expression);
+            lambda = lambda
+                .WithTriviaFrom(expression)
+                .WithFormatterAnnotation();
 
             return await document.ReplaceNodeAsync(expression, lambda, cancellationToken).ConfigureAwait(false);
         }

@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Roslynator.CSharp.CodeFixes;
+using Roslynator.CSharp.Testing;
 using Xunit;
 
 namespace Roslynator.CSharp.Analysis.Tests
@@ -16,6 +17,12 @@ namespace Roslynator.CSharp.Analysis.Tests
         public override DiagnosticAnalyzer Analyzer { get; } = new ConvertAnonymousFunctionToMethodGroupOrViceVersaAnalyzer();
 
         public override CodeFixProvider FixProvider { get; } = new ConvertAnonymousFunctionToMethodGroupOrViceVersaCodeFixProvider();
+
+        protected override CSharpCodeVerificationOptions UpdateOptions(CSharpCodeVerificationOptions options)
+        {
+            return base.UpdateOptions(options)
+                .WithEnabled(AnalyzerOptions.ConvertMethodGroupToAnonymousFunction);
+        }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
         public async Task Test_Argument()
@@ -44,7 +51,7 @@ class C
         M2(() => M());
     }
 }
-", options: Options.WithEnabled(AnalyzerOptions.ConvertMethodGroupToAnonymousFunction));
+");
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
@@ -74,7 +81,7 @@ class C
         M2(f => M(f));
     }
 }
-", options: Options.WithEnabled(AnalyzerOptions.ConvertMethodGroupToAnonymousFunction));
+");
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
@@ -104,7 +111,7 @@ class C
         M2((f, f2) => M(f, f2));
     }
 }
-", options: Options.WithEnabled(AnalyzerOptions.ConvertMethodGroupToAnonymousFunction));
+");
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
@@ -132,10 +139,9 @@ class C
     void M2(Func<object> p)
     {
         M2(() => C.M());
-
     }
 }
-", options: Options.WithEnabled(AnalyzerOptions.ConvertMethodGroupToAnonymousFunction));
+");
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
@@ -144,28 +150,34 @@ class C
             await VerifyDiagnosticAndFixAsync(@"
 using System;
 
-class C
+namespace N
 {
-    static object M() => null;
-
-    void M2(Func<object> p)
+    class C
     {
-        M2([|N.C.M|]);
+        static object M() => null;
+
+        void M2(Func<object> p)
+        {
+            M2([|N.C.M|]);
+        }
     }
 }
 ", @"
 using System;
 
-class C
+namespace N
 {
-    static object M() => null;
-
-    void M2(Func<object> p)
+    class C
     {
-        M2(() => N.C.M());
+        static object M() => null;
+
+        void M2(Func<object> p)
+        {
+            M2(() => N.C.M());
+        }
     }
 }
-", options: Options.WithEnabled(AnalyzerOptions.ConvertMethodGroupToAnonymousFunction));
+");
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
@@ -174,28 +186,34 @@ class C
             await VerifyDiagnosticAndFixAsync(@"
 using System;
 
-class C
+namespace N
 {
-    static object M() => null;
-
-    void M2(Func<object> p)
+    class C
     {
-        M2([|global::N.C.M|]);
+        static object M() => null;
+
+        void M2(Func<object> p)
+        {
+            M2([|global::N.C.M|]);
+        }
     }
 }
 ", @"
 using System;
 
-class C
+namespace N
 {
-    static object M() => null;
-
-    void M2(Func<object> p)
+    class C
     {
-        M2(() => global::N.C.M());
+        static object M() => null;
+
+        void M2(Func<object> p)
+        {
+            M2(() => global::N.C.M());
+        }
     }
 }
-", options: Options.WithEnabled(AnalyzerOptions.ConvertMethodGroupToAnonymousFunction));
+");
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
@@ -225,7 +243,7 @@ class C
         Func<object> x = () => M();
     }
 }
-", options: Options.WithEnabled(AnalyzerOptions.ConvertMethodGroupToAnonymousFunction));
+");
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
@@ -257,13 +275,15 @@ class C
 
     void M2(Func<object> p)
     {
+        Func<object> l = null;
+
         l = () => M();
         l += () => M();
         l -= () => M();
         l ??= () => M();
     }
 }
-", options: Options.WithEnabled(AnalyzerOptions.ConvertMethodGroupToAnonymousFunction));
+");
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
@@ -274,7 +294,7 @@ using System;
 
 class C
 {
-    Func<object> P { get; set; };
+    Func<object> P { get; set; }
 
     static object M() => null;
 
@@ -288,7 +308,7 @@ using System;
 
 class C
 {
-    Func<object> P { get; set; };
+    Func<object> P { get; set; }
 
     static object M() => null;
 
@@ -297,7 +317,7 @@ class C
         var c = new C() { P = () => M() };
     }
 }
-", options: Options.WithEnabled(AnalyzerOptions.ConvertMethodGroupToAnonymousFunction));
+");
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
@@ -321,7 +341,7 @@ class C
 
     static object M() => null;
 }
-", options: Options.WithEnabled(AnalyzerOptions.ConvertMethodGroupToAnonymousFunction));
+");
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
@@ -345,22 +365,25 @@ class C
 
     static object M() => null;
 }
-", options: Options.WithEnabled(AnalyzerOptions.ConvertMethodGroupToAnonymousFunction));
+");
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa)]
-        public async Task TestNoDiagnostic_NullReferenceException()
+        public async Task TestNoDiagnostic_AnalyzerOptionDisabled()
         {
             await VerifyNoDiagnosticAsync(@"
 using System;
 
 class C
 {
-    void M2()
+    static object M() => null;
+
+    void M2(Func<object> p)
     {
+        M2(M);
     }
 }
-", options: Options.WithEnabled(AnalyzerOptions.ConvertMethodGroupToAnonymousFunction));
+", options: Options.WithSuppressed(AnalyzerOptions.ConvertMethodGroupToAnonymousFunction));
         }
     }
 }
