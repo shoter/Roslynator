@@ -25,7 +25,7 @@ namespace Roslynator.CSharp.CodeFixes
             {
                 return ImmutableArray.Create(
                     DiagnosticIdentifiers.UnusedElementInDocumentationComment,
-                    DiagnosticIdentifiers.UseCorrectDocumentationCommentTag);
+                    DiagnosticIdentifiers.FixDocumentationCommentTag);
             }
         }
 
@@ -56,15 +56,15 @@ namespace Roslynator.CSharp.CodeFixes
                             context.RegisterCodeFix(codeAction, diagnostic);
                             break;
                         }
-                    case DiagnosticIdentifiers.UseCorrectDocumentationCommentTag:
+                    case DiagnosticIdentifiers.FixDocumentationCommentTag:
                         {
                             XmlElementInfo elementInfo = SyntaxInfo.XmlElementInfo(xmlNode);
 
                             CodeAction codeAction = CodeAction.Create(
                                 (elementInfo.GetTag() == XmlTag.C)
-                                    ? "Change element name to 'code'"
-                                    : "Change element name to 'c'",
-                                ct => UseCorrectDocumentationCommentTagAsync(document, elementInfo, ct),
+                                    ? "Rename tag to 'code'"
+                                    : "Rename tag to 'c'",
+                                ct => FixDocumentationCommentTagAsync(document, elementInfo, ct),
                                 GetEquivalenceKey(diagnostic));
 
                             context.RegisterCodeFix(codeAction, diagnostic);
@@ -180,7 +180,7 @@ namespace Roslynator.CSharp.CodeFixes
             }
         }
 
-        private static Task<Document> UseCorrectDocumentationCommentTagAsync(
+        private static Task<Document> FixDocumentationCommentTagAsync(
             Document document,
             in XmlElementInfo elementInfo,
             CancellationToken cancellationToken)

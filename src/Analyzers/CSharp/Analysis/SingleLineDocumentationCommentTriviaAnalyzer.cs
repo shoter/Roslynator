@@ -23,7 +23,7 @@ namespace Roslynator.CSharp.Analysis
             DiagnosticDescriptors.AddTypeParamElementToDocumentationComment,
             DiagnosticDescriptors.UnusedElementInDocumentationComment,
             DiagnosticDescriptors.OrderElementsInDocumentationComment,
-            DiagnosticDescriptors.UseCorrectDocumentationCommentTag);
+            DiagnosticDescriptors.FixDocumentationCommentTag);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
@@ -96,8 +96,8 @@ namespace Roslynator.CSharp.Analysis
 
                                 containsSummaryElement = true;
 
-                                if (useCorrectDocumentationTagEnabled ??= !context.IsAnalyzerSuppressed(DiagnosticDescriptors.UseCorrectDocumentationCommentTag))
-                                    UseCorrectDocumentationCommentTagAnalysis.Analyze(context, info);
+                                if (useCorrectDocumentationTagEnabled ??= !context.IsAnalyzerSuppressed(DiagnosticDescriptors.FixDocumentationCommentTag))
+                                    FixDocumentationCommentTagAnalysis.Analyze(context, info);
 
                                 break;
                             }
@@ -109,8 +109,8 @@ namespace Roslynator.CSharp.Analysis
                                 if (info.IsContentEmptyOrWhitespace)
                                     ReportUnusedElement(context, info.Element, i, content);
 
-                                if (useCorrectDocumentationTagEnabled ??= !context.IsAnalyzerSuppressed(DiagnosticDescriptors.UseCorrectDocumentationCommentTag))
-                                    UseCorrectDocumentationCommentTagAnalysis.Analyze(context, info);
+                                if (useCorrectDocumentationTagEnabled ??= !context.IsAnalyzerSuppressed(DiagnosticDescriptors.FixDocumentationCommentTag))
+                                    FixDocumentationCommentTagAnalysis.Analyze(context, info);
 
                                 break;
                             }
@@ -120,8 +120,8 @@ namespace Roslynator.CSharp.Analysis
                         case XmlTag.Permission:
                         case XmlTag.TypeParam:
                             {
-                                if (useCorrectDocumentationTagEnabled ??= !context.IsAnalyzerSuppressed(DiagnosticDescriptors.UseCorrectDocumentationCommentTag))
-                                    UseCorrectDocumentationCommentTagAnalysis.Analyze(context, info);
+                                if (useCorrectDocumentationTagEnabled ??= !context.IsAnalyzerSuppressed(DiagnosticDescriptors.FixDocumentationCommentTag))
+                                    FixDocumentationCommentTagAnalysis.Analyze(context, info);
 
                                 break;
                             }

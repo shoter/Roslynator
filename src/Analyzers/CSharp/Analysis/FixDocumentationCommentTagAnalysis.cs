@@ -9,7 +9,7 @@ using static Roslynator.DiagnosticHelpers;
 
 namespace Roslynator.CSharp.Analysis
 {
-    public static class UseCorrectDocumentationCommentTagAnalysis
+    public static class FixDocumentationCommentTagAnalysis
     {
         public static void Analyze(SyntaxNodeAnalysisContext context, XmlElementInfo elementInfo)
         {
@@ -127,7 +127,7 @@ namespace Roslynator.CSharp.Analysis
                 return;
 
             if (context.Node.SyntaxTree.IsMultiLineSpan(content.FullSpan))
-                ReportDiagnostic(context, DiagnosticDescriptors.UseCorrectDocumentationCommentTag, elementInfo.Element);
+                ReportDiagnostic(context, DiagnosticDescriptors.FixDocumentationCommentTag, elementInfo.Element);
         }
 
         private static void AnalyzeCodeElement(SyntaxNodeAnalysisContext context, XmlElementInfo elementInfo)
@@ -143,7 +143,7 @@ namespace Roslynator.CSharp.Analysis
                 return;
 
             if (context.Node.SyntaxTree.IsSingleLineSpan(content.FullSpan))
-                ReportDiagnostic(context, DiagnosticDescriptors.UseCorrectDocumentationCommentTag, elementInfo.Element);
+                ReportDiagnostic(context, DiagnosticDescriptors.FixDocumentationCommentTag, elementInfo.Element);
         }
     }
 }

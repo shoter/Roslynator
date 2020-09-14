@@ -9,15 +9,15 @@ using Xunit;
 
 namespace Roslynator.CSharp.Analysis.Tests
 {
-    public class RCS1247UseCorrectDocumentationCommentTagTests : AbstractCSharpFixVerifier
+    public class RCS1247FixDocumentationCommentTagTests : AbstractCSharpFixVerifier
     {
-        public override DiagnosticDescriptor Descriptor { get; } = DiagnosticDescriptors.UseCorrectDocumentationCommentTag;
+        public override DiagnosticDescriptor Descriptor { get; } = DiagnosticDescriptors.FixDocumentationCommentTag;
 
         public override DiagnosticAnalyzer Analyzer { get; } = new SingleLineDocumentationCommentTriviaAnalyzer();
 
         public override CodeFixProvider FixProvider { get; } = new XmlNodeCodeFixProvider();
 
-        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseCorrectDocumentationCommentTag)]
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.FixDocumentationCommentTag)]
         public async Task Test_C_Multiline()
         {
             await VerifyDiagnosticAndFixAsync(@"
@@ -77,7 +77,7 @@ class C
 ");
         }
 
-        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseCorrectDocumentationCommentTag)]
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.FixDocumentationCommentTag)]
         public async Task Test_C_Multiline_List()
         {
             await VerifyDiagnosticAndFixAsync(@"
@@ -153,7 +153,7 @@ class C
 ");
         }
 
-        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseCorrectDocumentationCommentTag)]
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.FixDocumentationCommentTag)]
         public async Task Test_Code_Singleline()
         {
             await VerifyDiagnosticAndFixAsync(@"
@@ -197,7 +197,7 @@ class C
 ");
         }
 
-        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseCorrectDocumentationCommentTag)]
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.FixDocumentationCommentTag)]
         public async Task Test_Code_Singleline_List()
         {
             await VerifyDiagnosticAndFixAsync(@"
@@ -257,7 +257,7 @@ class C
 ");
         }
 
-        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseCorrectDocumentationCommentTag)]
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.FixDocumentationCommentTag)]
         public async Task TestNoDiagnostic_C_Singleline()
         {
             await VerifyNoDiagnosticAsync(@"
@@ -281,7 +281,7 @@ class C
 ");
         }
 
-        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseCorrectDocumentationCommentTag)]
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.FixDocumentationCommentTag)]
         public async Task TestNoDiagnostic_Code_Multiline()
         {
             await VerifyNoDiagnosticAsync(@"

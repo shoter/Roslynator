@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Analyzers>
-  <Analyzer Identifier="UseCorrectDocumentationCommentTag" IsDevelopment="true">
+  <Analyzer Identifier="FixDocumentationCommentTag" IsDevelopment="true">
     <Id>RCS1247</Id>
-    <Title>Use correct documentation comment tag.</Title>
+    <Title>Fix documentation comment tag.</Title>
     <Category>Readability</Category>
     <DefaultSeverity>Info</DefaultSeverity>
     <IsEnabledByDefault>true</IsEnabledByDefault>

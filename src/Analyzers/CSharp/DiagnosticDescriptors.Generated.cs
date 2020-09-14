@@ -2442,15 +2442,15 @@ namespace Roslynator.CSharp
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS1247</summary>
-        public static readonly DiagnosticDescriptor UseCorrectDocumentationCommentTag = DiagnosticDescriptorFactory.Default.Create(
-            id:                 DiagnosticIdentifiers.UseCorrectDocumentationCommentTag, 
-            title:              "Use correct documentation comment tag.", 
-            messageFormat:      "Use correct documentation comment tag.", 
+        public static readonly DiagnosticDescriptor FixDocumentationCommentTag = DiagnosticDescriptorFactory.Default.Create(
+            id:                 DiagnosticIdentifiers.FixDocumentationCommentTag, 
+            title:              "Fix documentation comment tag.", 
+            messageFormat:      "Fix documentation comment tag.", 
             category:           DiagnosticCategories.Readability, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: true, 
             description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.UseCorrectDocumentationCommentTag, 
+            helpLinkUri:        DiagnosticIdentifiers.FixDocumentationCommentTag, 
             customTags:         Array.Empty<string>());
 
         public static partial class ReportOnly
