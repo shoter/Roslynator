@@ -710,130 +710,14 @@ namespace Roslynator.CSharp.Analysis
         {
             var identifierName = (IdentifierNameSyntax)context.Node;
 
-            Analyze(identifierName);
+            ConvertMethodGroupToAnonymousFunctionAnalysis.IsFixable(identifierName, context.SemanticModel, context.CancellationToken);
         }
 
         private static void AnalyzeSimpleMemberAccessExpression(SyntaxNodeAnalysisContext context)
         {
             var simpleMemberAccess = (MemberAccessExpressionSyntax)context.Node;
 
-            Analyze(simpleMemberAccess);
-        }
-
-        private static void Analyze(ExpressionSyntax expression)
-        {
-            expression = expression.WalkUpParentheses();
-
-            SyntaxNode parent = expression.Parent;
-
-            switch (parent.Kind())
-            {
-                case SyntaxKind.Argument:
-                case SyntaxKind.EqualsValueClause:
-                case SyntaxKind.SimpleAssignmentExpression:
-                case SyntaxKind.AddAssignmentExpression:
-                case SyntaxKind.SubtractAssignmentExpression:
-                case SyntaxKind.CoalesceAssignmentExpression:
-                case SyntaxKind.ReturnStatement:
-                case SyntaxKind.YieldReturnStatement:
-                case SyntaxKind.ArrowExpressionClause:
-                case SyntaxKind.ArrayInitializerExpression:
-                case SyntaxKind.CollectionInitializerExpression:
-                case SyntaxKind.SwitchExpressionArm:
-                //
-                case SyntaxKind.SimpleMemberAccessExpression:
-                case SyntaxKind.InvocationExpression:
-                case SyntaxKind.MemberBindingExpression:
-                case SyntaxKind.ConditionalAccessExpression:
-                case SyntaxKind.UsingDirective:
-                case SyntaxKind.NamespaceDeclaration:
-                case SyntaxKind.QualifiedName:
-                case SyntaxKind.AliasQualifiedName:
-                case SyntaxKind.VariableDeclaration:
-                case SyntaxKind.ObjectCreationExpression:
-                case SyntaxKind.NameEquals:
-                case SyntaxKind.SimpleBaseType:
-                case SyntaxKind.PropertyDeclaration:
-                case SyntaxKind.Parameter:
-                case SyntaxKind.LogicalAndExpression:
-                case SyntaxKind.LogicalOrExpression:
-                case SyntaxKind.LogicalNotExpression:
-                case SyntaxKind.Interpolation:
-                case SyntaxKind.PragmaWarningDirectiveTrivia:
-                case SyntaxKind.Attribute:
-                case SyntaxKind.TypeArgumentList:
-                case SyntaxKind.AttributeArgument:
-                case SyntaxKind.NameMemberCref:
-                case SyntaxKind.XmlNameAttribute:
-                case SyntaxKind.QualifiedCref:
-                case SyntaxKind.TypeConstraint:
-                case SyntaxKind.TypeParameterConstraintClause:
-                case SyntaxKind.IndexerDeclaration:
-                case SyntaxKind.ExplicitInterfaceSpecifier:
-                case SyntaxKind.BitwiseAndExpression:
-                case SyntaxKind.BitwiseNotExpression:
-                case SyntaxKind.BitwiseOrExpression:
-                case SyntaxKind.NameColon:
-                case SyntaxKind.CaseSwitchLabel:
-                case SyntaxKind.MethodDeclaration:
-                case SyntaxKind.SwitchStatement:
-                case SyntaxKind.DeclarationExpression:
-                case SyntaxKind.AddExpression:
-                case SyntaxKind.SubtractExpression:
-                case SyntaxKind.PostIncrementExpression:
-                case SyntaxKind.PostDecrementExpression:
-                case SyntaxKind.PreIncrementExpression:
-                case SyntaxKind.PreDecrementExpression:
-                case SyntaxKind.ArrayType:
-                case SyntaxKind.EqualsExpression:
-                case SyntaxKind.LessThanExpression:
-                case SyntaxKind.LessThanOrEqualExpression:
-                case SyntaxKind.GreaterThanOrEqualExpression:
-                case SyntaxKind.GreaterThanExpression:
-                case SyntaxKind.NotEqualsExpression:
-                case SyntaxKind.IsPatternExpression:
-                case SyntaxKind.DeclarationPattern:
-                case SyntaxKind.CastExpression:
-                case SyntaxKind.ConditionalExpression:
-                case SyntaxKind.CoalesceExpression:
-                case SyntaxKind.ElementAccessExpression:
-                case SyntaxKind.ForEachStatement:
-                case SyntaxKind.IfStatement:
-                case SyntaxKind.AsExpression:
-                case SyntaxKind.IsExpression:
-                case SyntaxKind.IfDirectiveTrivia:
-                case SyntaxKind.DefaultExpression:
-                case SyntaxKind.TypeOfExpression:
-                case SyntaxKind.MultiplyExpression:
-                case SyntaxKind.DivideExpression:
-                case SyntaxKind.SimpleLambdaExpression:
-                case SyntaxKind.ParenthesizedLambdaExpression:
-                case SyntaxKind.AndAssignmentExpression:
-                case SyntaxKind.MultiplyAssignmentExpression:
-                case SyntaxKind.OrAssignmentExpression:
-                case SyntaxKind.NullableType:
-                case SyntaxKind.LeftShiftExpression:
-                case SyntaxKind.RightShiftExpression:
-                case SyntaxKind.LocalFunctionStatement:
-                case SyntaxKind.CatchDeclaration:
-                case SyntaxKind.SwitchExpression:
-                case SyntaxKind.ConversionOperatorDeclaration:
-                case SyntaxKind.TupleElement:
-                case SyntaxKind.ForEachVariableStatement:
-                case SyntaxKind.ConstantPattern:
-                case SyntaxKind.DoStatement:
-                case SyntaxKind.WhileStatement:
-                case SyntaxKind.UnaryMinusExpression:
-                case SyntaxKind.ArrayRankSpecifier:
-                    {
-                        return;
-                    }
-                default:
-                    {
-                        Debug.Fail($"{expression.Kind()} {expression}\n\n{parent.Kind()} {parent}");
-                        break;
-                    }
-            }
+            ConvertMethodGroupToAnonymousFunctionAnalysis.IsFixable(simpleMemberAccess, context.SemanticModel, context.CancellationToken);
         }
 #endif
     }
