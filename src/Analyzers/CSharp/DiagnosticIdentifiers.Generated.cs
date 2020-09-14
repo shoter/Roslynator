@@ -82,7 +82,7 @@ namespace Roslynator.CSharp
         public const string DeclareUsingDirectiveOnTopLevel = "RCS1094";
         public const string ConvertHasFlagCallToBitwiseOperationOrViceVersa = "RCS1096";
         public const string RemoveRedundantToStringCall = "RCS1097";
-        public const string AvoidNullLiteralExpressionOnLeftSideOfBinaryExpression = "RCS1098";
+        public const string ConstantValuesShouldBePlacedOnRightSideOfComparisons = "RCS1098";
         public const string DefaultLabelShouldBeLastLabelInSwitchSection = "RCS1099";
         public const string FormatDocumentationSummaryOnSingleLine = "RCS1100";
         public const string FormatDocumentationSummaryOnMultipleLines = "RCS1101";
@@ -167,7 +167,7 @@ namespace Roslynator.CSharp
         public const string UseEventArgsEmpty = "RCS1204";
         public const string OrderNamedArguments = "RCS1205";
         public const string UseConditionalAccessInsteadOfConditionalExpression = "RCS1206";
-        public const string ConvertAnonymousFunctionToMethodGroup = "RCS1207";
+        public const string ConvertAnonymousFunctionToMethodGroupOrViceVersa = "RCS1207";
         public const string ReduceIfNesting = "RCS1208";
         public const string OrderTypeParameterConstraints = "RCS1209";
         public const string ReturnTaskInsteadOfNull = "RCS1210";
@@ -206,5 +206,6 @@ namespace Roslynator.CSharp
         public const string DuplicateWordInComment = "RCS1243";
         public const string SimplifyDefaultExpression = "RCS1244";
         public const string UseElementAccess = "RCS1246";
+        public const string FixDocumentationCommentTag = "RCS1247";
     }
 }

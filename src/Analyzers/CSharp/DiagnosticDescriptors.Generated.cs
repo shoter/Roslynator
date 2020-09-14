@@ -936,15 +936,15 @@ namespace Roslynator.CSharp
             customTags:         WellKnownDiagnosticTags.Unnecessary);
 
         /// <summary>RCS1098</summary>
-        public static readonly DiagnosticDescriptor AvoidNullLiteralExpressionOnLeftSideOfBinaryExpression = DiagnosticDescriptorFactory.Default.Create(
-            id:                 DiagnosticIdentifiers.AvoidNullLiteralExpressionOnLeftSideOfBinaryExpression, 
-            title:              "Avoid 'null' on the left side of a binary expression.", 
-            messageFormat:      "'null' should be on the right side of a binary expression.", 
+        public static readonly DiagnosticDescriptor ConstantValuesShouldBePlacedOnRightSideOfComparisons = DiagnosticDescriptorFactory.Default.Create(
+            id:                 DiagnosticIdentifiers.ConstantValuesShouldBePlacedOnRightSideOfComparisons, 
+            title:              "Constant values should be placed on right side of comparisons.", 
+            messageFormat:      "Constant values should be placed on right side of comparisons.", 
             category:           DiagnosticCategories.Readability, 
             defaultSeverity:    DiagnosticSeverity.Info, 
             isEnabledByDefault: true, 
             description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.AvoidNullLiteralExpressionOnLeftSideOfBinaryExpression, 
+            helpLinkUri:        DiagnosticIdentifiers.ConstantValuesShouldBePlacedOnRightSideOfComparisons, 
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS1099</summary>
@@ -1964,18 +1964,18 @@ namespace Roslynator.CSharp
             customTags:         Array.Empty<string>());
 
         /// <summary>RCS1207</summary>
-        public static readonly DiagnosticDescriptor ConvertAnonymousFunctionToMethodGroup = DiagnosticDescriptorFactory.Default.Create(
-            id:                 DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroup, 
-            title:              "Convert anonymous function to method group.", 
+        public static readonly DiagnosticDescriptor ConvertAnonymousFunctionToMethodGroupOrViceVersa = DiagnosticDescriptorFactory.Default.Create(
+            id:                 DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa, 
+            title:              "Convert anonymous function to method group (or vice versa).", 
             messageFormat:      "Convert anonymous function to method group.", 
             category:           DiagnosticCategories.Simplification, 
             defaultSeverity:    DiagnosticSeverity.Hidden, 
             isEnabledByDefault: false, 
             description:        null, 
-            helpLinkUri:        DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroup, 
+            helpLinkUri:        DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa, 
             customTags:         Array.Empty<string>());
 
-        public static readonly DiagnosticDescriptor ConvertAnonymousFunctionToMethodGroupFadeOut = DiagnosticDescriptorFactory.CreateFadeOut(ConvertAnonymousFunctionToMethodGroup);
+        public static readonly DiagnosticDescriptor ConvertAnonymousFunctionToMethodGroupOrViceVersaFadeOut = DiagnosticDescriptorFactory.CreateFadeOut(ConvertAnonymousFunctionToMethodGroupOrViceVersa);
 
         /// <summary>RCS1208</summary>
         public static readonly DiagnosticDescriptor ReduceIfNesting = DiagnosticDescriptorFactory.Default.Create(
@@ -2441,6 +2441,18 @@ namespace Roslynator.CSharp
             helpLinkUri:        DiagnosticIdentifiers.UseElementAccess, 
             customTags:         Array.Empty<string>());
 
+        /// <summary>RCS1247</summary>
+        public static readonly DiagnosticDescriptor FixDocumentationCommentTag = DiagnosticDescriptorFactory.Default.Create(
+            id:                 DiagnosticIdentifiers.FixDocumentationCommentTag, 
+            title:              "Fix documentation comment tag.", 
+            messageFormat:      "Fix documentation comment tag.", 
+            category:           DiagnosticCategories.Readability, 
+            defaultSeverity:    DiagnosticSeverity.Info, 
+            isEnabledByDefault: true, 
+            description:        null, 
+            helpLinkUri:        DiagnosticIdentifiers.FixDocumentationCommentTag, 
+            customTags:         Array.Empty<string>());
+
         public static partial class ReportOnly
         {
             /// <summary>RCS1050i</summary>
@@ -2477,6 +2489,18 @@ namespace Roslynator.CSharp
                 isEnabledByDefault: true, 
                 description:        null, 
                 helpLinkUri:        DiagnosticIdentifiers.ConvertHasFlagCallToBitwiseOperationOrViceVersa, 
+                customTags:         Array.Empty<string>());
+
+            /// <summary>RCS1207i</summary>
+            public static readonly DiagnosticDescriptor ConvertMethodGroupToAnonymousFunction = DiagnosticDescriptorFactory.Default.Create(
+                id:                 DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa, 
+                title:              "Convert anonymous function to method group (or vice versa).", 
+                messageFormat:      "Convert method group to anonymous function.", 
+                category:           DiagnosticCategories.Simplification, 
+                defaultSeverity:    DiagnosticSeverity.Hidden, 
+                isEnabledByDefault: false, 
+                description:        null, 
+                helpLinkUri:        DiagnosticIdentifiers.ConvertAnonymousFunctionToMethodGroupOrViceVersa, 
                 customTags:         Array.Empty<string>());
 
         }
