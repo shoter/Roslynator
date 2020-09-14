@@ -81,7 +81,7 @@ class C
 {
     void M(string s1, string s2)
     {
-        Action<string, string> action = (f, g) => M(f, g);
+        Action<string, string> action = (f, f2) => M(f, f2);
     }
 }
 ", equivalenceKey: RefactoringId);
@@ -164,7 +164,7 @@ class C
 {
     string M(string s1, string s2)
     {
-        Func<string, string, string> func = (f, g) => M(f, g);
+        Func<string, string, string> func = (f, f2) => M(f, f2);
         return null;
     }
 }
@@ -255,7 +255,7 @@ class C
     {
         Action<string, string> action = null;
 
-        action = (f, g) => M(f, g);
+        action = (f, f2) => M(f, f2);
     }
 }
 ", equivalenceKey: RefactoringId);
@@ -355,7 +355,7 @@ class C
     {
         Func<string, string, string> func = null;
 
-        func = (f, g) => M(f, g);
+        func = (f, f2) => M(f, f2);
 
         return null;
     }
@@ -445,7 +445,7 @@ class C
 {
     void M(Action<string, string> action)
     {
-        M((f, g) => M2(f, g));
+        M((f, f2) => M2(f, f2));
     }
 
     void M2(string s1, string s2) { }
@@ -535,7 +535,7 @@ class C
 {
     void M(Func<string, string, string> func)
     {
-        M((f, g) => M2(f, g));
+        M((f, f2) => M2(f, f2));
     }
 
     string M2(string s1, string s2) => null;
