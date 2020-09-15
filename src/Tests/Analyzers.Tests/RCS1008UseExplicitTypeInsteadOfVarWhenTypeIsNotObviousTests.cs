@@ -125,6 +125,66 @@ class C
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseExplicitTypeInsteadOfVarWhenTypeIsNotObvious)]
+        public async Task Test_TupleExpression()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+class C
+{
+    (object x, System.DateTime y) M()
+    {
+        [|var|] (x, y) = M();
+
+        return default;
+    }
+}
+", @"
+class C
+{
+    (object x, System.DateTime y) M()
+    {
+        (object x, System.DateTime y) = M();
+
+        return default;
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseExplicitTypeInsteadOfVarWhenTypeIsNotObvious)]
+        public async Task Test_Tuple_ForEach()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+using System.Collections.Generic;
+
+class C
+{
+    IEnumerable<(object x, System.DateTime y)> M()
+    {
+        foreach ([|var|] (x, y) in M())
+        {
+        }
+
+        return default;
+    }
+}
+", @"
+using System.Collections.Generic;
+
+class C
+{
+    IEnumerable<(object x, System.DateTime y)> M()
+    {
+        foreach ((object x, System.DateTime y) in M())
+        {
+        }
+
+        return default;
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseExplicitTypeInsteadOfVarWhenTypeIsNotObvious)]
         public async Task TestNoDiagnostic()
         {
             await VerifyNoDiagnosticAsync(@"

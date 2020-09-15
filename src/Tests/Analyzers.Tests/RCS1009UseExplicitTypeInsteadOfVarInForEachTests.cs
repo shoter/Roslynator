@@ -54,6 +54,40 @@ class C
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseExplicitTypeInsteadOfVarInForEach)]
+        public async Task TestDiagnostic_Tuple()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+using System.Collections.Generic;
+
+class C
+{
+    IEnumerable<(object x, System.DateTime y)> M()
+    {
+        foreach ([|var|] (x, y) in M())
+        {
+        }
+
+        return default;
+    }
+}
+", @"
+using System.Collections.Generic;
+
+class C
+{
+    IEnumerable<(object x, System.DateTime y)> M()
+    {
+        foreach ((object x, System.DateTime y) in M())
+        {
+        }
+
+        return default;
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseExplicitTypeInsteadOfVarInForEach)]
         public async Task TestNoDiagnostic()
         {
             await VerifyNoDiagnosticAsync(@"

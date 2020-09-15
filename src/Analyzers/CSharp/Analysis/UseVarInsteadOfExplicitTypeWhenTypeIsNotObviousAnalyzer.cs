@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -23,6 +22,7 @@ namespace Roslynator.CSharp.Analysis
 
             context.RegisterSyntaxNodeAction(f => AnalyzeVariableDeclaration(f), SyntaxKind.VariableDeclaration);
             context.RegisterSyntaxNodeAction(f => AnalyzeDeclarationExpression(f), SyntaxKind.DeclarationExpression);
+            context.RegisterSyntaxNodeAction(f => AnalyzeTupleExpression(f), SyntaxKind.TupleExpression);
         }
 
         private static void AnalyzeVariableDeclaration(SyntaxNodeAnalysisContext context)
@@ -46,6 +46,18 @@ namespace Roslynator.CSharp.Analysis
                 DiagnosticHelpers.ReportDiagnostic(context,
                     DiagnosticDescriptors.UseVarInsteadOfExplicitTypeWhenTypeIsNotObvious,
                     declarationExpression.Type);
+            }
+        }
+
+        private static void AnalyzeTupleExpression(SyntaxNodeAnalysisContext context)
+        {
+            var tupleExpression = (TupleExpressionSyntax)context.Node;
+
+            if (CSharpTypeAnalysis.IsExplicitThatCanBeImplicit(tupleExpression, context.SemanticModel, context.CancellationToken))
+            {
+                DiagnosticHelpers.ReportDiagnostic(context,
+                    DiagnosticDescriptors.UseVarInsteadOfExplicitTypeWhenTypeIsNotObvious,
+                    tupleExpression);
             }
         }
     }

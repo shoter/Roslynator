@@ -331,23 +331,49 @@ namespace Roslynator.CSharp
             if (!type.IsVar)
                 return false;
 
-            if (!(declarationExpression.Designation is SingleVariableDesignationSyntax singleVariableDesignation))
-                return false;
+            switch (declarationExpression.Designation)
+            {
+                case SingleVariableDesignationSyntax singleVariableDesignation:
+                    {
+                        return IsLocalThatSupportsExplicitDeclaration(singleVariableDesignation);
+                    }
+                case ParenthesizedVariableDesignationSyntax parenthesizedVariableDesignation:
+                    {
+                        foreach (VariableDesignationSyntax variableDesignation in parenthesizedVariableDesignation.Variables)
+                        {
+                            if (!(variableDesignation is SingleVariableDesignationSyntax singleVariableDesignation2))
+                                return false;
 
-            if (!(semanticModel.GetDeclaredSymbol(singleVariableDesignation, cancellationToken) is ILocalSymbol localSymbol))
-                return false;
+                            if (!IsLocalThatSupportsExplicitDeclaration(singleVariableDesignation2))
+                                return false;
+                        }
 
-            ITypeSymbol typeSymbol = localSymbol.Type;
+                        return true;
+                    }
+                default:
+                    {
+                        Debug.Fail(declarationExpression.Designation.Kind().ToString());
+                        return false;
+                    }
+            }
 
-            Debug.Assert(typeSymbol != null);
+            bool IsLocalThatSupportsExplicitDeclaration(SingleVariableDesignationSyntax singleVariableDesignation)
+            {
+                if (!(semanticModel.GetDeclaredSymbol(singleVariableDesignation, cancellationToken) is ILocalSymbol localSymbol))
+                    return false;
 
-            if (typeSymbol == null)
-                return false;
+                ITypeSymbol typeSymbol = localSymbol.Type;
 
-            if (typeSymbol.IsKind(SymbolKind.ErrorType, SymbolKind.DynamicType))
-                return false;
+                Debug.Assert(typeSymbol != null);
 
-            return typeSymbol.SupportsExplicitDeclaration();
+                if (typeSymbol == null)
+                    return false;
+
+                if (typeSymbol.IsKind(SymbolKind.ErrorType, SymbolKind.DynamicType))
+                    return false;
+
+                return typeSymbol.SupportsExplicitDeclaration();
+            }
         }
 
         public static bool IsExplicitThatCanBeImplicit(
@@ -378,6 +404,84 @@ namespace Roslynator.CSharp
 
             if (typeSymbol.IsKind(SymbolKind.ErrorType, SymbolKind.DynamicType))
                 return false;
+
+            return true;
+        }
+
+        public static bool IsExplicitThatCanBeImplicit(
+            TupleExpressionSyntax tupleExpression,
+            SemanticModel semanticModel,
+            CancellationToken cancellationToken = default)
+        {
+            return IsExplicitThatCanBeImplicit(tupleExpression, semanticModel, TypeAppearance.None, cancellationToken);
+        }
+
+        public static bool IsExplicitThatCanBeImplicit(
+            TupleExpressionSyntax tupleExpression,
+            SemanticModel semanticModel,
+            TypeAppearance typeAppearance,
+            CancellationToken cancellationToken = default)
+        {
+            if (!tupleExpression.IsParentKind(SyntaxKind.SimpleAssignmentExpression))
+            {
+                Debug.Fail(tupleExpression.Parent.Kind().ToString());
+                return false;
+            }
+
+            var assignment = (AssignmentExpressionSyntax)tupleExpression.Parent;
+
+            ExpressionSyntax expression = assignment.Right.WalkDownParentheses();
+
+            if (expression?.IsMissing != false)
+                return false;
+
+            if (expression.IsKind(SyntaxKind.NullLiteralExpression, SyntaxKind.DefaultLiteralExpression))
+                return false;
+
+            ITypeSymbol tupleTypeSymbol = semanticModel.GetTypeSymbol(tupleExpression, cancellationToken);
+
+            if (tupleTypeSymbol == null)
+                return false;
+
+            if (!SymbolEqualityComparer.Default.Equals(tupleTypeSymbol, semanticModel.GetTypeSymbol(expression, cancellationToken)))
+                return false;
+
+            foreach (ArgumentSyntax argument in tupleExpression.Arguments)
+            {
+                if (!(argument.Expression is DeclarationExpressionSyntax declarationExpression))
+                    return false;
+
+                TypeSyntax type = declarationExpression.Type;
+
+                if (type == null)
+                    return false;
+
+                if (!(declarationExpression.Designation is SingleVariableDesignationSyntax singleVariableDesignation))
+                    return false;
+
+                if (!(semanticModel.GetDeclaredSymbol(singleVariableDesignation, cancellationToken) is ILocalSymbol localSymbol))
+                    return false;
+
+                ITypeSymbol typeSymbol = localSymbol.Type;
+
+                Debug.Assert(typeSymbol != null);
+
+                if (typeSymbol == null)
+                    return false;
+
+                if (typeSymbol.IsKind(SymbolKind.ErrorType, SymbolKind.DynamicType))
+                    return false;
+            }
+
+            switch (typeAppearance)
+            {
+                case TypeAppearance.Obvious:
+                    return IsObvious(expression, semanticModel, cancellationToken);
+                case TypeAppearance.NotObvious:
+                    return !IsObvious(expression, semanticModel, cancellationToken);
+            }
+
+            Debug.Assert(typeAppearance == TypeAppearance.None, typeAppearance.ToString());
 
             return true;
         }
