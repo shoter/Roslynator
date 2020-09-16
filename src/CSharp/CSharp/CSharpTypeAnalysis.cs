@@ -431,6 +431,17 @@ namespace Roslynator.CSharp
 
                         return IsExplicitThatCanBeImplicit(tupleExpression, forEachStatement, semanticModel);
                     }
+                case SyntaxKind.Argument:
+                case SyntaxKind.ArrayInitializerExpression:
+                case SyntaxKind.ReturnStatement:
+                case SyntaxKind.YieldReturnStatement:
+                case SyntaxKind.ArrowExpressionClause:
+                case SyntaxKind.SimpleLambdaExpression:
+                case SyntaxKind.ParenthesizedLambdaExpression:
+                    {
+                        Debug.Assert(!tupleExpression.Arguments.Any(f => f.Expression.IsKind(SyntaxKind.DeclarationExpression)), tupleExpression.ToString());
+                        return false;
+                    }
                 default:
                     {
                         Debug.Fail(tupleExpression.Parent.Kind().ToString());

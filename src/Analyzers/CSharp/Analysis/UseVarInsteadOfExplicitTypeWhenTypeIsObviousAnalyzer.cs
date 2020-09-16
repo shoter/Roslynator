@@ -29,11 +29,7 @@ namespace Roslynator.CSharp.Analysis
             var variableDeclaration = (VariableDeclarationSyntax)context.Node;
 
             if (CSharpTypeAnalysis.IsExplicitThatCanBeImplicit(variableDeclaration, context.SemanticModel, TypeAppearance.Obvious, context.CancellationToken))
-            {
-                DiagnosticHelpers.ReportDiagnostic(context,
-                    DiagnosticDescriptors.UseVarInsteadOfExplicitTypeWhenTypeIsObvious,
-                    variableDeclaration.Type);
-            }
+                ReportDiagnostic(context, variableDeclaration.Type);
         }
 
         private static void AnalyzeTupleExpression(SyntaxNodeAnalysisContext context)
@@ -44,11 +40,15 @@ namespace Roslynator.CSharp.Analysis
                 return;
 
             if (CSharpTypeAnalysis.IsExplicitThatCanBeImplicit(tupleExpression, context.SemanticModel, TypeAppearance.Obvious, context.CancellationToken))
-            {
-                DiagnosticHelpers.ReportDiagnostic(context,
-                    DiagnosticDescriptors.UseVarInsteadOfExplicitTypeWhenTypeIsObvious,
-                    tupleExpression);
-            }
+                ReportDiagnostic(context, tupleExpression);
+        }
+
+        private static void ReportDiagnostic(SyntaxNodeAnalysisContext context, SyntaxNode node)
+        {
+            DiagnosticHelpers.ReportDiagnostic(
+                context,
+                DiagnosticDescriptors.UseVarInsteadOfExplicitTypeWhenTypeIsObvious,
+                node);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Immutable;
-using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -49,28 +48,26 @@ namespace Roslynator.CSharp.Analysis
             }
 
             if (CSharpTypeAnalysis.IsExplicitThatCanBeImplicit(declarationExpression, context.SemanticModel, context.CancellationToken))
-            {
-                DiagnosticHelpers.ReportDiagnostic(context,
-                    DiagnosticDescriptors.UseVarInsteadOfExplicitTypeWhenTypeIsNotObvious,
-                    declarationExpression.Type);
-            }
+                ReportDiagnostic(context, declarationExpression.Type);
         }
 
         private static void AnalyzeTupleExpression(SyntaxNodeAnalysisContext context)
         {
             var tupleExpression = (TupleExpressionSyntax)context.Node;
 
-            Debug.Assert(tupleExpression.IsParentKind(SyntaxKind.ForEachVariableStatement, SyntaxKind.SimpleAssignmentExpression), tupleExpression.Parent.Kind().ToString());
-
             if (tupleExpression.IsParentKind(SyntaxKind.ForEachVariableStatement))
                 return;
 
             if (CSharpTypeAnalysis.IsExplicitThatCanBeImplicit(tupleExpression, context.SemanticModel, context.CancellationToken))
-            {
-                DiagnosticHelpers.ReportDiagnostic(context,
-                    DiagnosticDescriptors.UseVarInsteadOfExplicitTypeWhenTypeIsNotObvious,
-                    tupleExpression);
-            }
+                ReportDiagnostic(context, tupleExpression);
+        }
+
+        private static void ReportDiagnostic(SyntaxNodeAnalysisContext context, SyntaxNode node)
+        {
+            DiagnosticHelpers.ReportDiagnostic(
+                context,
+                DiagnosticDescriptors.UseVarInsteadOfExplicitTypeWhenTypeIsNotObvious,
+                node);
         }
     }
 }

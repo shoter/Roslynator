@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -34,7 +33,7 @@ namespace Roslynator.CSharp.Analysis
             if (analysis.IsExplicit
                 && analysis.SupportsImplicit)
             {
-                DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.UseVarInsteadOfExplicitTypeInForEach, forEachStatement.Type);
+                ReportDiagnostic(context, forEachStatement.Type);
             }
         }
 
@@ -47,8 +46,16 @@ namespace Roslynator.CSharp.Analysis
             if (analysis.IsExplicit
                 && analysis.SupportsImplicit)
             {
-                DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.UseVarInsteadOfExplicitTypeInForEach, forEachStatement.Variable);
+                ReportDiagnostic(context, forEachStatement.Variable);
             }
+        }
+
+        private static void ReportDiagnostic(SyntaxNodeAnalysisContext context, SyntaxNode node)
+        {
+            DiagnosticHelpers.ReportDiagnostic(
+                context,
+                DiagnosticDescriptors.UseVarInsteadOfExplicitTypeInForEach,
+                node);
         }
     }
 }

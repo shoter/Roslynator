@@ -46,12 +46,7 @@ namespace Roslynator.CSharp.Analysis
                 case DeclarationExpressionSyntax declarationExpression:
                     {
                         if (CSharpTypeAnalysis.IsImplicitThatCanBeExplicit(forEachStatement, context.SemanticModel))
-                        {
-                            DiagnosticHelpers.ReportDiagnostic(
-                                context,
-                                DiagnosticDescriptors.UseExplicitTypeInsteadOfVarInForEach,
-                                declarationExpression.Type);
-                        }
+                            ReportDiagnostic(context, declarationExpression.Type);
 
                         break;
                     }
@@ -63,12 +58,7 @@ namespace Roslynator.CSharp.Analysis
                                 continue;
 
                             if (CSharpTypeAnalysis.IsImplicitThatCanBeExplicit(declarationExpression, context.SemanticModel, context.CancellationToken))
-                            {
-                                DiagnosticHelpers.ReportDiagnostic(
-                                    context,
-                                    DiagnosticDescriptors.UseExplicitTypeInsteadOfVarInForEach,
-                                    declarationExpression.Type);
-                            }
+                                ReportDiagnostic(context, declarationExpression.Type);
                         }
 
                         break;
@@ -79,6 +69,14 @@ namespace Roslynator.CSharp.Analysis
                         break;
                     }
             }
+        }
+
+        private static void ReportDiagnostic(SyntaxNodeAnalysisContext context, TypeSyntax type)
+        {
+            DiagnosticHelpers.ReportDiagnostic(
+                context,
+                DiagnosticDescriptors.UseExplicitTypeInsteadOfVarInForEach,
+                type);
         }
     }
 }
