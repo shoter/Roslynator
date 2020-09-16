@@ -40,6 +40,9 @@ namespace Roslynator.CSharp.Analysis
         {
             var tupleExpression = (TupleExpressionSyntax)context.Node;
 
+            if (tupleExpression.IsParentKind(SyntaxKind.ForEachVariableStatement))
+                return;
+
             if (CSharpTypeAnalysis.IsExplicitThatCanBeImplicit(tupleExpression, context.SemanticModel, TypeAppearance.Obvious, context.CancellationToken))
             {
                 DiagnosticHelpers.ReportDiagnostic(context,

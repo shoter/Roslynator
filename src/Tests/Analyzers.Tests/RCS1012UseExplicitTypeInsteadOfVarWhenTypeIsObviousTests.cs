@@ -44,7 +44,7 @@ class C
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseExplicitTypeInsteadOfVarWhenTypeIsObvious)]
-        public async Task Test_Tuple()
+        public async Task Test_Tuple_DeclarationExpression()
         {
             await VerifyDiagnosticAndFixAsync(@"
 class C
@@ -60,6 +60,90 @@ class C
     void M()
     {
         (object x, System.DateTime y) = default((object, System.DateTime));
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseExplicitTypeInsteadOfVarWhenTypeIsObvious)]
+        public async Task Test_TupleExpression()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+class C
+{
+    void M()
+    {
+        (object x, [|var|] y) = default((object, System.DateTime));
+    }
+}
+", @"
+class C
+{
+    void M()
+    {
+        (object x, System.DateTime y) = default((object, System.DateTime));
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseExplicitTypeInsteadOfVarWhenTypeIsObvious)]
+        public async Task Test_TupleExpression_AllVar()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+class C
+{
+    void M()
+    {
+        ([|var|] x, [|var|] y) = default((object, System.DateTime));
+    }
+}
+", @"
+class C
+{
+    void M()
+    {
+        (object x, System.DateTime y) = default((object, System.DateTime));
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseExplicitTypeInsteadOfVarWhenTypeIsObvious)]
+        public async Task TestNoDiagnostic_ForEach_DeclarationExpression()
+        {
+            await VerifyNoDiagnosticAsync(@"
+using System.Collections.Generic;
+
+class C
+{
+    IEnumerable<(object x, string y)> M()
+    {
+        foreach (var (x, y) in M())
+        {
+        }
+
+        return default;
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseExplicitTypeInsteadOfVarWhenTypeIsObvious)]
+        public async Task TestNoDiagnostic_ForEach_TupleExpression()
+        {
+            await VerifyNoDiagnosticAsync(@"
+using System.Collections.Generic;
+
+class C
+{
+    IEnumerable<(object x, string y)> M()
+    {
+        foreach ((object x, string y) in M())
+        {
+        }
+
+        return default;
     }
 }
 ");

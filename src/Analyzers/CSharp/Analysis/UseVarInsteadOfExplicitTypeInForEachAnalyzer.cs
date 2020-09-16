@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Roslynator.CSharp.Analysis
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class UseVarInForEachAnalyzer : BaseDiagnosticAnalyzer
+    public class UseVarInsteadOfExplicitTypeInForEachAnalyzer : BaseDiagnosticAnalyzer
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         {
@@ -22,6 +22,7 @@ namespace Roslynator.CSharp.Analysis
             base.Initialize(context);
 
             context.RegisterSyntaxNodeAction(f => AnalyzeForEachStatement(f), SyntaxKind.ForEachStatement);
+            context.RegisterSyntaxNodeAction(f => AnalyzeForEachVariableStatement(f), SyntaxKind.ForEachVariableStatement);
         }
 
         private static void AnalyzeForEachStatement(SyntaxNodeAnalysisContext context)
@@ -34,6 +35,19 @@ namespace Roslynator.CSharp.Analysis
                 && analysis.SupportsImplicit)
             {
                 DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.UseVarInsteadOfExplicitTypeInForEach, forEachStatement.Type);
+            }
+        }
+
+        private static void AnalyzeForEachVariableStatement(SyntaxNodeAnalysisContext context)
+        {
+            var forEachStatement = (ForEachVariableStatementSyntax)context.Node;
+
+            TypeAnalysis analysis = CSharpTypeAnalysis.AnalyzeType(forEachStatement, context.SemanticModel);
+
+            if (analysis.IsExplicit
+                && analysis.SupportsImplicit)
+            {
+                DiagnosticHelpers.ReportDiagnostic(context, DiagnosticDescriptors.UseVarInsteadOfExplicitTypeInForEach, forEachStatement.Variable);
             }
         }
     }

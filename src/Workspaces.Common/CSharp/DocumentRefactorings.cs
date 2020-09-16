@@ -11,7 +11,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Roslynator.CSharp.Documentation;
 using Roslynator.CSharp.Refactorings;
 using Roslynator.Documentation;
-using Roslynator.Text;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static Roslynator.CSharp.CSharpFactory;
 
@@ -123,7 +122,7 @@ namespace Roslynator.CSharp
             TupleExpressionSyntax tupleExpression,
             CancellationToken cancellationToken = default)
         {
-            SeparatedSyntaxList<VariableDesignationSyntax> designations = tupleExpression.Arguments
+            SeparatedSyntaxList<VariableDesignationSyntax> variables = tupleExpression.Arguments
                 .Select(f => f.Expression)
                 .Cast<DeclarationExpressionSyntax>()
                 .Select(f => f.Designation)
@@ -131,7 +130,7 @@ namespace Roslynator.CSharp
 
             DeclarationExpressionSyntax declarationExpression = DeclarationExpression(
                     VarType(),
-                    ParenthesizedVariableDesignation(designations))
+                    ParenthesizedVariableDesignation(variables))
                 .WithTriviaFrom(tupleExpression)
                 .WithFormatterAnnotation();
 

@@ -41,6 +41,9 @@ namespace Roslynator.CSharp.Analysis
         {
             var declarationExpression = (DeclarationExpressionSyntax)context.Node;
 
+            if (declarationExpression.IsParentKind(SyntaxKind.ForEachVariableStatement))
+                return;
+
             if (CSharpTypeAnalysis.IsImplicitThatCanBeExplicit(declarationExpression, context.SemanticModel, context.CancellationToken))
             {
                 DiagnosticHelpers.ReportDiagnostic(context,

@@ -44,7 +44,7 @@ class C
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseVarInsteadOfExplicitTypeWhenTypeIsObvious)]
-        public async Task Test_DefaultExpression_Tuple()
+        public async Task Test_DefaultExpression_TupleExpression()
         {
             await VerifyDiagnosticAndFixAsync(@"
 class C
@@ -52,6 +52,28 @@ class C
     void M()
     {
         [|(object x, string y)|] = default((object, string));
+    }
+}
+", @"
+class C
+{
+    void M()
+    {
+        var (x, y) = default((object, string));
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseVarInsteadOfExplicitTypeWhenTypeIsObvious)]
+        public async Task Test_DefaultExpression_TupleExpression_var()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+class C
+{
+    void M()
+    {
+        [|(object x, var y)|] = default((object, string));
     }
 }
 ", @"
@@ -85,6 +107,46 @@ class C
         foreach (Match match in Regex.Matches(""input"", ""pattern""))
         {
         }
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseVarInsteadOfExplicitTypeWhenTypeIsObvious)]
+        public async Task TestNoDiagnostic_ForEach_DeclarationExpression()
+        {
+            await VerifyNoDiagnosticAsync(@"
+using System.Collections.Generic;
+
+class C
+{
+    IEnumerable<(object x, string y)> M()
+    {
+        foreach (var (x, y) in M())
+        {
+        }
+
+        return default;
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseVarInsteadOfExplicitTypeWhenTypeIsObvious)]
+        public async Task TestNoDiagnostic_ForEach_TupleExpression()
+        {
+            await VerifyNoDiagnosticAsync(@"
+using System.Collections.Generic;
+
+class C
+{
+    IEnumerable<(object x, string y)> M()
+    {
+        foreach ((object x, string y) in M())
+        {
+        }
+
+        return default;
     }
 }
 ");

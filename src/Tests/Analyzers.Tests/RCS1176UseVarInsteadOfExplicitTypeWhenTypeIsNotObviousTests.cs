@@ -25,7 +25,7 @@ class C
 {
     object M()
     {
-        [|var|] x = M();
+        [|object|] x = M();
 
         return default;
     }
@@ -35,7 +35,7 @@ class C
 {
     object M()
     {
-        object x = M();
+        var x = M();
 
         return default;
     }
@@ -44,7 +44,7 @@ class C
         }
 
         [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseVarInsteadOfExplicitTypeWhenTypeIsNotObvious)]
-        public async Task Test_Tuple()
+        public async Task Test_TupleExpression()
         {
             await VerifyDiagnosticAndFixAsync(@"
 class C
@@ -62,6 +62,72 @@ class C
     (object x, object y) M()
     {
         var (x, y) = M();
+
+        return default;
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseVarInsteadOfExplicitTypeWhenTypeIsNotObvious)]
+        public async Task Test_TupleExpression_Var()
+        {
+            await VerifyDiagnosticAndFixAsync(@"
+class C
+{
+    (object x, object y) M()
+    {
+        [|(var x, object y)|] = M();
+
+        return default;
+    }
+}
+", @"
+class C
+{
+    (object x, object y) M()
+    {
+        var (x, y) = M();
+
+        return default;
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseVarInsteadOfExplicitTypeWhenTypeIsNotObvious)]
+        public async Task TestNoDiagnostic_ForEach_DeclarationExpression()
+        {
+            await VerifyNoDiagnosticAsync(@"
+using System.Collections.Generic;
+
+class C
+{
+    IEnumerable<(object x, string y)> M()
+    {
+        foreach (var (x, y) in M())
+        {
+        }
+
+        return default;
+    }
+}
+");
+        }
+
+        [Fact, Trait(Traits.Analyzer, DiagnosticIdentifiers.UseVarInsteadOfExplicitTypeWhenTypeIsNotObvious)]
+        public async Task TestNoDiagnostic_ForEach_TupleExpression()
+        {
+            await VerifyNoDiagnosticAsync(@"
+using System.Collections.Generic;
+
+class C
+{
+    IEnumerable<(object x, string y)> M()
+    {
+        foreach ((object x, string y) in M())
+        {
+        }
 
         return default;
     }

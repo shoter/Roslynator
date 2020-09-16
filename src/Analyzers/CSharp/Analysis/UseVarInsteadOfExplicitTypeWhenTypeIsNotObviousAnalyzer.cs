@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -41,6 +42,12 @@ namespace Roslynator.CSharp.Analysis
         {
             var declarationExpression = (DeclarationExpressionSyntax)context.Node;
 
+            if (declarationExpression.IsParentKind(SyntaxKind.Argument)
+                && declarationExpression.Parent.IsParentKind(SyntaxKind.TupleExpression))
+            {
+                return;
+            }
+
             if (CSharpTypeAnalysis.IsExplicitThatCanBeImplicit(declarationExpression, context.SemanticModel, context.CancellationToken))
             {
                 DiagnosticHelpers.ReportDiagnostic(context,
@@ -52,6 +59,11 @@ namespace Roslynator.CSharp.Analysis
         private static void AnalyzeTupleExpression(SyntaxNodeAnalysisContext context)
         {
             var tupleExpression = (TupleExpressionSyntax)context.Node;
+
+            Debug.Assert(tupleExpression.IsParentKind(SyntaxKind.ForEachVariableStatement, SyntaxKind.SimpleAssignmentExpression), tupleExpression.Parent.Kind().ToString());
+
+            if (tupleExpression.IsParentKind(SyntaxKind.ForEachVariableStatement))
+                return;
 
             if (CSharpTypeAnalysis.IsExplicitThatCanBeImplicit(tupleExpression, context.SemanticModel, context.CancellationToken))
             {
