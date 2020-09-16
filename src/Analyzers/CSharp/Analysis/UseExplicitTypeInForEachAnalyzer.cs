@@ -22,6 +22,7 @@ namespace Roslynator.CSharp.Analysis
             base.Initialize(context);
 
             context.RegisterSyntaxNodeAction(f => AnalyzeForEachStatement(f), SyntaxKind.ForEachStatement);
+            context.RegisterSyntaxNodeAction(f => AnalyzeForEachVariableStatement(f), SyntaxKind.ForEachVariableStatement);
         }
 
         private static void AnalyzeForEachStatement(SyntaxNodeAnalysisContext context)
@@ -33,6 +34,18 @@ namespace Roslynator.CSharp.Analysis
                 DiagnosticHelpers.ReportDiagnostic(context,
                     DiagnosticDescriptors.UseExplicitTypeInsteadOfVarInForEach,
                     forEachStatement.Type);
+            }
+        }
+
+        private static void AnalyzeForEachVariableStatement(SyntaxNodeAnalysisContext context)
+        {
+            var forEachStatement = (ForEachVariableStatementSyntax)context.Node;
+
+            if (CSharpTypeAnalysis.IsImplicitThatCanBeExplicit(forEachStatement, context.SemanticModel))
+            {
+                DiagnosticHelpers.ReportDiagnostic(context,
+                    DiagnosticDescriptors.UseExplicitTypeInsteadOfVarInForEach,
+                    ((DeclarationExpressionSyntax)forEachStatement.Variable).Type);
             }
         }
     }

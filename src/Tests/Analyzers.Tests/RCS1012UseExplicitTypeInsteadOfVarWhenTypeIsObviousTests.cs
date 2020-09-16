@@ -47,8 +47,6 @@ class C
         public async Task Test_Tuple()
         {
             await VerifyDiagnosticAndFixAsync(@"
-using System.Collections.Generic;
-
 class C
 {
     void M()

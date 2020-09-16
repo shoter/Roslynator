@@ -55,7 +55,6 @@ class C
     }
 }
 ", @"
-
 class C
 {
     void M()

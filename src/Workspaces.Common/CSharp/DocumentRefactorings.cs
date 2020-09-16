@@ -27,10 +27,32 @@ namespace Roslynator.CSharp
         {
             if (type.IsVar
                 && type.Parent is DeclarationExpressionSyntax declarationExpression
-                && declarationExpression.Designation.IsKind(SyntaxKind.ParenthesizedVariableDesignation)
-                && declarationExpression.Parent.IsKind(SyntaxKind.SimpleAssignmentExpression)
-                && object.ReferenceEquals(declarationExpression, ((AssignmentExpressionSyntax)declarationExpression.Parent).Left))
+                && declarationExpression.Designation.IsKind(SyntaxKind.ParenthesizedVariableDesignation))
             {
+#if DEBUG
+                SyntaxNode parent = declarationExpression.Parent;
+
+                switch (parent.Kind())
+                {
+                    case SyntaxKind.SimpleAssignmentExpression:
+                        {
+                            var assignmentExpression = (AssignmentExpressionSyntax)parent;
+                            Debug.Assert(object.ReferenceEquals(assignmentExpression.Left, declarationExpression));
+                            break;
+                        }
+                    case SyntaxKind.ForEachVariableStatement:
+                        {
+                            var forEachStatement = (ForEachVariableStatementSyntax)parent;
+                            Debug.Assert(object.ReferenceEquals(forEachStatement.Variable, declarationExpression));
+                            break;
+                        }
+                    default:
+                        {
+                            Debug.Fail(parent.Kind().ToString());
+                            break;
+                        }
+                }
+#endif
                 TupleExpressionSyntax tupleExpression = CreateTupleExpression(typeSymbol)
                     .WithTriviaFrom(declarationExpression);
 
@@ -101,27 +123,19 @@ namespace Roslynator.CSharp
             TupleExpressionSyntax tupleExpression,
             CancellationToken cancellationToken = default)
         {
-            var builder = new SyntaxNodeTextBuilder(tupleExpression);
+            SeparatedSyntaxList<VariableDesignationSyntax> designations = tupleExpression.Arguments
+                .Select(f => f.Expression)
+                .Cast<DeclarationExpressionSyntax>()
+                .Select(f => f.Designation)
+                .ToSeparatedSyntaxList();
 
-            builder.AppendFullSpan(tupleExpression.OpenParenToken);
+            DeclarationExpressionSyntax declarationExpression = DeclarationExpression(
+                    VarType(),
+                    ParenthesizedVariableDesignation(designations))
+                .WithTriviaFrom(tupleExpression)
+                .WithFormatterAnnotation();
 
-            SeparatedSyntaxList<ArgumentSyntax> arguments = tupleExpression.Arguments;
-
-            for (int i = 0; i < arguments.Count; i++)
-            {
-                var declarationExpression = (DeclarationExpressionSyntax)arguments[i].Expression;
-
-                builder.AppendFullSpan(declarationExpression.Designation);
-
-                if (i < arguments.Count - 1)
-                    builder.AppendFullSpan(arguments.GetSeparator(i));
-            }
-
-            builder.AppendFullSpan(tupleExpression.CloseParenToken);
-
-            ExpressionSyntax expression = ParseExpression(builder.ToString());
-
-            return document.ReplaceNodeAsync(tupleExpression, expression, cancellationToken);
+            return document.ReplaceNodeAsync(tupleExpression, declarationExpression, cancellationToken);
         }
 
         public static Task<Document> ChangeTypeAndAddAwaitAsync(

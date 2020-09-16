@@ -443,8 +443,25 @@ namespace Roslynator.CSharp
             if (tupleTypeSymbol == null)
                 return false;
 
-            if (!SymbolEqualityComparer.Default.Equals(tupleTypeSymbol, semanticModel.GetTypeSymbol(expression, cancellationToken)))
+            ITypeSymbol expressionTypeSymbol = semanticModel.GetTypeSymbol(expression, cancellationToken);
+
+            if (tupleTypeSymbol.IsTupleType
+                && expressionTypeSymbol.IsTupleType)
+            {
+                var tupleNamedTypeSymbol = (INamedTypeSymbol)tupleTypeSymbol;
+                var expressionNamedTypeSymbol = (INamedTypeSymbol)expressionTypeSymbol;
+
+                if (!SymbolEqualityComparer.Default.Equals(
+                    tupleNamedTypeSymbol.TupleUnderlyingType ?? tupleNamedTypeSymbol,
+                    expressionNamedTypeSymbol.TupleUnderlyingType ?? expressionNamedTypeSymbol))
+                {
+                    return false;
+                }
+            }
+            else if (!SymbolEqualityComparer.Default.Equals(tupleTypeSymbol, expressionTypeSymbol))
+            {
                 return false;
+            }
 
             foreach (ArgumentSyntax argument in tupleExpression.Arguments)
             {
@@ -538,6 +555,33 @@ namespace Roslynator.CSharp
 
             if (type == null)
                 return false;
+
+            if (!type.IsVar)
+                return false;
+
+            ForEachStatementInfo info = semanticModel.GetForEachStatementInfo(forEachStatement);
+
+            ITypeSymbol typeSymbol = info.ElementType;
+
+            if (typeSymbol == null)
+                return false;
+
+            if (typeSymbol.IsKind(SymbolKind.ErrorType, SymbolKind.DynamicType))
+                return false;
+
+            return typeSymbol.SupportsExplicitDeclaration();
+        }
+
+        public static bool IsImplicitThatCanBeExplicit(ForEachVariableStatementSyntax forEachStatement, SemanticModel semanticModel)
+        {
+            ExpressionSyntax expression = forEachStatement.Variable;
+
+            if (!(expression is DeclarationExpressionSyntax declarationExpression))
+                return false;
+
+            TypeSyntax type = declarationExpression.Type;
+
+            Debug.Assert(type.IsVar, type.Kind().ToString());
 
             if (!type.IsVar)
                 return false;

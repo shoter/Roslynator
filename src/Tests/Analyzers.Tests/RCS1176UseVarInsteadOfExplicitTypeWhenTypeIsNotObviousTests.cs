@@ -26,6 +26,8 @@ class C
     object M()
     {
         [|var|] x = M();
+
+        return default;
     }
 }
 ", @"
@@ -34,6 +36,8 @@ class C
     object M()
     {
         object x = M();
+
+        return default;
     }
 }
 ");
